@@ -8,7 +8,13 @@
         activeSub   : tên sub-menu đang active (hien-thi-sp | chi-tiet-sp | cpu | ram | o-cung | gpu | man-hinh | mau-sac | pin | danh-muc | thuong-hieu)
 --%>
 <c:set var="nv" value="${sessionScope.nhanVien}" />
-<c:set var="isNhanVien" value="${nv != null and fn:contains(fn:toLowerCase(nv.chucVu), 'nhân viên')}" />
+<%-- Kiểm tra chức vụ nhân viên không phân biệt dấu/hoa/thường --%>
+<%-- Chuẩn hóa: dùng Java scriptlet để normalize --%>
+<%
+    demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
+    boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
+    pageContext.setAttribute("isNhanVien", _isNhanVien);
+%>
 <%-- Map các jsp:param vào biến local để dùng trong EL --%>
 <c:set var="activeMenu" value="${param.activeMenu}" />
 <c:set var="activeSub"  value="${param.activeSub}" />

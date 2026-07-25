@@ -68,8 +68,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
                 nv = (demo.entity.nhan_vien.NhanVien) obj;
             }
         }
-        boolean isNhanVien = nv != null && nv.getChucVu() != null
-                && nv.getChucVu().toLowerCase().contains("nhân viên");
+        boolean isNhanVien = LoginServlet.isNhanVienRole(nv != null ? nv.getChucVu() : null);
 
         // Nếu nhân viên cố truy cập chức năng xóa → redirect về trang hiện thị
         if (isNhanVien && uri.contains("/xoa")) {
@@ -107,8 +106,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
         Object nvObj = session.getAttribute("nhanVien");
         demo.entity.nhan_vien.NhanVien nv = (nvObj instanceof demo.entity.nhan_vien.NhanVien)
                 ? (demo.entity.nhan_vien.NhanVien) nvObj : null;
-        boolean isNhanVien = nv != null && nv.getChucVu() != null
-                && nv.getChucVu().toLowerCase().contains("nhân viên");
+        boolean isNhanVien = LoginServlet.isNhanVienRole(nv != null ? nv.getChucVu() : null);
         if (isNhanVien) {
             session.setAttribute("errorMessage", "Bạn không có quyền thực hiện thao tác này.");
             resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");

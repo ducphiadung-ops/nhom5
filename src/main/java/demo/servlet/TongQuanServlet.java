@@ -28,8 +28,7 @@ public class TongQuanServlet extends HttpServlet {
         Object nvObj = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
         demo.entity.nhan_vien.NhanVien nv = (nvObj instanceof demo.entity.nhan_vien.NhanVien)
                 ? (demo.entity.nhan_vien.NhanVien) nvObj : null;
-        if (nv != null && nv.getChucVu() != null
-                && nv.getChucVu().toLowerCase().contains("nhân viên")) {
+        if (nv != null && LoginServlet.isNhanVienRole(nv.getChucVu())) {
             resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
             return;
         }

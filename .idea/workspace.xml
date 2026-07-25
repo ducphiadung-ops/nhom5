@@ -14,18 +14,16 @@
   <component name="ChangeListManager">
     <list default="true" id="4d10d1b0-9c0e-419b-8246-6aef80ccf8f8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/Service/nhanvien/NhanVienService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/Service/nhanvien/NhanVienService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/nhanvien/NhanVienRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/nhanvien/NhanVienRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/LoginServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/LoginServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/NhanVienServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/NhanVienServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/ThuocTinhSanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/ThuocTinhSanPhamServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/common/sidebar.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/common/sidebar.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang_add.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang_add.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/login/dang_nhap.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/login/dang_nhap.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/form_sua.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/form_sua.jsp" afterDir="false" />
@@ -33,14 +31,15 @@
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/cpu/cpu-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/cpu/cpu-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/danh-muc/danh-muc-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/danh-muc/danh-muc-index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/gpu/gpu-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/gpu/gpu-index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/man-hinh/man-hinh-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/man-hinh/man-hinh-index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/mau-sac/mau-sac-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/mau-sac/mau-sac-index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/o-cung/o-cung-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/o-cung/o-cung-index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/pin/pin-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/pin/pin-index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/ram/ram-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/ram/ram-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/thuong-hieu/thuong-hieu-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/thuong-hieu/thuong-hieu-index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/tong_quan.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/tong_quan.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/index.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +52,7 @@
     </persistenceIdMap>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="134" />
+    <option name="cachedIndexableFilesCount" value="141" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -66,18 +65,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "ducphiadung-ops"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;ducphiadung-ops&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/ducphiadung-ops/nhom5.git",
-    "accountId": "096b23bc-ae53-4b66-9175-ff5e97faa9b1"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/ducphiadung-ops/nhom5.git&quot;,
+    &quot;accountId&quot;: &quot;096b23bc-ae53-4b66-9175-ff5e97faa9b1&quot;
   }
-}]]></component>
+}</component>
   <component name="LogFilters">
     <option name="FILTER_ERRORS" value="false" />
     <option name="FILTER_WARNINGS" value="false" />
@@ -98,23 +97,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.4233886957082649" />
-      <entry key="MS500" value="1.988733149446829" />
-      <entry key="S2" value="3.6116390324473775" />
-      <entry key="S5" value="5.127823075371472" />
-      <entry key="S10" value="5.943313028479681" />
-      <entry key="S30" value="6.61659848405653" />
-      <entry key="S60" value="6.804091414358071" />
-      <entry key="M2" value="6.900968814795941" />
-      <entry key="M5" value="6.960125809472545" />
-      <entry key="M10" value="6.9800190119092465" />
-      <entry key="M15" value="6.986671487329087" />
-      <entry key="M30" value="6.997397506457399" />
-      <entry key="H1" value="7.319859865368706" />
-      <entry key="H2" value="11.142963792555836" />
-      <entry key="H4" value="33.68980880784454" />
-      <entry key="D1" value="434.8710713602175" />
-      <entry key="W1" value="886.107499347288" />
+      <entry key="MS100" value="1.4565185921240567" />
+      <entry key="MS500" value="3.570328618773033" />
+      <entry key="S2" value="10.365622072207323" />
+      <entry key="S5" value="18.458166144432703" />
+      <entry key="S10" value="26.17512874970935" />
+      <entry key="S30" value="36.94533714385477" />
+      <entry key="S60" value="41.0478291706724" />
+      <entry key="M2" value="43.40573106282521" />
+      <entry key="M5" value="44.932230642835506" />
+      <entry key="M10" value="45.46095602688337" />
+      <entry key="M15" value="45.63948141530449" />
+      <entry key="M30" value="45.823194541380545" />
+      <entry key="H1" value="46.231392623621716" />
+      <entry key="H2" value="50.09137598848785" />
+      <entry key="H4" value="72.64240789565983" />
+      <entry key="D1" value="473.799096527529" />
+      <entry key="W1" value="925.0869206791638" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -122,37 +121,37 @@
       <entry key="S2" value="0.0" />
       <entry key="S5" value="0.0" />
       <entry key="S10" value="0.0" />
-      <entry key="S30" value="3.240906102430121E-215" />
-      <entry key="S60" value="8.021909198374327E-108" />
-      <entry key="M2" value="4.2082842026907905E-54" />
-      <entry key="M5" value="7.9986204355034035E-22" />
-      <entry key="M10" value="4.8376972791395224E-11" />
-      <entry key="M15" value="1.9452634963451632E-7" />
-      <entry key="M30" value="8.672135099515497E-4" />
-      <entry key="H1" value="0.07102198694656875" />
-      <entry key="H2" value="0.9477011978518859" />
-      <entry key="H4" value="7.50270224509433" />
-      <entry key="D1" value="181.0892437724663" />
-      <entry key="W1" value="410.2389805407443" />
+      <entry key="S30" value="2.045940074550677E-215" />
+      <entry key="S60" value="6.373690519537604E-108" />
+      <entry key="M2" value="3.751126212905157E-54" />
+      <entry key="M5" value="7.639021536628941E-22" />
+      <entry key="M10" value="4.727701105012842E-11" />
+      <entry key="M15" value="1.9156639175700682E-7" />
+      <entry key="M30" value="8.605903579599832E-4" />
+      <entry key="H1" value="0.07075025975435265" />
+      <entry key="H2" value="0.9458865276312373" />
+      <entry key="H4" value="7.495515668709822" />
+      <entry key="D1" value="181.06032238406758" />
+      <entry key="W1" value="410.2296201259424" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.3504211863916347" />
-      <entry key="MS500" value="1.9546967070078134" />
-      <entry key="S2" value="3.5356755606914785" />
-      <entry key="S5" value="5.069718369924753" />
-      <entry key="S10" value="5.906800392102037" />
-      <entry key="S30" value="6.602377102310905" />
-      <entry key="S60" value="6.796695450233451" />
-      <entry key="M2" value="6.897197152424201" />
-      <entry key="M5" value="6.958599150380374" />
-      <entry key="M10" value="6.979252657117229" />
-      <entry key="M15" value="6.986160102844465" />
-      <entry key="M30" value="6.998005511393965" />
-      <entry key="H1" value="7.390642399809814" />
-      <entry key="H2" value="12.090016590519642" />
-      <entry key="H4" value="41.190869896358436" />
-      <entry key="D1" value="615.9558842734322" />
-      <entry key="W1" value="1296.3451140799668" />
+      <entry key="MS100" value="1.34990894583075" />
+      <entry key="MS500" value="3.5159175184228015" />
+      <entry key="S2" value="10.326757823797033" />
+      <entry key="S5" value="18.42161794892272" />
+      <entry key="S10" value="26.135884830563448" />
+      <entry key="S30" value="36.91853232020778" />
+      <entry key="S60" value="41.0314451219007" />
+      <entry key="M2" value="43.39664911225493" />
+      <entry key="M5" value="44.92836287073633" />
+      <entry key="M10" value="45.45898105504824" />
+      <entry key="M15" value="45.638155679834256" />
+      <entry key="M30" value="45.82338443412983" />
+      <entry key="H1" value="46.30169700883107" />
+      <entry key="H2" value="51.03651153734742" />
+      <entry key="H4" value="80.13623203168129" />
+      <entry key="D1" value="654.854980096702" />
+      <entry key="W1" value="1335.315173790463" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -187,6 +186,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Tomcat Server.Tomcat 10.1.55.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",

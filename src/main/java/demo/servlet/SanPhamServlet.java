@@ -62,8 +62,7 @@ public class SanPhamServlet extends HttpServlet {
             Object nvObj = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
             demo.entity.nhan_vien.NhanVien nv = (nvObj instanceof demo.entity.nhan_vien.NhanVien)
                     ? (demo.entity.nhan_vien.NhanVien) nvObj : null;
-            boolean isNhanVien = nv != null && nv.getChucVu() != null
-                    && nv.getChucVu().toLowerCase().contains("nhân viên");
+            boolean isNhanVien = LoginServlet.isNhanVienRole(nv != null ? nv.getChucVu() : null);
             if (isNhanVien) {
                 resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
                 return;
@@ -89,8 +88,7 @@ public class SanPhamServlet extends HttpServlet {
         Object nvObjPost = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
         demo.entity.nhan_vien.NhanVien nv = (nvObjPost instanceof demo.entity.nhan_vien.NhanVien)
                 ? (demo.entity.nhan_vien.NhanVien) nvObjPost : null;
-        boolean isNhanVien = nv != null && nv.getChucVu() != null
-                && nv.getChucVu().toLowerCase().contains("nhân viên");
+        boolean isNhanVien = LoginServlet.isNhanVienRole(nv != null ? nv.getChucVu() : null);
         if (isNhanVien) {
             req.getSession().setAttribute("errorMessage", "Bạn không có quyền thực hiện thao tác này.");
             resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");

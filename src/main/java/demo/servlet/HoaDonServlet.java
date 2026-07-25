@@ -223,12 +223,18 @@ public class HoaDonServlet extends HttpServlet {
         List<HinhThucThanhToan> listHTTT = hinhThucThanhToanRepo.getAll();
         Map<Integer, String> mapThanhToan = new HashMap<>();
 
-        String keyword = req.getParameter("keyword");
+        String keyword   = req.getParameter("keyword");
         String trangThai = req.getParameter("trangThai");
-        String ngayTao = req.getParameter("ngayTao");
+        String ngayTao   = req.getParameter("ngayTao");
+        // "filtered=true" được gửi lên khi user bấm nút Lọc hoặc Xóa lọc trong JSP
+        boolean isFiltered = "true".equals(req.getParameter("filtered"));
 
-        // 2. Gọi hàm lọc linh động từ Repository thay vì lấy tất cả
-        // Nếu mới vào trang (chưa bấm lọc), các biến này sẽ là null -> Repo tự hiểu là select all
+        // Nếu user chưa bấm lọc lần nào (lần đầu vào trang) → mặc định ngày hôm nay
+        // Nếu user đã bấm lọc (filtered=true) → tôn trọng giá trị ngayTao (kể cả rỗng = hiện tất cả)
+        if (!isFiltered) {
+            ngayTao = java.time.LocalDate.now().toString(); // "yyyy-MM-dd"
+        }
+
         List<HoaDon> ListHoaDon = hoaDonRepository.timKiemVaLoc(keyword, trangThai, ngayTao);
 
         for (HinhThucThanhToan httt : listHTTT) {
@@ -237,9 +243,14 @@ public class HoaDonServlet extends HttpServlet {
             }
         }
 
-        req.setAttribute("ListHoaDon", ListHoaDon);
-        req.setAttribute("mapThanhToan", mapThanhToan);
-        req.getRequestDispatcher("/demo/hoa_don/hoa_don.jsp").forward(req,resp);
+        // Truyền lại để JSP hiển thị đúng giá trị trên ô lọc ngày
+        req.setAttribute("oldNgayTao",  ngayTao);
+        req.setAttribute("oldKeyword",  keyword  != null ? keyword  : "");
+        req.setAttribute("oldTrangThai",trangThai != null ? trangThai : "");
+        req.setAttribute("isFiltered",  isFiltered);
+        req.setAttribute("ListHoaDon",  ListHoaDon);
+        req.setAttribute("mapThanhToan",mapThanhToan);
+        req.getRequestDispatcher("/demo/hoa_don/hoa_don.jsp").forward(req, resp);
     }
 
     @Override

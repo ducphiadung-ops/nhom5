@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.text.Normalizer;
 
 @WebServlet(name = "LoginServlet", value = {
         "/login/dang_nhap",
@@ -19,6 +20,37 @@ public class LoginServlet extends HttpServlet {
 
     private final NhanVienService nhanVienService = new NhanVienService();
 
+    /**
+     * Xóa dấu tiếng Việt và chuyển về chữ thường để so sánh không phân biệt dấu.
+     * "Nhân Viên" -> "nhan vien"
+     * "NHÂN VIÊN" -> "nhan vien"
+     */
+    public static String removeDiacritics(String str) {
+        if (str == null) return "";
+        String normalized = Normalizer.normalize(str, Normalizer.Form.NFD);
+        return normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .replace("đ", "d").replace("Đ", "d")
+                .toLowerCase().trim();
+    }
+
+    /**
+     * Kiểm tra chức vụ có phải nhân viên không (bất kể cách viết dấu/hoa/thường).
+     * Nhân Viên / nhan vien / NHÂN VIÊN / Nhân viên / Bán Hàng → true
+     * Admin / Quản Lý / Giám Đốc → false
+     */
+    public static boolean isNhanVienRole(String chucVu) {
+        if (chucVu == null || chucVu.trim().isEmpty()) return false;
+        String normalized = removeDiacritics(chucVu);
+        // Các từ khóa đặc trưng của nhân viên (không dấu)
+        return normalized.contains("nhan vien")
+                || normalized.contains("nhanvien")
+                || normalized.contains("ban hang")
+                || normalized.contains("banhang")
+                || normalized.contains("thu ngan")
+                || normalized.contains("thu kho")
+                || normalized.contains("ky thuat");
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI();
@@ -26,7 +58,12 @@ public class LoginServlet extends HttpServlet {
             // Nếu đã đăng nhập thì chuyển về trang chính
             HttpSession session = req.getSession(false);
             if (session != null && session.getAttribute("nhanVien") != null) {
-                resp.sendRedirect(req.getContextPath() + "/tong_quan");
+                NhanVien nv = (NhanVien) session.getAttribute("nhanVien");
+                if (isNhanVienRole(nv.getChucVu())) {
+                    resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
+                } else {
+                    resp.sendRedirect(req.getContextPath() + "/tong_quan");
+                }
                 return;
             }
             req.getRequestDispatcher("/demo/login/dang_nhap.jsp").forward(req, resp);
@@ -64,15 +101,10 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = req.getSession(true);
             session.setAttribute("nhanVien", nv);
 
-            // Xác định vai trò để chuyển hướng phù hợp
-            boolean isNhanVien = nv.getChucVu() != null
-                    && nv.getChucVu().toLowerCase().contains("nhân viên");
-
-            if (isNhanVien) {
-                // Nhân viên → vào thẳng quản lý sản phẩm
+            // Kiểm tra chức vụ (không phân biệt dấu/hoa/thường)
+            if (isNhanVienRole(nv.getChucVu())) {
                 resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
             } else {
-                // Admin → vào trang tổng quan
                 resp.sendRedirect(req.getContextPath() + "/tong_quan");
             }
 
