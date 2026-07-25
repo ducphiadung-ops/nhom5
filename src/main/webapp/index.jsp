@@ -1,0 +1,1 @@
+\<% response.sendRedirect(request.getContextPath() + "/demo/login/dang_nhap.jsp"); %>
