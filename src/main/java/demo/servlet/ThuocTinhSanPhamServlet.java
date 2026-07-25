@@ -60,6 +60,23 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI();
 
+        // Kiểm tra quyền: nhân viên không được xóa thuộc tính
+        demo.entity.nhan_vien.NhanVien nv = null;
+        if (req.getSession(false) != null) {
+            Object obj = req.getSession().getAttribute("nhanVien");
+            if (obj instanceof demo.entity.nhan_vien.NhanVien) {
+                nv = (demo.entity.nhan_vien.NhanVien) obj;
+            }
+        }
+        boolean isNhanVien = nv != null && nv.getChucVu() != null
+                && nv.getChucVu().toLowerCase().contains("nhân viên");
+
+        // Nếu nhân viên cố truy cập chức năng xóa → redirect về trang hiện thị
+        if (isNhanVien && uri.contains("/xoa")) {
+            resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
+            return;
+        }
+
         if (uri.contains("/thuoc-tinh/cpu/hien-thi")) this.cpuHienThi(req, resp);
         else if (uri.contains("/thuoc-tinh/ram/hien-thi")) this.ramHienThi(req, resp);
         else if (uri.contains("/thuoc-tinh/o-cung/hien-thi")) this.oCungHienThi(req, resp);
@@ -85,6 +102,18 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI();
         HttpSession session = req.getSession();
+
+        // Kiểm tra quyền server-side: nhân viên không được thêm thuộc tính
+        Object nvObj = session.getAttribute("nhanVien");
+        demo.entity.nhan_vien.NhanVien nv = (nvObj instanceof demo.entity.nhan_vien.NhanVien)
+                ? (demo.entity.nhan_vien.NhanVien) nvObj : null;
+        boolean isNhanVien = nv != null && nv.getChucVu() != null
+                && nv.getChucVu().toLowerCase().contains("nhân viên");
+        if (isNhanVien) {
+            session.setAttribute("errorMessage", "Bạn không có quyền thực hiện thao tác này.");
+            resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
+            return;
+        }
 
         try {
             if (uri.contains("/thuoc-tinh/cpu/them")) {
@@ -212,7 +241,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
 
     public void thuongHieuHienThi(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("listThuongHieu", thuongHieuRepo.getAll());
-        req.getRequestDispatcher("demo/san_pham/thuoc-tinh/thuong-hieu/thuong-hieu-index.jsp").forward(req, resp);
+        req.getRequestDispatcher("/demo/san_pham/thuoc-tinh/thuong-hieu/thuong-hieu-index.jsp").forward(req, resp);
     }
 
     public void danhMucHienThi(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

@@ -13,7 +13,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d10d1b0-9c0e-419b-8246-6aef80ccf8f8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/Service/nhanvien/NhanVienService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/Service/nhanvien/NhanVienService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/nhanvien/NhanVienRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/nhanvien/NhanVienRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/LoginServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/LoginServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/NhanVienServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/NhanVienServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/ThuocTinhSanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/ThuocTinhSanPhamServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang_add.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang_add.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/login/dang_nhap.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/login/dang_nhap.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/form_sua.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/form_sua.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/hien_thi.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/hien_thi.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/cpu/cpu-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/cpu/cpu-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/gpu/gpu-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/gpu/gpu-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/man-hinh/man-hinh-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/man-hinh/man-hinh-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/mau-sac/mau-sac-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/mau-sac/mau-sac-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/o-cung/o-cung-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/o-cung/o-cung-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/pin/pin-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/pin/pin-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/ram/ram-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/ram/ram-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/tong_quan.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/tong_quan.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/index.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +66,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "ducphiadung-ops"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/ducphiadung-ops/nhom5.git",
+    "accountId": "096b23bc-ae53-4b66-9175-ff5e97faa9b1"
+  }
+}]]></component>
   <component name="LogFilters">
     <option name="FILTER_ERRORS" value="false" />
     <option name="FILTER_WARNINGS" value="false" />

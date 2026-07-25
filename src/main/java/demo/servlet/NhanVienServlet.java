@@ -29,6 +29,16 @@ public class NhanVienServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Kiểm tra quyền: nhân viên không được truy cập quản lý nhân viên
+        Object nvObjCheck = request.getSession(false) != null ? request.getSession().getAttribute("nhanVien") : null;
+        demo.entity.nhan_vien.NhanVien nvSession = (nvObjCheck instanceof demo.entity.nhan_vien.NhanVien)
+                ? (demo.entity.nhan_vien.NhanVien) nvObjCheck : null;
+        if (nvSession != null && nvSession.getChucVu() != null
+                && nvSession.getChucVu().toLowerCase().contains("nhân viên")) {
+            response.sendRedirect(request.getContextPath() + "/san-pham/hien-thi");
+            return;
+        }
+
         String uri = request.getRequestURI();
 
         // Hiển thị danh sách nhân viên

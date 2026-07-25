@@ -254,11 +254,21 @@
             <p>Chào mừng bạn quay trở lại</p>
         </div>
 
-        <form action="/tong_quan" method="POST">
+        <form action="/login/dang_nhap" method="POST">
+            <!-- Thông báo lỗi -->
+            <% if (request.getAttribute("errorMessage") != null) { %>
+            <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:12px 16px; margin-bottom:20px; display:flex; align-items:center; gap:10px; font-size:13px; color:#dc2626;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <%= request.getAttribute("errorMessage") %>
+            </div>
+            <% } %>
+
             <!-- Tài khoản -->
             <div class="form-group">
                 <label for="username">Tài khoản</label>
-                <input type="text" id="username" name="username" class="form-control" placeholder="Nhập tên tài khoản" required>
+                <input type="text" id="username" name="username" class="form-control"
+                       placeholder="Nhập tên tài khoản" required
+                       value="<%= request.getAttribute("oldUsername") != null ? request.getAttribute("oldUsername") : "" %>">
             </div>
 
             <!-- Mật khẩu -->
@@ -270,28 +280,16 @@
             <!-- Tuỳ chọn mở rộng -->
             <div class="form-options">
                 <label class="remember-me">
-                    <input type="checkbox" name="remember"> Remember for 30 days
+                    <input type="checkbox" name="remember"> Ghi nhớ đăng nhập
                 </label>
-                <a href="#" class="forgot-link">Forgot password</a>
             </div>
 
-            <!-- Các nút hành động -->
-            <button type="submit" class="btn btn-submit">Sign in</button>
-
-            <button type="button" class="btn btn-google">
-                <!-- SVG Icon Google chuẩn màu sắc gốc của nó giống ảnh mẫu -->
-                <svg width="18" height="18" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.61c-.29 1.53-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-8.58z"/>
-                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.11 0-5.74-2.11-6.68-4.96H1.21v3.15C3.18 21.88 7.31 24 12 24z"/>
-                    <path fill="#FBBC05" d="M5.32 14.24A7.16 7.16 0 0 1 5 12c0-.79.13-1.57.32-2.34V6.51H1.21A11.94 11.94 0 0 0 0 12c0 1.92.45 3.74 1.21 5.39l4.11-3.15z"/>
-                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.18 2.12 1.21 5.65l4.11 3.15c.94-2.85 3.57-4.96 6.68-4.96z"/>
-                </svg>
-                Sign in with Google
-            </button>
+            <!-- Nút đăng nhập -->
+            <button type="submit" class="btn btn-submit">Đăng nhập</button>
         </form>
 
         <div class="signup-text">
-            Don't have an account? <a href="/login/dang_ky">Sign up</a>
+            Skycomputer &copy; 2025 &mdash; Hệ thống quản lý nội bộ
         </div>
     </div>
 

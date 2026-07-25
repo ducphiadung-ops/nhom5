@@ -56,6 +56,20 @@ public class SanPhamServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
+
+        // Nhân viên không được vào trang thêm / sửa sản phẩm
+        if (!path.equals("/san-pham/hien-thi")) {
+            Object nvObj = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
+            demo.entity.nhan_vien.NhanVien nv = (nvObj instanceof demo.entity.nhan_vien.NhanVien)
+                    ? (demo.entity.nhan_vien.NhanVien) nvObj : null;
+            boolean isNhanVien = nv != null && nv.getChucVu() != null
+                    && nv.getChucVu().toLowerCase().contains("nhân viên");
+            if (isNhanVien) {
+                resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
+                return;
+            }
+        }
+
         if (path.equals("/san-pham/hien-thi")) {
             hienThiDanhSach(req, resp);
         } else if (path.equals("/san-pham/sua")) {
@@ -70,6 +84,19 @@ public class SanPhamServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
+
+        // Nhân viên không được thêm/sửa/xóa sản phẩm
+        Object nvObjPost = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
+        demo.entity.nhan_vien.NhanVien nv = (nvObjPost instanceof demo.entity.nhan_vien.NhanVien)
+                ? (demo.entity.nhan_vien.NhanVien) nvObjPost : null;
+        boolean isNhanVien = nv != null && nv.getChucVu() != null
+                && nv.getChucVu().toLowerCase().contains("nhân viên");
+        if (isNhanVien) {
+            req.getSession().setAttribute("errorMessage", "Bạn không có quyền thực hiện thao tác này.");
+            resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
+            return;
+        }
+
         if (path.equals("/san-pham/them")) {
             xuLyThemMoi(req, resp);
         } else if (path.equals("/san-pham/sua")) {

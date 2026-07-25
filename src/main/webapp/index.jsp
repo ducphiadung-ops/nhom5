@@ -1,1 +1,1 @@
-\<% response.sendRedirect(request.getContextPath() + "/demo/login/dang_nhap.jsp"); %>
+<% response.sendRedirect(request.getContextPath() + "/login/dang_nhap"); %>

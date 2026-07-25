@@ -35,8 +35,13 @@ public class NhanVienService {
     }
 
 
-// switch doi trang thai
-    public void doiTrangThai(Integer id, Boolean trangThai){
-    repo.doiTrangThai(id, trangThai);
-}
+    // switch doi trang thai
+    public void doiTrangThai(Integer id, Boolean trangThai) {
+        repo.doiTrangThai(id, trangThai);
+    }
+
+    // Đăng nhập
+    public NhanVien findByTaiKhoanAndMatKhau(String taiKhoan, String matKhau) {
+        return repo.findByTaiKhoanAndMatKhau(taiKhoan, matKhau);
+    }
 }

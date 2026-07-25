@@ -73,6 +73,20 @@
             return String.format("NV%03d", so);
         }
 
+        // Đăng nhập
+        public NhanVien findByTaiKhoanAndMatKhau(String taiKhoan, String matKhau) {
+            Session session = HibernateConfig.getFACTORY().openSession();
+            try {
+                String hql = "FROM NhanVien WHERE taiKhoan = :taiKhoan AND matKhau = :matKhau AND trangThai = true";
+                return session.createQuery(hql, NhanVien.class)
+                        .setParameter("taiKhoan", taiKhoan)
+                        .setParameter("matKhau", matKhau)
+                        .uniqueResult();
+            } finally {
+                session.close();
+            }
+        }
+
         // Sửa
         public void update(NhanVien nv) {
 

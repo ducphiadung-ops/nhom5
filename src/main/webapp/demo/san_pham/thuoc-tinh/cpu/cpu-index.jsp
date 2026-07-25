@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:set var="isNhanVien" value="${sessionScope.nhanVien != null and fn:contains(fn:toLowerCase(sessionScope.nhanVien.chucVu), 'nhân viên')}" />
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -56,113 +58,21 @@
 </head>
 <body>
 
-<!-- Menu Sidebar Chuẩn (Active mục Cấu hình CPU) -->
-<aside class="sidebar">
-    <div class="brand">
-        <div class="brand-logo">
-            <img src="/img/logo.jpg" alt="Skycomputer Logo">
-        </div>
-        <div class="brand-text">
-            <h1>Skycomputer</h1>
-            <p>Hệ thống quản lý</p>
-        </div>
-    </div>
-
-    <ul class="nav-menu">
-        <li class="nav-item">
-            <a href="/tong_quan" class="nav-link-custom"><i class="fa-solid fa-border-all"></i> Trang tổng quan</a>
-        </li>
-        <li class="nav-item">
-            <a href="${pageContext.request.contextPath}/hoa-don/ban-hang" class="nav-link-custom"><i class="fa-solid fa-store"></i> Bán hàng tại quầy</a>
-        </li>
-
-        <!-- DROPDOWN QUẢN LÝ SẢN PHẨM -->
-        <li class="nav-item">
-            <a href="#sub-san-pham" class="nav-link-custom d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false">
-                <span><i class="fa-solid fa-box"></i> Quản lý sản phẩm</span>
-                <i class="fa-solid fa-chevron-down" style="font-size: 10px; transition: transform 0.2s;"></i>
-            </a>
-            <div class="collapse" id="sub-san-pham">
-                <ul class="sub-menu">
-                    <li>
-                        <a href="${pageContext.request.contextPath}/san-pham/hien-thi" class="nav-link-custom">
-                            <i class="fa-solid fa-list me-1"></i> Danh sách sản phẩm
-                        </a>
-                    </li>
-                    <li>
-                        <a href="${pageContext.request.contextPath}/san-pham-chi-tiet/hien-thi" class="nav-link-custom">
-                            <i class="fa-solid fa-circle-info me-1"></i> Sản phẩm chi tiết
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-
-        <!-- QUẢN LÝ HÓA ĐƠN -->
-        <li class="nav-item">
-            <a href="${pageContext.request.contextPath}/hoa-don/hien-thi" class="nav-link-custom"><i class="fa-solid fa-file-invoice"></i> Quản lý hóa đơn</a>
-        </li>
-
-        <!-- QUẢN LÝ KHÁCH HÀNG -->
-        <li class="nav-item">
-            <a href="${pageContext.request.contextPath}/khach-hang/hien-thi" class="nav-link-custom"><i class="fa-solid fa-users"></i> Quản lý khách hàng</a>
-        </li>
-
-        <!-- QUẢN LÝ NHÂN VIÊN -->
-        <li class="nav-item">
-            <a href="${pageContext.request.contextPath}/nhan-vien/hien-thi" class="nav-link-custom"><i class="fa-solid fa-id-badge"></i> Quản lý nhân viên</a>
-        </li>
-
-
-        <!-- DROPDOWN QUẢN LÝ THUỘC TÍNH -->
-        <li class="nav-item">
-            <a href="#sub-thuoc-tinh" class="nav-link-custom d-flex justify-content-between align-items-center active" data-bs-toggle="collapse" role="button" aria-expanded="true">
-                <span><i class="fa-solid fa-sliders"></i> Quản lý thuộc tính</span>
-                <i class="fa-solid fa-chevron-down" style="font-size: 10px; transition: transform 0.2s;"></i>
-            </a>
-            <div class="collapse show" id="sub-thuoc-tinh">
-                <ul class="sub-menu">
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/cpu/hien-thi" class="nav-link-custom active-sub"><i class="fa-solid fa-microchip me-1"></i> Cấu hình CPU</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/ram/hien-thi" class="nav-link-custom"><i class="fa-solid fa-memory me-1"></i> Cấu hình RAM</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/o-cung/hien-thi" class="nav-link-custom"><i class="fa-solid fa-hard-drive me-1"></i> Ổ cứng</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/gpu/hien-thi" class="nav-link-custom"><i class="fa-solid fa-clone me-1"></i> Card đồ họa (GPU)</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/man-hinh/hien-thi" class="nav-link-custom"><i class="fa-solid fa-display me-1"></i> Màn hình</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/mau-sac/hien-thi" class="nav-link-custom"><i class="fa-solid fa-palette me-1"></i> Màu sắc</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/pin/hien-thi" class="nav-link-custom"><i class="fa-solid fa-battery-three-quarters me-1"></i> Thông số Pin</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/danh-muc/hien-thi" class="nav-link-custom"><i class="fa-solid fa-layer-group me-1"></i> Danh mục sản phẩm</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/thuong-hieu/hien-thi" class="nav-link-custom"><i class="fa-solid fa-copyright me-1"></i> Thương hiệu</a></li>
-                </ul>
-            </div>
-        </li>
-    </ul>
-
-    <div class="logout-item">
-        <a href="${pageContext.request.contextPath}/dang-xuat" class="nav-link-custom logout-link">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
-        </a>
-    </div>
-</aside>
+<!-- SIDEBAR & HEADER (dùng chung) -->
+<jsp:include page="/demo/common/sidebar.jsp">
+    <jsp:param name="activeMenu" value="thuoc-tinh"/>
+    <jsp:param name="activeSub"  value="cpu"/>
+</jsp:include>
 
 <main class="main-wrapper">
-    <header class="top-header">
-        <div class="header-actions">
-            <div class="user-profile">
-                <div class="user-info">
-                    <div class="user-name">Admin User</div>
-                    <div class="user-role">QUẢN TRỊ VIÊN</div>
-                </div>
-                <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="avatar">
-            </div>
-        </div>
-    </header>
-
+    <jsp:include page="/demo/common/header.jsp"/>
     <div class="content-area">
         <div class="mb-4">
             <h4 class="fw-bold mb-1" style="color: var(--text-main);">Quản lý thuộc tính CPU</h4>
             <p class="text-muted mb-0" style="font-size: 13px;">Cấu hình danh mục các loại vi xử lý (CPU) cho sản phẩm laptop.</p>
         </div>
-
         <div class="row g-4">
+            <c:if test="${not isNhanVien}">
             <div class="col-md-4">
                 <div class="card card-custom p-4">
                     <h6 class="fw-bold mb-3 text-uppercase text-muted" style="font-size: 13px;"><i class="fa-solid fa-plus me-2"></i>Thêm CPU mới</h6>
@@ -179,8 +89,8 @@
                     </form>
                 </div>
             </div>
-
-            <div class="col-md-8">
+            </c:if>
+            <div class="${isNhanVien ? 'col-md-12' : 'col-md-8'}">
                 <div class="card card-custom p-4">
                     <h6 class="fw-bold text-uppercase mb-3 text-muted" style="font-size: 13px;"><i class="fa-solid fa-list me-2"></i>Danh sách bộ vi xử lý</h6>
                     <div class="table-responsive">
@@ -191,7 +101,7 @@
                                 <th class="text-start">Tên cấu hình CPU</th>
                                 <th>Thế hệ</th>
                                 <th>Trạng thái</th>
-                                <th style="width: 150px;">Thao tác</th>
+                                <c:if test="${not isNhanVien}"><th style="width: 150px;">Thao tác</th></c:if>
                             </tr>
                             </thead>
                             <tbody>
@@ -200,18 +110,15 @@
                                     <td class="text-muted fw-medium">${status.index + 1}</td>
                                     <td class="text-start fw-semibold text-dark">${cpu.tenCpu}</td>
                                     <td class="text-muted">${empty cpu.theHeCpu ? '—' : cpu.theHeCpu}</td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${cpu.trangThai}"><span class="badge-active">Sử dụng</span></c:when>
-                                            <c:otherwise><span class="badge-inactive">Ngừng dùng</span></c:otherwise>
-                                        </c:choose>
-                                    </td>
+                                    <td><c:choose><c:when test="${cpu.trangThai}"><span class="badge-active">Sử dụng</span></c:when><c:otherwise><span class="badge-inactive">Ngừng dùng</span></c:otherwise></c:choose></td>
+                                    <c:if test="${not isNhanVien}">
                                     <td>
                                         <div class="d-flex justify-content-center gap-3">
                                             <a href="${pageContext.request.contextPath}/thuoc-tinh/cpu/sua?id=${cpu.id}" class="text-muted"><i class="fa-regular fa-pen-to-square"></i></a>
                                             <a href="${pageContext.request.contextPath}/thuoc-tinh/cpu/xoa?id=${cpu.id}" class="text-danger" onclick="return confirm('Ngừng sử dụng CPU này?');"><i class="fa-regular fa-trash-can"></i></a>
                                         </div>
                                     </td>
+                                    </c:if>
                                 </tr>
                             </c:forEach>
                             </tbody>

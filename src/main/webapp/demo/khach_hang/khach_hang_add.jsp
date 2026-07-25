@@ -328,6 +328,51 @@
         .btn-outline:hover { background: #f9fafb; }
         .btn-primary { background: var(--primary); color: #fff; }
         .btn-primary:hover { background: #154cbf; }
+
+        /* ===== SEARCHABLE DROPDOWN ===== */
+        .searchable-select-wrapper { position: relative; }
+
+        .searchable-input {
+            cursor: text;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="%236b7280" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>') no-repeat 12px center;
+            padding-left: 34px !important;
+        }
+
+        .searchable-input:disabled {
+            background-color: #f9fafb;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .searchable-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 9999;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .searchable-dropdown::-webkit-scrollbar { width: 6px; }
+        .searchable-dropdown::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .searchable-dropdown::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        .sd-item {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .sd-item:hover { background-color: #eef2ff; color: var(--primary); }
+        .sd-item.sd-empty { color: var(--text-muted); cursor: default; font-style: italic; }
+        .sd-item.sd-selected { background-color: #e6efff; color: var(--primary); font-weight: 600; }
     </style>
 </head>
 <body>
@@ -579,29 +624,46 @@
         <div class="address-grid">
             <div class="form-group">
                 <label>Tỉnh/Thành phố <span>*</span></label>
-                <select class="form-control province-select" required onchange="onProvinceChange(this)">
-                    <option value="">-- Chọn Tỉnh/Thành --</option>
-                </select>
+                <div class="searchable-select-wrapper">
+                    <input type="text" class="form-control searchable-input province-input"
+                           placeholder="Tìm tỉnh/thành..."
+                           autocomplete="off"
+                           onfocus="openDropdown(this)"
+                           oninput="filterOptions(this)">
+                    <div class="searchable-dropdown province-dropdown"></div>
+                </div>
                 <input type="hidden" name="tinhThanh" class="province-name">
-                <input type="hidden" name="provinceCode" class="province-code">
+                <input type="hidden" name="provinceCode" class="province-code" value="0">
             </div>
 
             <div class="form-group">
                 <label>Quận/Huyện <span>*</span></label>
-                <select class="form-control district-select" required disabled onchange="onDistrictChange(this)">
-                    <option value="">-- Chọn Quận/Huyện --</option>
-                </select>
+                <div class="searchable-select-wrapper">
+                    <input type="text" class="form-control searchable-input district-input"
+                           placeholder="Tìm quận/huyện..."
+                           autocomplete="off"
+                           disabled
+                           onfocus="openDropdown(this)"
+                           oninput="filterOptions(this)">
+                    <div class="searchable-dropdown district-dropdown"></div>
+                </div>
                 <input type="hidden" name="quanHuyen" class="district-name">
-                <input type="hidden" name="districtCode" class="district-code">
+                <input type="hidden" name="districtCode" class="district-code" value="0">
             </div>
 
             <div class="form-group">
                 <label>Phường/Xã <span>*</span></label>
-                <select class="form-control ward-select" required disabled onchange="onWardChange(this)">
-                    <option value="">-- Chọn Phường/Xã --</option>
-                </select>
+                <div class="searchable-select-wrapper">
+                    <input type="text" class="form-control searchable-input ward-input"
+                           placeholder="Tìm phường/xã..."
+                           autocomplete="off"
+                           disabled
+                           onfocus="openDropdown(this)"
+                           oninput="filterOptions(this)">
+                    <div class="searchable-dropdown ward-dropdown"></div>
+                </div>
                 <input type="hidden" name="phuongXa" class="ward-name">
-                <input type="hidden" name="wardCode" class="ward-code">
+                <input type="hidden" name="wardCode" class="ward-code" value="0">
             </div>
         </div>
 
@@ -621,7 +683,7 @@
     `;
 
         container.appendChild(cardDiv);
-        loadProvinces(cardDiv.querySelector('.province-select'));
+        loadProvinces(cardDiv.querySelector('.province-input'));
     }
 
     // Xóa thẻ địa chỉ & đánh số lại tiêu đề
@@ -647,100 +709,126 @@
         }
     }
 
-    // API Tỉnh/Thành
-    function loadProvinces(selectElement) {
+    // ======= SEARCHABLE DROPDOWN LOGIC =======
+
+    // Mỗi input lưu data riêng
+    const inputData = new WeakMap(); // input → [{code, name}]
+
+    function loadProvinces(inputEl) {
         fetch('https://provinces.open-api.vn/api/p/')
             .then(res => res.json())
             .then(data => {
-                data.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.code;
-                    opt.textContent = p.name;
-                    selectElement.appendChild(opt);
-                });
+                inputData.set(inputEl, data.map(p => ({ code: p.code, name: p.name })));
             })
             .catch(err => console.error("Lỗi tải Tỉnh/Thành:", err));
     }
 
-    function onProvinceChange(select) {
-        const card = select.closest('.address-card');
-        const pCode = select.value;
-        const pText = select.options[select.selectedIndex]?.text || '';
-
-        const dSelect = card.querySelector('.district-select');
-        const wSelect = card.querySelector('.ward-select');
-
-        card.querySelector('.province-name').value = pCode ? pText : '';
-        card.querySelector('.province-code').value = pCode || '0';
-
-        dSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
-        wSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
-        wSelect.disabled = true;
-
-        card.querySelector('.district-name').value = '';
-        card.querySelector('.district-code').value = '0';
-        card.querySelector('.ward-name').value = '';
-        card.querySelector('.ward-code').value = '0';
-
-        if (!pCode) {
-            dSelect.disabled = true;
-            return;
-        }
-
-        fetch(`https://provinces.open-api.vn/api/p/\${pCode}?depth=2`)
-            .then(res => res.json())
-            .then(data => {
-                data.districts.forEach(d => {
-                    const opt = document.createElement('option');
-                    opt.value = d.code;
-                    opt.textContent = d.name;
-                    dSelect.appendChild(opt);
-                });
-                dSelect.disabled = false;
-            })
-            .catch(err => console.error("Lỗi tải Quận/Huyện:", err));
+    function openDropdown(inputEl) {
+        const data = inputData.get(inputEl) || [];
+        renderDropdown(inputEl, data);
     }
 
-    function onDistrictChange(select) {
-        const card = select.closest('.address-card');
-        const dCode = select.value;
-        const dText = select.options[select.selectedIndex]?.text || '';
-
-        const wSelect = card.querySelector('.ward-select');
-
-        card.querySelector('.district-name').value = dCode ? dText : '';
-        card.querySelector('.district-code').value = dCode || '0';
-
-        wSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
-        card.querySelector('.ward-name').value = '';
-        card.querySelector('.ward-code').value = '0';
-
-        if (!dCode) {
-            wSelect.disabled = true;
-            return;
-        }
-
-        fetch(`https://provinces.open-api.vn/api/d/\${dCode}?depth=2`)
-            .then(res => res.json())
-            .then(data => {
-                data.wards.forEach(w => {
-                    const opt = document.createElement('option');
-                    opt.value = w.code;
-                    opt.textContent = w.name;
-                    wSelect.appendChild(opt);
-                });
-                wSelect.disabled = false;
-            })
-            .catch(err => console.error("Lỗi tải Phường/Xã:", err));
+    function filterOptions(inputEl) {
+        const keyword = inputEl.value.trim().toLowerCase();
+        const data = inputData.get(inputEl) || [];
+        const filtered = keyword
+            ? data.filter(item => removeAccents(item.name).toLowerCase().includes(removeAccents(keyword)))
+            : data;
+        renderDropdown(inputEl, filtered);
     }
 
-    function onWardChange(select) {
-        const card = select.closest('.address-card');
-        const wCode = select.value;
-        const wText = select.options[select.selectedIndex]?.text || '';
+    function renderDropdown(inputEl, items) {
+        const wrapper = inputEl.closest('.searchable-select-wrapper');
+        let dropdown = wrapper.querySelector('.searchable-dropdown');
+        dropdown.innerHTML = '';
 
-        card.querySelector('.ward-name').value = wCode ? wText : '';
-        card.querySelector('.ward-code').value = wCode || '0';
+        if (items.length === 0) {
+            dropdown.innerHTML = '<div class="sd-item sd-empty">Không tìm thấy kết quả</div>';
+        } else {
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'sd-item';
+                div.textContent = item.name;
+                div.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    selectItem(inputEl, item);
+                });
+                dropdown.appendChild(div);
+            });
+        }
+        dropdown.style.display = 'block';
+    }
+
+    function selectItem(inputEl, item) {
+        const card = inputEl.closest('.address-card');
+        inputEl.value = item.name;
+
+        const wrapper = inputEl.closest('.searchable-select-wrapper');
+        wrapper.querySelector('.searchable-dropdown').style.display = 'none';
+
+        // Xác định loại (province / district / ward)
+        if (inputEl.classList.contains('province-input')) {
+            card.querySelector('.province-name').value = item.name;
+            card.querySelector('.province-code').value = item.code;
+
+            // Reset quận và phường
+            const dInput = card.querySelector('.district-input');
+            const wInput = card.querySelector('.ward-input');
+            dInput.value = '';
+            dInput.disabled = false;
+            wInput.value = '';
+            wInput.disabled = true;
+            card.querySelector('.district-name').value = '';
+            card.querySelector('.district-code').value = '0';
+            card.querySelector('.ward-name').value = '';
+            card.querySelector('.ward-code').value = '0';
+            inputData.delete(dInput);
+            inputData.delete(wInput);
+
+            // Load quận/huyện
+            fetch('https://provinces.open-api.vn/api/p/' + item.code + '?depth=2')
+                .then(res => res.json())
+                .then(data => {
+                    inputData.set(dInput, data.districts.map(d => ({ code: d.code, name: d.name })));
+                })
+                .catch(err => console.error("Lỗi tải Quận/Huyện:", err));
+
+        } else if (inputEl.classList.contains('district-input')) {
+            card.querySelector('.district-name').value = item.name;
+            card.querySelector('.district-code').value = item.code;
+
+            // Reset phường
+            const wInput = card.querySelector('.ward-input');
+            wInput.value = '';
+            wInput.disabled = false;
+            card.querySelector('.ward-name').value = '';
+            card.querySelector('.ward-code').value = '0';
+            inputData.delete(wInput);
+
+            // Load phường/xã
+            fetch('https://provinces.open-api.vn/api/d/' + item.code + '?depth=2')
+                .then(res => res.json())
+                .then(data => {
+                    inputData.set(wInput, data.wards.map(w => ({ code: w.code, name: w.name })));
+                })
+                .catch(err => console.error("Lỗi tải Phường/Xã:", err));
+
+        } else if (inputEl.classList.contains('ward-input')) {
+            card.querySelector('.ward-name').value = item.name;
+            card.querySelector('.ward-code').value = item.code;
+        }
+    }
+
+    // Đóng dropdown khi click ra ngoài
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.searchable-select-wrapper')) {
+            document.querySelectorAll('.searchable-dropdown').forEach(d => d.style.display = 'none');
+        }
+    });
+
+    // Xóa dấu tiếng Việt để tìm kiếm không phân biệt dấu
+    function removeAccents(str) {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g,'d').replace(/Đ/g,'D');
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

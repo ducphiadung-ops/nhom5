@@ -6,7 +6,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý Ổ cứng - Skycomputer</title>
+    <title>Quản lý Thương hiệu - Skycomputer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -53,29 +53,25 @@
 
 <jsp:include page="/demo/common/sidebar.jsp">
     <jsp:param name="activeMenu" value="thuoc-tinh"/>
-    <jsp:param name="activeSub"  value="o-cung"/>
+    <jsp:param name="activeSub"  value="thuong-hieu"/>
 </jsp:include>
 
 <main class="main-wrapper">
     <jsp:include page="/demo/common/header.jsp"/>
     <div class="content-area">
         <div class="mb-4">
-            <h4 class="fw-bold mb-1">Quản lý thuộc tính Ổ cứng</h4>
-            <p class="text-muted mb-0">Cấu hình chuẩn kết nối ổ lưu trữ (SSD/HDD) và dung lượng lưu trữ.</p>
+            <h4 class="fw-bold mb-1">Quản lý thuộc tính Thương hiệu</h4>
+            <p class="text-muted mb-0">Quản lý danh sách các hãng sản xuất laptop trong hệ thống.</p>
         </div>
         <div class="row g-4">
             <c:if test="${not isNhanVien}">
             <div class="col-md-4">
                 <div class="card card-custom p-4">
-                    <h6 class="fw-bold mb-3 text-uppercase" style="font-size:13px;color:#475569;"><i class="fa-solid fa-plus me-2"></i>Thêm Ổ cứng mới</h6>
-                    <form action="${pageContext.request.contextPath}/thuoc-tinh/o-cung/them" method="POST">
+                    <h6 class="fw-bold mb-3 text-uppercase" style="font-size:13px;color:#475569;"><i class="fa-solid fa-plus me-2"></i>Thêm Thương hiệu mới</h6>
+                    <form action="${pageContext.request.contextPath}/thuoc-tinh/thuong-hieu/them" method="POST">
                         <div class="mb-3">
-                            <label class="form-label">Loại ổ cứng <span class="text-danger">*</span></label>
-                            <input type="text" name="tenOCung" class="form-control py-2" placeholder="Ví dụ: SSD NVMe PCIe" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Dung lượng ổ cứng</label>
-                            <input type="text" name="dungLuongOCung" class="form-control py-2" placeholder="Ví dụ: 512GB, 1TB">
+                            <label class="form-label">Tên thương hiệu <span class="text-danger">*</span></label>
+                            <input type="text" name="tenThuongHieu" class="form-control py-2" placeholder="Ví dụ: Dell, HP, Lenovo" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 py-2 fw-medium" style="border-radius:8px;"><i class="fa-solid fa-save me-2"></i>Lưu thuộc tính</button>
                     </form>
@@ -84,34 +80,31 @@
             </c:if>
             <div class="${isNhanVien ? 'col-md-12' : 'col-md-8'}">
                 <div class="card card-custom p-4">
-                    <h6 class="fw-bold text-uppercase mb-3" style="font-size:13px;color:#475569;"><i class="fa-solid fa-list me-2"></i>Danh sách ổ lưu trữ</h6>
+                    <h6 class="fw-bold text-uppercase mb-3" style="font-size:13px;color:#475569;"><i class="fa-solid fa-list me-2"></i>Danh sách thương hiệu</h6>
                     <div class="table-responsive">
                         <table class="table table-custom table-hover align-middle text-center mb-0">
                             <thead><tr>
                                 <th style="width:60px;">STT</th>
-                                <th class="text-start">Loại ổ cứng</th>
-                                <th>Dung lượng</th>
+                                <th class="text-start">Tên thương hiệu</th>
                                 <th>Trạng thái</th>
-                                <c:if test="${not isNhanVien}"><th style="width:150px;">Thao tác</th></c:if>
+                                <c:if test="${not isNhanVien}"><th style="width:120px;">Thao tác</th></c:if>
                             </tr></thead>
                             <tbody>
-                            <c:forEach items="${listOCung}" var="oc" varStatus="status">
+                            <c:forEach items="${listThuongHieu}" var="th" varStatus="status">
                                 <tr>
                                     <td>${status.index + 1}</td>
-                                    <td class="text-start fw-semibold text-dark">${oc.tenOCung}</td>
-                                    <td class="text-secondary">${empty oc.dungLuongOCung ? '—' : oc.dungLuongOCung}</td>
-                                    <td><c:choose><c:when test="${oc.trangThai}"><span class="badge-active">Sử dụng</span></c:when><c:otherwise><span class="badge-inactive">Ngừng dùng</span></c:otherwise></c:choose></td>
+                                    <td class="text-start fw-semibold text-dark">${th.tenThuongHieu}</td>
+                                    <td><c:choose><c:when test="${th.trangThai}"><span class="badge-active">Sử dụng</span></c:when><c:otherwise><span class="badge-inactive">Ngừng dùng</span></c:otherwise></c:choose></td>
                                     <c:if test="${not isNhanVien}">
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a href="${pageContext.request.contextPath}/thuoc-tinh/o-cung/sua?id=${oc.id}" class="btn btn-sm btn-outline-secondary" style="border-radius:6px;"><i class="fa-regular fa-pen-to-square"></i></a>
-                                            <a href="${pageContext.request.contextPath}/thuoc-tinh/o-cung/xoa?id=${oc.id}" class="btn btn-sm btn-outline-danger" style="border-radius:6px;" onclick="return confirm('Ngừng kích hoạt Ổ Cứng này?');"><i class="fa-regular fa-trash-can"></i></a>
+                                            <a href="${pageContext.request.contextPath}/thuoc-tinh/thuong-hieu/xoa?id=${th.id}" class="btn btn-sm btn-outline-danger" style="border-radius:6px;" onclick="return confirm('Ngừng kích hoạt Thương hiệu này?');"><i class="fa-regular fa-trash-can"></i></a>
                                         </div>
                                     </td>
                                     </c:if>
                                 </tr>
                             </c:forEach>
-                            <c:if test="${empty listOCung}"><tr><td colspan="5" class="text-center py-5 text-muted">Chưa có dữ liệu Ổ cứng nào!</td></tr></c:if>
+                            <c:if test="${empty listThuongHieu}"><tr><td colspan="4" class="text-center py-5 text-muted">Chưa có dữ liệu Thương hiệu nào!</td></tr></c:if>
                             </tbody>
                         </table>
                     </div>

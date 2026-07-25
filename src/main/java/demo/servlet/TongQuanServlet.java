@@ -24,6 +24,15 @@ public class TongQuanServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Nhân viên không được truy cập trang tổng quan
+        Object nvObj = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
+        demo.entity.nhan_vien.NhanVien nv = (nvObj instanceof demo.entity.nhan_vien.NhanVien)
+                ? (demo.entity.nhan_vien.NhanVien) nvObj : null;
+        if (nv != null && nv.getChucVu() != null
+                && nv.getChucVu().toLowerCase().contains("nhân viên")) {
+            resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
+            return;
+        }
         this.tongquan(req, resp);
     }
 
@@ -44,9 +53,9 @@ public class TongQuanServlet extends HttpServlet {
             // Xử lý null và định dạng: nếu null thì về 0
             double doanhThuValue = (tongDoanhThu != null) ? tongDoanhThu.doubleValue() : 0.0;
 
-            // 2. TỔNG HÓA ĐƠN
+            // 2. TỔNG HÓA ĐƠN ĐÃ THANH TOÁN
             Long tongHoaDon = session.createQuery(
-                            "SELECT COUNT(h) FROM HoaDon h", Long.class)
+                            "SELECT COUNT(h) FROM HoaDon h WHERE h.trangThai = 1", Long.class)
                     .uniqueResult();
             if (tongHoaDon == null) tongHoaDon = 0L;
 
@@ -67,8 +76,10 @@ public class TongQuanServlet extends HttpServlet {
             List<SanPham> listSanPhamBanChay = sanPhamRepo.getTop5();
 
             // Đẩy dữ liệu lên JSP
-            // Định dạng chuỗi: %,.0f sẽ có dấu phẩy ngăn cách hàng nghìn
-            req.setAttribute("tongDoanhThu", String.format("%,.0f", doanhThuValue));
+            // Định dạng chuỗi tiền tệ: dùng Locale để format đúng chuẩn VN (dấu chấm)
+            String doanhThuFormatted = String.format("%,.0f", doanhThuValue)
+                    .replace(",", ".");
+            req.setAttribute("tongDoanhThu", doanhThuFormatted);
             req.setAttribute("tongHoaDon", tongHoaDon);
             req.setAttribute("tongSanPham", tongSanPhamDaBan);
             req.setAttribute("tongKhachHang", tongKhachHang);

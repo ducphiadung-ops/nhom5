@@ -49,6 +49,20 @@ public class ChiTietSanPhamServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
+
+        // Nhân viên không được vào trang sửa biến thể
+        if (path.equals("/san-pham-chi-tiet/sua")) {
+            Object nvObj = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
+            demo.entity.nhan_vien.NhanVien nv = (nvObj instanceof demo.entity.nhan_vien.NhanVien)
+                    ? (demo.entity.nhan_vien.NhanVien) nvObj : null;
+            boolean isNhanVien = nv != null && nv.getChucVu() != null
+                    && nv.getChucVu().toLowerCase().contains("nhân viên");
+            if (isNhanVien) {
+                resp.sendRedirect(req.getContextPath() + "/san-pham-chi-tiet/hien-thi");
+                return;
+            }
+        }
+
         if (path.equals("/san-pham-chi-tiet/detail")) {
             xuLyHienThiDetail(req, resp);
         } else if (path.equals("/san-pham-chi-tiet/sua")) {
@@ -61,6 +75,19 @@ public class ChiTietSanPhamServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
+
+        // Nhân viên không được thêm/sửa/xóa biến thể hoặc IMEI
+        Object nvObjPost = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
+        demo.entity.nhan_vien.NhanVien nv = (nvObjPost instanceof demo.entity.nhan_vien.NhanVien)
+                ? (demo.entity.nhan_vien.NhanVien) nvObjPost : null;
+        boolean isNhanVien = nv != null && nv.getChucVu() != null
+                && nv.getChucVu().toLowerCase().contains("nhân viên");
+        if (isNhanVien) {
+            req.getSession().setAttribute("errorMessage", "Bạn không có quyền thực hiện thao tác này.");
+            resp.sendRedirect(req.getContextPath() + "/san-pham-chi-tiet/hien-thi");
+            return;
+        }
+
         if (path.equals("/san-pham-chi-tiet/them")) {
             xuLyThemMoiBienThe(req, resp);
         } else if (path.equals("/san-pham-chi-tiet/xoa")) {
