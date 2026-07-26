@@ -13,7 +13,7 @@ public class CpuRepository {
     }
     public List<Cpu> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM Cpu WHERE trangThai = true", Cpu.class).list();
+            return session.createQuery("FROM Cpu WHERE trangThai = 1", Cpu.class).list();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

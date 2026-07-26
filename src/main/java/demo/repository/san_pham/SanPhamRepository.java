@@ -24,7 +24,7 @@ public class  SanPhamRepository {
     public List<SanPham> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             // 🟢 Đã thêm SanPham.class
-            return session.createQuery("FROM SanPham WHERE trangThai = true", SanPham.class).getResultList();
+            return session.createQuery("FROM SanPham WHERE trangThai = 1", SanPham.class).getResultList();
         }
     }
 
@@ -103,7 +103,7 @@ public class  SanPhamRepository {
         }
     }
 
-    public List<SanPham> timTheoTrangThai(Boolean trangThai) {
+    public List<SanPham> timTheoTrangThai(Integer trangThai) {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             return session.createQuery("FROM SanPham WHERE trangThai = :tt", SanPham.class)
                     .setParameter("tt", trangThai)

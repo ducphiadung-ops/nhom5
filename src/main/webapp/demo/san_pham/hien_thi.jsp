@@ -5,7 +5,7 @@
 <%
     demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
-    pageContext.setAttribute("isNhanVien", _isNhanVien);
+    request.setAttribute("isNhanVien", _isNhanVien);
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -254,8 +254,8 @@
                     <label class="form-label small fw-medium text-muted mb-1">Trạng thái</label>
                     <select name="trangThai" class="form-select form-select-sm py-2">
                         <option value="">Tất cả trạng thái</option>
-                        <option value="true" ${oldTrangThai == true ? 'selected' : ''}>Hoạt động</option>
-                        <option value="false" ${oldTrangThai == false ? 'selected' : ''}>Không hoạt động</option>
+                        <option value="1" ${oldTrangThai == '1' ? 'selected' : ''}>Hoạt động</option>
+                        <option value="0" ${oldTrangThai == '0' ? 'selected' : ''}>Không hoạt động</option>
                     </select>
                 </div>
                 <div class="col-md-1 d-flex align-items-end">
@@ -317,7 +317,7 @@
 
                         <td class="text-center">
                             <c:choose>
-                                <c:when test="${sp.trangThai}">
+                                <c:when test="${sp.trangThai == 1}">
                                     <span class="badge-active">Hoạt động</span>
                                 </c:when>
                                 <c:otherwise>

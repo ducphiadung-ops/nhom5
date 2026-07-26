@@ -42,7 +42,7 @@ public class KhachHangService {
 
     }
     // doi trang thai
-    public void doiTrangThai(Integer id, Boolean trangThai) {
+    public void doiTrangThai(Integer id, Integer trangThai) {
         repository.doiTrangThai(id, trangThai);
     }
 }

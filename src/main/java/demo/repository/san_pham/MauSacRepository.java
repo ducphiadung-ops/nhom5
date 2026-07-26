@@ -12,7 +12,7 @@ public class MauSacRepository {
 
     public List<MauSac> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM MauSac WHERE trangThai = true", MauSac.class).list();
+            return session.createQuery("FROM MauSac WHERE trangThai = 1", MauSac.class).list();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -22,7 +22,7 @@ public class MauSacRepository {
     public List<MauSac> getDangHoatDong() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             // ĐÃ SỬA: Đổi Cpu thành MauSac
-            return session.createQuery("FROM MauSac WHERE trangThai = true", MauSac.class).getResultList();
+            return session.createQuery("FROM MauSac WHERE trangThai = 1", MauSac.class).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

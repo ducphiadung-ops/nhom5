@@ -104,7 +104,7 @@ public class MaSeriRepository {
             tx = session.beginTransaction();
             MaSeri m = session.find(MaSeri.class, id);
             if (m != null) {
-                m.setTrangThai(false);
+                m.setTrangThai(0);
                 session.merge(m);
             }
             tx.commit();

@@ -37,6 +37,10 @@ public class HoaDon {
     @JoinColumn(name = "id_nhan_vien", referencedColumnName = "id")
     private NhanVien nhanVien;
 
+    @ManyToOne
+    @JoinColumn(name = "id_hinh_thuc_thanh_toan", referencedColumnName = "id")
+    private HinhThucThanhToan hinhThucThanhToan;
+
     // --- Các cột dữ liệu (Columns) ---
     @Column(name = "ma_hoa_don")
     private String maHoaDon;

@@ -4,7 +4,7 @@
 <%
     demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
-    pageContext.setAttribute("isNhanVien", _isNhanVien);
+    request.setAttribute("isNhanVien", _isNhanVien);
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -114,7 +114,7 @@
                                     <td class="text-muted fw-medium">${status.index + 1}</td>
                                     <td class="text-start fw-semibold text-dark">${cpu.tenCpu}</td>
                                     <td class="text-muted">${empty cpu.theHeCpu ? '—' : cpu.theHeCpu}</td>
-                                    <td><c:choose><c:when test="${cpu.trangThai}"><span class="badge-active">Sử dụng</span></c:when><c:otherwise><span class="badge-inactive">Ngừng dùng</span></c:otherwise></c:choose></td>
+                                    <td><c:choose><c:when test="${cpu.trangThai == 1}"><span class="badge-active">Sử dụng</span></c:when><c:otherwise><span class="badge-inactive">Ngừng dùng</span></c:otherwise></c:choose></td>
                                     <c:if test="${not isNhanVien}">
                                     <td>
                                         <div class="d-flex justify-content-center gap-3">

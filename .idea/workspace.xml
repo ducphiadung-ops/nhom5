@@ -13,23 +13,67 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d10d1b0-9c0e-419b-8246-6aef80ccf8f8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/webContexts.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/webContexts.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/Service/khachhang/KhachHangService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/Service/khachhang/KhachHangService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/Service/nhanvien/NhanVienService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/Service/nhanvien/NhanVienService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/hoa_don/HinhThucThanhToan.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/hoa_don/HinhThucThanhToan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/hoa_don/HoaDon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/hoa_don/HoaDon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/hoa_don/LichSuHoaDon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/hoa_don/LichSuHoaDon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/hoa_don/LichSuThanhToan.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/hoa_don/LichSuThanhToan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/khach_hang/DiaChiKhachHang.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/khach_hang/DiaChiKhachHang.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/khach_hang/KhachHang.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/khach_hang/KhachHang.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/nhan_vien/NhanVien.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/nhan_vien/NhanVien.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/ChiTietSanPham.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/ChiTietSanPham.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/Cpu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/Cpu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/DanhMuc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/DanhMuc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/Gpu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/Gpu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/MaSeri.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/MaSeri.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/ManHinh.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/ManHinh.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/MauSac.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/MauSac.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/OCung.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/OCung.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/Pin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/Pin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/Ram.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/Ram.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/SanPham.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/SanPham.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/ThuongHieu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/entity/san_pham/ThuongHieu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HinhThucThanhToanRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HinhThucThanhToanRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HoaDonRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HoaDonRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/khachhang/KhachHangRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/khachhang/KhachHangRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/nhanvien/NhanVienRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/nhanvien/NhanVienRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ChiTietSanPhamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ChiTietSanPhamRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/CpuRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/CpuRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/DanhMucRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/DanhMucRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/GpuRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/GpuRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/MaSeriRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/MaSeriRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ManHinhRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ManHinhRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/MauSacRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/MauSacRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/OCungRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/OCungRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/PinRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/PinRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/RamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/RamRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/SanPhamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/SanPhamRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ThuongHieuRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ThuongHieuRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/LoginServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/LoginServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/KhachHangServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/KhachHangServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/NhanVienServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/NhanVienServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/ThuocTinhSanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/ThuocTinhSanPhamServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/common/sidebar.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/common/sidebar.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/chi_tiet_hoa_don.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/chi_tiet_hoa_don.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang_add.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang_add.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang_update.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/khach_hang/khach_hang_update.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien_add.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien_add.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien_update.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien_update.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/form_sua.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/form_sua.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/hien_thi.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/hien_thi.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them_chi_tiet.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them_chi_tiet.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/cpu/cpu-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/cpu/cpu-index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/danh-muc/danh-muc-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/danh-muc/danh-muc-index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/gpu/gpu-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/gpu/gpu-index.jsp" afterDir="false" />
@@ -52,7 +96,7 @@
     </persistenceIdMap>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="141" />
+    <option name="cachedIndexableFilesCount" value="142" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -155,7 +199,7 @@
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="AISelfReview" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4,
@@ -180,34 +224,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.HibernateConfig.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Tomcat Server.Tomcat 10.1.55.executor": "Run",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "copilot.chat.legacySessionMetadata.migrated": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Admin/Desktop/nhom5_DA1/src/main/webapp",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.jshint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.jshint": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Artifacts",
-    "project.structure.proportion": "0.16015625",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.HibernateConfig.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Tomcat Server.Tomcat 10.1.55.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;copilot.chat.legacySessionMetadata.migrated&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/Desktop/nhom5_DA1/src/main/webapp&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.16015625&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\webapp" />
@@ -381,7 +425,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="NONE" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java</url>
-          <line>79</line>
+          <line>80</line>
           <placement>INTER_LINE</placement>
           <option name="timeStamp" value="1" />
         </line-breakpoint>

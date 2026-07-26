@@ -19,5 +19,5 @@ public class DanhMuc {
     @Column(name = "ten_danh_muc")
     private String tenDanhMuc;
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 }

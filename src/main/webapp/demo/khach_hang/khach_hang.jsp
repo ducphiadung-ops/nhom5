@@ -4,7 +4,7 @@
 <%
     demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
-    pageContext.setAttribute("isNhanVien", _isNhanVien);
+    request.setAttribute("isNhanVien", _isNhanVien);
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -405,7 +405,7 @@
 
                 <c:forEach items="${listKH}" var="kh" varStatus="status">
                     <!-- Tự động làm tối dòng từ đầu nếu khách hàng ở trạng thái false (ngừng hoạt động) -->
-                    <tr class="${!kh.trangThai ? 'row-inactive' : ''}">
+                    <tr class="${kh.trangThai == 1 ? '' : 'row-inactive'}">
                         <td>${status.index + 1}</td>
 
                         <td><span class="cust-code">${kh.maKhachHang}</span></td>
@@ -449,7 +449,7 @@
                             <div class="switch-wrapper">
                                 <label class="switch">
                                     <input type="checkbox"
-                                        ${kh.trangThai ? 'checked' : ''}
+                                        ${kh.trangThai == 1 ? 'checked' : ''}
                                            onchange="doiTrangThai(${kh.id}, this.checked, this)">
                                     <span class="slider"></span>
                                 </label>
@@ -513,17 +513,21 @@
         // Gọi API cập nhật Database ngầm
         let url = "${pageContext.request.contextPath}/khach-hang/doi-trang-thai?id=" + id + "&trangThai=" + trangThai;
 
-        fetch(url, { method: 'GET' })
+        fetch(url, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Cập nhật thất bại');
-                }
+                if (!response.ok) throw new Error('Cập nhật thất bại');
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) throw new Error('Server báo lỗi');
                 console.log("Đã đồng bộ DB thành công cho KH ID: " + id);
             })
             .catch(error => {
                 console.error(error);
                 alert("Có lỗi xảy ra khi đồng bộ dữ liệu về máy chủ!");
-                // Revert lại trạng thái switch nếu bị lỗi
                 element.checked = !trangThai;
                 row.classList.toggle('row-inactive');
             });

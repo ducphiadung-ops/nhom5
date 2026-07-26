@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -398,7 +398,7 @@
 
         <!-- DROPDOWN QUẢN LÝ SẢN PHẨM -->
         <li class="nav-item">
-            <a href="#sub-san-pham" class="nav-link-custom d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false">
+            <a class="nav-link-custom d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false">
                 <span><i class="fa-solid fa-box"></i> Quản lý sản phẩm</span>
                 <i class="fa-solid fa-chevron-down" style="font-size: 10px; transition: transform 0.2s;"></i>
             </a>
@@ -439,7 +439,7 @@
 
         <!-- DROPDOWN QUẢN LÝ THUỘC TÍNH -->
         <li class="nav-item">
-            <a href="#sub-thuoc-tinh" class="nav-link-custom d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false">
+            <a class="nav-link-custom d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false">
                 <span><i class="fa-solid fa-sliders"></i> Quản lý thuộc tính</span>
                 <i class="fa-solid fa-chevron-down" style="font-size: 10px; transition: transform 0.2s;"></i>
             </a>

@@ -21,5 +21,5 @@ public class OCung {
     @Column(name = "dung_luong_o_cung")
     private String dungLuongOCung;
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 }

@@ -13,7 +13,7 @@ public class KhachHangRepository {
     public List<KhachHang> getAll() {
         Session session = HibernateConfig.getFACTORY().openSession();
 
-        List<KhachHang> list = session.createQuery("FROM KhachHang WHERE trangThai = true", KhachHang.class).getResultList();
+        List<KhachHang> list = session.createQuery("FROM KhachHang WHERE trangThai = 1", KhachHang.class).getResultList();
 
         session.close();
 
@@ -82,7 +82,7 @@ public class KhachHangRepository {
 
             if(kh != null){
 
-                kh.setTrangThai(false);
+                kh.setTrangThai(0);
 
                 session.merge(kh);
 
@@ -136,7 +136,7 @@ public class KhachHangRepository {
         }
     }
     // doi trang thai
-    public void doiTrangThai(Integer id, Boolean trangThai) {
+    public void doiTrangThai(Integer id, Integer trangThai) {
 
         Session session = HibernateConfig.getFACTORY().openSession();
 

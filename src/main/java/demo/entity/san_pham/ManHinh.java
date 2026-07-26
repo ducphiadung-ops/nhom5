@@ -26,5 +26,5 @@ public class ManHinh {
     @Column(name = "kich_thuoc")
     private String kichThuoc;
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 }

@@ -78,11 +78,28 @@ public class KhachHangServlet extends HttpServlet {
 
             Integer id = Integer.valueOf(req.getParameter("id"));
 
-            Boolean trangThai = Boolean.valueOf(req.getParameter("trangThai"));
+            // JS gửi "true"/"false" từ checkbox, cần parse sang 1/0
+            String trangThaiParam = req.getParameter("trangThai");
+            Integer trangThai;
+            if ("true".equalsIgnoreCase(trangThaiParam) || "1".equals(trangThaiParam)) {
+                trangThai = 1;
+            } else if ("false".equalsIgnoreCase(trangThaiParam) || "0".equals(trangThaiParam)) {
+                trangThai = 0;
+            } else {
+                trangThai = 0;
+            }
 
             service.doiTrangThai(id, trangThai);
 
-            resp.sendRedirect(req.getContextPath() + "/khach-hang/hien-thi");
+            // Nếu là AJAX (fetch) thì trả về JSON, ngược lại redirect
+            String xhrHeader = req.getHeader("X-Requested-With");
+            String acceptHeader = req.getHeader("Accept");
+            if ("XMLHttpRequest".equals(xhrHeader) || (acceptHeader != null && acceptHeader.contains("application/json"))) {
+                resp.setContentType("application/json;charset=UTF-8");
+                resp.getWriter().write("{\"success\":true}");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/khach-hang/hien-thi");
+            }
             return;
         }
 
@@ -104,7 +121,7 @@ public class KhachHangServlet extends HttpServlet {
             String sdt = req.getParameter("sdt");
             String email = req.getParameter("email");
 
-            Boolean trangThai = Boolean.valueOf(req.getParameter("trangThai"));
+            Integer trangThai = "true".equalsIgnoreCase(req.getParameter("trangThai")) ? 1 : 0;
             Boolean gioiTinh = Boolean.valueOf(req.getParameter("gioiTinh"));
 
             String[] tinhThanh = req.getParameterValues("tinhThanh");
@@ -151,7 +168,7 @@ public class KhachHangServlet extends HttpServlet {
                 }
 
                 // Địa chỉ đầu tiên là mặc định
-                dc.setTrangThai(i == 0);
+                dc.setTrangThai(i == 0 ? 1 : 0);
 
                 dc.setKhachHang(kh);
 
@@ -197,7 +214,7 @@ public class KhachHangServlet extends HttpServlet {
 
                 kh.setSdt(req.getParameter("sdt"));
                 kh.setEmail(req.getParameter("email"));
-                kh.setTrangThai(Boolean.valueOf(req.getParameter("trangThai")));
+                kh.setTrangThai("true".equalsIgnoreCase(req.getParameter("trangThai")) ? 1 : 0);
 
                 // 2. Nhận mảng dữ liệu Địa Chỉ từ Form JSP gửi lên
                 String[] dsTinhThanh = req.getParameterValues("tinhThanh");

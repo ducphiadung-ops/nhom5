@@ -13,7 +13,7 @@ public class GpuRepository {
 
     public List<Gpu> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM Gpu WHERE trangThai = true", Gpu.class).list();
+            return session.createQuery("FROM Gpu WHERE trangThai = 1", Gpu.class).list();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -22,7 +22,7 @@ public class GpuRepository {
     public List<Gpu> getDangHoatDong() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             // ĐÃ SỬA: Đổi Cpu thành Gpu
-            return session.createQuery("FROM Gpu WHERE trangThai = true", Gpu.class).getResultList();
+            return session.createQuery("FROM Gpu WHERE trangThai = 1", Gpu.class).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -67,8 +67,7 @@ public class GpuRepository {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             tx = session.beginTransaction();
             Gpu gpu = session.find(Gpu.class, id);
-            if (gpu != null) {
-                gpu.setTrangThai(false);
+            if (gpu != null) {gpu.setTrangThai(0);
                 session.merge(gpu);
             }
             tx.commit();

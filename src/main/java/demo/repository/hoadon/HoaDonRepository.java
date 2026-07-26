@@ -32,9 +32,11 @@ public class HoaDonRepository {
 
 
     public List<HoaDon> getTop5() {
-        try (Session session =HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM HoaDon ORDER BY ngayLap DESC", HoaDon.class)
-                    .setMaxResults(5) // Lấy đúng 5 hóa đơn đầu tiên
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            return session.createQuery(
+                    "SELECT h FROM HoaDon h LEFT JOIN h.khachHang ORDER BY h.ngayLap DESC",
+                    HoaDon.class)
+                    .setMaxResults(5)
                     .list();
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,41 +47,39 @@ public class HoaDonRepository {
         List<HoaDon> list = new ArrayList<>();
 
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            // Mệnh đề WHERE 1=1 để dễ dàng nối các điều kiện AND ở sau mà không bị lỗi cú pháp
-            StringBuilder hql = new StringBuilder("SELECT h FROM HoaDon h WHERE 1=1 ");
+            // LEFT JOIN để giữ lại hóa đơn không có khách hàng (hóa đơn chờ)
+            StringBuilder hql = new StringBuilder(
+                "SELECT h FROM HoaDon h " +
+                "LEFT JOIN h.khachHang kh " +
+                "LEFT JOIN h.nhanVien nv " +
+                "WHERE 1=1 "
+            );
 
-            // 1. Kiểm tra và nối điều kiện keyword (Mã HĐ, Tên KH, SĐT)
             if (keyword != null && !keyword.trim().isEmpty()) {
                 hql.append("AND (h.maHoaDon LIKE :keyword " +
-                        "OR h.khachHang.tenKhachHang LIKE :keyword " +
-                        "OR h.khachHang.sdt LIKE :keyword) ");
+                        "OR kh.tenKhachHang LIKE :keyword " +
+                        "OR kh.sdt LIKE :keyword) ");
             }
 
-            // 2. Kiểm tra và nối điều kiện trạng thái
             if (trangThai != null && !trangThai.trim().isEmpty()) {
                 hql.append("AND h.trangThai = :trangThai ");
             }
 
-            // 3. Kiểm tra và nối điều kiện ngày tạo
             if (ngayTao != null && !ngayTao.trim().isEmpty()) {
-                // Ép h.ngayLap về dạng date (bỏ qua giờ phút giây nếu có) để so sánh chính xác với input
                 hql.append("AND CAST(h.ngayLap as date) = :ngayTao ");
             }
 
-            // Tạo Query với chuỗi HQL đã nối hoàn chỉnh
+            hql.append("ORDER BY h.ngayLap DESC ");
+
             Query<HoaDon> query = session.createQuery(hql.toString(), HoaDon.class);
 
-            // Truyền giá trị (Set Parameter) vào các biến trong HQL
             if (keyword != null && !keyword.trim().isEmpty()) {
-                // Thêm % ở 2 đầu để tìm kiếm chứa (LIKE)
                 query.setParameter("keyword", "%" + keyword.trim() + "%");
             }
             if (trangThai != null && !trangThai.trim().isEmpty()) {
                 query.setParameter("trangThai", Integer.parseInt(trangThai));
             }
             if (ngayTao != null && !ngayTao.trim().isEmpty()) {
-                // Thẻ <input type="date"> gửi lên chuỗi "yyyy-MM-dd"
-                // Ta chuyển đổi chuỗi này sang java.sql.Date để Hibernate hiểu
                 query.setParameter("ngayTao", java.sql.Date.valueOf(ngayTao));
             }
 
@@ -88,6 +88,45 @@ public class HoaDonRepository {
             e.printStackTrace();
         }
         return list;
+    }
+
+    // Lấy danh sách hóa đơn chờ (trangThai = 2 = Chờ xử lý)
+    public List<HoaDon> getHoaDonCho() {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            return session.createQuery(
+                    "SELECT h FROM HoaDon h LEFT JOIN h.khachHang " +
+                    "WHERE h.trangThai = 2 ORDER BY h.ngayLap DESC",
+                    HoaDon.class).list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    // Tự động sinh mã hóa đơn: HD001, HD002, ...
+    public String taoMaHoaDon() {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            Long count = session.createQuery(
+                    "SELECT COUNT(h) FROM HoaDon h", Long.class).uniqueResult();
+            if (count == null) count = 0L;
+            return String.format("HD%03d", count + 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "HD" + System.currentTimeMillis();
+        }
+    }
+
+    // Xóa hóa đơn chờ (soft delete — chỉ dùng cho hóa đơn chờ trangThai=2)
+    public void deleteHoaDonCho(Integer id) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            org.hibernate.Transaction tx = session.beginTransaction();
+            session.createNativeQuery(
+                    "UPDATE hoa_don SET is_deleted = 1 WHERE id = :id AND trang_thai = 2"
+            ).setParameter("id", id).executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 

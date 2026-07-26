@@ -13,7 +13,7 @@ public class PinRepository {
     }
     public List<Pin> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM Pin WHERE trangThai = true", Pin.class).list();
+            return session.createQuery("FROM Pin WHERE trangThai = 1", Pin.class).list();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -34,7 +34,7 @@ public class DiaChiKhachHang {
     @Column(name = "loai_dia_chi")
     private String loaiDiaChi;
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
     public DiaChiApiMapping getDiaChiApiMapping() {
         return diaChiApiMapping;
     }

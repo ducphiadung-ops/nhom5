@@ -42,5 +42,5 @@ public class SanPham {
     @Column(name = "ngay_sua")
     private LocalDate ngaySua;
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 }

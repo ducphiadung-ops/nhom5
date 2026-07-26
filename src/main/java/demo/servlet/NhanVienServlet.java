@@ -81,11 +81,29 @@ public class NhanVienServlet extends HttpServlet {
         else if (uri.contains("doi-trang-thai")) {
 
             Integer id = Integer.parseInt(request.getParameter("id"));
-            Boolean trangThai = Boolean.parseBoolean(request.getParameter("trangThai"));
+
+            // JS gửi "true"/"false" từ checkbox, cần parse sang 1/0
+            String trangThaiParam = request.getParameter("trangThai");
+            Integer trangThai;
+            if ("true".equalsIgnoreCase(trangThaiParam) || "1".equals(trangThaiParam)) {
+                trangThai = 1;
+            } else if ("false".equalsIgnoreCase(trangThaiParam) || "0".equals(trangThaiParam)) {
+                trangThai = 0;
+            } else {
+                trangThai = 0;
+            }
 
             service.doiTrangThai(id, trangThai);
 
-            response.sendRedirect(request.getContextPath() + "/nhan-vien/hien-thi");
+            // Nếu là AJAX (fetch) thì trả về JSON, ngược lại redirect
+            String xhrHeader = request.getHeader("X-Requested-With");
+            String acceptHeader = request.getHeader("Accept");
+            if ("XMLHttpRequest".equals(xhrHeader) || (acceptHeader != null && acceptHeader.contains("application/json"))) {
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"success\":true}");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/nhan-vien/hien-thi");
+            }
         }
 
     }
@@ -134,7 +152,7 @@ public class NhanVienServlet extends HttpServlet {
             nv.setEmail(email);
             nv.setDiaChi(diaChiFull);
             nv.setChucVu(chucVu);
-            nv.setTrangThai(true);
+            nv.setTrangThai(1);
 
             // Gán tài khoản & mật khẩu mặc định
             nv.setTaiKhoan("NV_" + System.currentTimeMillis());

@@ -140,7 +140,7 @@ public class ChiTietSanPhamRepository {
 
             Long soLuongConLai = session.createQuery(
                             "SELECT COUNT(m) FROM MaSeri m " +
-                                    "WHERE m.cauHinhSanPham.id = :idCH AND m.trangThai = true",
+                                    "WHERE m.cauHinhSanPham.id = :idCH AND m.trangThai = 1",
                             Long.class)
                     .setParameter("idCH", idCauHinh)
                     .uniqueResult();

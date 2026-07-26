@@ -202,7 +202,7 @@ public class ChiTietSanPhamServlet extends HttpServlet {
                     ctsp.setGiaNhap(giaNhap);
                     ctsp.setTonKho(soLuongImeiHopLe);
                     ctsp.setHanBaoHanh(hanBaoHanh);
-                    ctsp.setTrangThai(true);
+                    ctsp.setTrangThai(1);
                     ctspRepo.add(ctsp);
 
                     for (String cleanImei : validImeisList) {
@@ -211,7 +211,7 @@ public class ChiTietSanPhamServlet extends HttpServlet {
                         maSeriObj.setChiTietPhieuNhap(ctpn);
                         maSeriObj.setSoSeri(cleanImei);
                         maSeriObj.setNgayNhap(LocalDate.now());
-                        maSeriObj.setTrangThai(true);
+                        maSeriObj.setTrangThai(1);
                         maSeriRepo.add(maSeriObj);
                     }
 
@@ -345,7 +345,7 @@ public class ChiTietSanPhamServlet extends HttpServlet {
             BigDecimal donGia = new BigDecimal(req.getParameter("donGia"));
             BigDecimal giaNhap = new BigDecimal(req.getParameter("giaNhap"));
             Integer hanBaoHanh = Integer.parseInt(req.getParameter("hanBaoHanh"));
-            Boolean trangThai = "true".equalsIgnoreCase(req.getParameter("trangThai"));
+            Integer trangThai = "true".equalsIgnoreCase(req.getParameter("trangThai")) ? 1 : 0;
 
             chiTiet.setDonGia(donGia);
             chiTiet.setGiaNhap(giaNhap);

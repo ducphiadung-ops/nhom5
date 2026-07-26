@@ -41,5 +41,5 @@ public class ChiTietSanPham {
     private Integer hanBaoHanh;
 
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 }

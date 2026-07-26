@@ -13,7 +13,7 @@ public class ManHinhRepository {
 
     public List<ManHinh> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM ManHinh WHERE trangThai = true", ManHinh.class).list();
+            return session.createQuery("FROM ManHinh WHERE trangThai = 1", ManHinh.class).list();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -22,7 +22,7 @@ public class ManHinhRepository {
 
     public List<ManHinh> getDangHoatDong() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM ManHinh WHERE trangThai = true", ManHinh.class).getResultList();
+            return session.createQuery("FROM ManHinh WHERE trangThai = 1", ManHinh.class).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

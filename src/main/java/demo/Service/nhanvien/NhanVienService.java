@@ -36,7 +36,7 @@ public class NhanVienService {
 
 
     // switch doi trang thai
-    public void doiTrangThai(Integer id, Boolean trangThai) {
+    public void doiTrangThai(Integer id, Integer trangThai) {
         repo.doiTrangThai(id, trangThai);
     }
 

@@ -15,7 +15,7 @@ public class DanhMucRepository {
 
     public List<DanhMuc> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM DanhMuc where trangThai = true", DanhMuc.class).list();
+            return session.createQuery("FROM DanhMuc where trangThai = 1", DanhMuc.class).list();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -45,7 +45,7 @@ public class DanhMucRepository {
 
     public List<DanhMuc> getDangHoatDong(){
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM DanhMuc where trangThai = true", DanhMuc.class).getResultList();
+            return session.createQuery("FROM DanhMuc where trangThai = 1", DanhMuc.class).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

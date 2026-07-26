@@ -13,7 +13,7 @@ public class RamRepository {
     }
     public List<Ram> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM Ram WHERE trangThai = true", Ram.class).list();
+            return session.createQuery("FROM Ram WHERE trangThai = 1", Ram.class).list();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

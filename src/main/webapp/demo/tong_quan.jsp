@@ -5,7 +5,7 @@
 <%
     demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
-    pageContext.setAttribute("isNhanVien", _isNhanVien);
+    request.setAttribute("isNhanVien", _isNhanVien);
 %>
 <%-- Nhân viên không được vào trang tổng quan --%>
 <c:if test="${isNhanVien}">

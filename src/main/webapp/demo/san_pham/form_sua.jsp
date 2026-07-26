@@ -4,7 +4,7 @@
 <%
     demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
-    pageContext.setAttribute("isNhanVien", _isNhanVien);
+    request.setAttribute("isNhanVien", _isNhanVien);
 %>
 <c:if test="${isNhanVien}">
     <c:redirect url="${pageContext.request.contextPath}/san-pham/hien-thi"/>
@@ -275,8 +275,8 @@
                         <div class="mb-2">
                             <label class="form-label">Trạng thái kinh doanh *</label>
                             <select name="trangThai" class="form-select">
-                                <option value="true" ${sanPham.trangThai ? 'selected' : ''}>Đang kinh doanh</option>
-                                <option value="false" ${!sanPham.trangThai ? 'selected' : ''}>Ngừng kinh doanh</option>
+                                <option value="1" ${sanPham.trangThai == 1 ? 'selected' : ''}>Đang kinh doanh</option>
+                                <option value="0" ${sanPham.trangThai != 1 ? 'selected' : ''}>Ngừng kinh doanh</option>
                             </select>
                         </div>
                     </div>

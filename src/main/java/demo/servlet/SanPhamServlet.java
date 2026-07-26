@@ -289,7 +289,7 @@ public class SanPhamServlet extends HttpServlet {
             sp.setThuongHieu(thuongHieuRepo.getOne(idThuongHieu));
             sp.setDanhMuc(danhMucRepo.getOne(idDanhMuc));
             sp.setNgayTao(LocalDate.now());
-            sp.setTrangThai(true);
+            sp.setTrangThai(1);
             sp.setSoLuongTon(0);
             sp.setHanBaoHanh(hanBaoHanh);
 
@@ -359,7 +359,7 @@ public class SanPhamServlet extends HttpServlet {
                 ctsp.setGiaNhap(giaNhap);
                 ctsp.setTonKho(soLuongImeiHopLe);
                 ctsp.setHanBaoHanh(hanBaoHanh);
-                ctsp.setTrangThai(true);
+                ctsp.setTrangThai(1);
                 ctspRepo.add(ctsp);
 
                 for (String cleanImei : validImeisList) {
@@ -368,7 +368,7 @@ public class SanPhamServlet extends HttpServlet {
                     maSeriObj.setChiTietPhieuNhap(ctpn);
                     maSeriObj.setSoSeri(cleanImei);
                     maSeriObj.setNgayNhap(LocalDate.now());
-                    maSeriObj.setTrangThai(true);
+                    maSeriObj.setTrangThai(1);
                     maSeriRepo.add(maSeriObj);
                 }
                 tongSoLuongMayTrongKho += soLuongImeiHopLe;
@@ -460,7 +460,7 @@ public class SanPhamServlet extends HttpServlet {
 
             Integer idThuongHieu = Integer.parseInt(idThuongHieuRaw.trim());
             Integer idDanhMuc = Integer.parseInt(idDanhMucRaw.trim());
-            Boolean trangThai = Boolean.parseBoolean(trangThaiRaw);
+            Integer trangThai = trangThaiRaw != null && (trangThaiRaw.equalsIgnoreCase("true") || trangThaiRaw.equals("1")) ? 1 : 0;
 
             SanPham sp = sanPhamRepo.getOne(id);
             if (sp != null) {
@@ -495,7 +495,7 @@ public class SanPhamServlet extends HttpServlet {
                 SanPham sp = sanPhamRepo.getOne(id);
 
                 if (sp != null) {
-                    sp.setTrangThai(!sp.getTrangThai());
+                    sp.setTrangThai(sp.getTrangThai() != null && sp.getTrangThai() == 1 ? 0 : 1);
                     sanPhamRepo.update(sp);
                     session.setAttribute("successMessage", "Cập nhật trạng thái kinh doanh thành công!");
                 } else {

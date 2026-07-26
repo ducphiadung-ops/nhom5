@@ -22,5 +22,5 @@ public class Pin {
     @Column(name = "dung_luong_pin")
     private String dungLuongPin;
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 }

@@ -15,7 +15,7 @@
             Session session = HibernateConfig.getFACTORY().openSession();
 
             List<NhanVien> list =
-                    session.createQuery("FROM NhanVien WHERE trangThai = true", NhanVien.class)
+                    session.createQuery("FROM NhanVien WHERE trangThai = 1", NhanVien.class)
                             .getResultList();
 
             session.close();
@@ -77,7 +77,7 @@
         public NhanVien findByTaiKhoanAndMatKhau(String taiKhoan, String matKhau) {
             Session session = HibernateConfig.getFACTORY().openSession();
             try {
-                String hql = "FROM NhanVien WHERE taiKhoan = :taiKhoan AND matKhau = :matKhau AND trangThai = true";
+                String hql = "FROM NhanVien WHERE taiKhoan = :taiKhoan AND matKhau = :matKhau AND trangThai = 1";
                 return session.createQuery(hql, NhanVien.class)
                         .setParameter("taiKhoan", taiKhoan)
                         .setParameter("matKhau", matKhau)
@@ -111,7 +111,7 @@
 
             NhanVien nv = session.find(NhanVien.class, id);
 
-            nv.setTrangThai(false);
+            nv.setTrangThai(0);
 
             session.merge(nv);
 
@@ -122,7 +122,7 @@
         }
 
         // switch doi trang thai
-        public void doiTrangThai(Integer id, Boolean trangThai) {
+        public void doiTrangThai(Integer id, Integer trangThai) {
 
             Session session = HibernateConfig.getFACTORY().openSession();
 

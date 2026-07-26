@@ -26,7 +26,7 @@ public class Cpu {
     private String theHeCpu; // Khớp với NVARCHAR(50)
 
     @Column(name = "trang_thai")
-    private Boolean trangThai; // Khớp với BIT
+    private Integer trangThai;
 }
 
 

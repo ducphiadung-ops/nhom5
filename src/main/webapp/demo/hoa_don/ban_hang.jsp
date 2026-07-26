@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+﻿<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="vi">
@@ -286,12 +286,13 @@
 
                         <div class="form-group" style="margin-top: 20px; margin-bottom: 24px;">
                             <label>Phương thức thanh toán</label>
-                            <select class="form-control" style="font-weight: 500;">
-                                <option value="TIEN_MAT">💵 Tiền mặt tại quầy</option>
-                                <option value="CHUYEN_KHOAN">💳 Chuyển khoản ngân hàng</option>
+                            <select name="hinhThucId" id="hinhThucId" class="form-control" style="font-weight: 500;">
+                                <c:forEach items="${listHinhThucThanhToan}" var="ht">
+                                    <option value="${ht.id}">${ht.tenHinhThuc}</option>
+                                </c:forEach>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block" style="background-color: #1a56db;"><i class="fa-solid fa-square-plus"></i> THÊM HÓA ĐƠN</button>
+                        <button type="submit" class="btn btn-primary btn-block" style="background-color: #1a56db;"><i class="fa-solid fa-check"></i> Xác nhận thanh toán</button>
                     </div>
                 </form>
             </div>
@@ -436,7 +437,7 @@
         "soSeri": "${ms.soSeri}",
         "cauhinhId": ${ms.cauHinhSanPham.id},
         "masp": "${ms.cauHinhSanPham.sanPham.maSanPham}",
-        "trangThai": ${ms.trangThai != null ? ms.trangThai : false}
+        "trangThai": ${ms.trangThai != null ? ms.trangThai : 0}
     }${!sLoop.last ? ',' : ''}
 </c:forEach>
 ]
@@ -642,7 +643,7 @@
 
             // Lọc seri theo cấu hình
             const filtered = allSeriData.filter(function(s) {
-                return s.cauhinhId === cauhinhId && s.trangThai === true;
+                return s.cauhinhId === cauhinhId && s.trangThai === 1;
             });
 
             seriSearchInput.value = '';
@@ -856,6 +857,9 @@
 
     });
 </script>
+
+<script>
+    // ================================================================
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

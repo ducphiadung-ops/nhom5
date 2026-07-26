@@ -5,7 +5,7 @@
 <%
     demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
-    pageContext.setAttribute("isNhanVien", _isNhanVien);
+    request.setAttribute("isNhanVien", _isNhanVien);
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -266,7 +266,7 @@
                 <div class="col-md-3">
                     <small class="text-muted d-block">Trạng thái</small>
                     <c:choose>
-                        <c:when test="${chiTiet.trangThai}"><span class="badge-active">Đang kinh doanh</span></c:when>
+                        <c:when test="${chiTiet.trangThai == 1}"><span class="badge-active">Đang kinh doanh</span></c:when>
                         <c:otherwise><span class="badge-inactive">Ngừng kinh doanh</span></c:otherwise>
                     </c:choose>
                 </div>
@@ -297,7 +297,7 @@
                         <td>${imei.ngayNhap}</td>
                         <td>
                             <c:choose>
-                                <c:when test="${imei.trangThai}"><span class="badge-active">Còn trong kho</span></c:when>
+                                <c:when test="${imei.trangThai == 1}"><span class="badge-active">Còn trong kho</span></c:when>
                                 <c:otherwise><span class="badge-inactive">Đã bán / Đã hủy</span></c:otherwise>
                             </c:choose>
                         </td>
@@ -309,7 +309,7 @@
                                    data-bs-toggle="modal" data-bs-target="#modalSuaImei"
                                    data-id="${imei.id}" data-soseri="${imei.soSeri}">
                                 </i>
-                                <c:if test="${imei.trangThai}">
+                                <c:if test="${imei.trangThai == 1}">
                                     <i class="fa-regular fa-trash-can fs-5 action-icon-btn text-danger" title="Xóa / Hủy IMEI"
                                        onclick="moModalXoaImei('${imei.id}', '${imei.soSeri}')">
                                     </i>

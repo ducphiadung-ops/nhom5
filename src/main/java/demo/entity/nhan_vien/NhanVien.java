@@ -51,5 +51,5 @@ public class NhanVien {
     private String matKhau;
 
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 }

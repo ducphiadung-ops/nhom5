@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%--
@@ -13,7 +13,7 @@
 <%
     demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
-    pageContext.setAttribute("isNhanVien", _isNhanVien);
+    request.setAttribute("isNhanVien", _isNhanVien);
 %>
 <%-- Map các jsp:param vào biến local để dùng trong EL --%>
 <c:set var="activeMenu" value="${param.activeMenu}" />
@@ -52,13 +52,13 @@
 
         <%-- Quản lý sản phẩm --%>
         <li class="nav-item">
-            <a href="#sub-san-pham"
-               class="nav-link-custom d-flex justify-content-between align-items-center ${activeMenu == 'san-pham' ? 'active' : ''}"
-               data-bs-toggle="collapse" role="button"
+            <button type="button"
+               class="nav-link-custom d-flex justify-content-between align-items-center w-100 text-start bg-transparent border-0 ${activeMenu == 'san-pham' ? 'active' : ''}"
+               data-bs-toggle="collapse" data-bs-target="#sub-san-pham"
                aria-expanded="${activeMenu == 'san-pham' ? 'true' : 'false'}">
                 <span><i class="fa-solid fa-box"></i> Quản lý sản phẩm</span>
                 <i class="fa-solid fa-chevron-down" style="font-size:10px;transition:transform 0.2s;"></i>
-            </a>
+            </button>
             <div class="collapse ${activeMenu == 'san-pham' ? 'show' : ''}" id="sub-san-pham">
                 <ul class="sub-menu">
                     <li>
@@ -79,13 +79,13 @@
 
         <%-- Dropdown Quản lý thuộc tính --%>
         <li class="nav-item">
-            <a href="#sub-thuoc-tinh"
-               class="nav-link-custom d-flex justify-content-between align-items-center ${activeMenu == 'thuoc-tinh' ? 'active' : ''}"
-               data-bs-toggle="collapse" role="button"
+            <button type="button"
+               class="nav-link-custom d-flex justify-content-between align-items-center w-100 text-start bg-transparent border-0 ${activeMenu == 'thuoc-tinh' ? 'active' : ''}"
+               data-bs-toggle="collapse" data-bs-target="#sub-thuoc-tinh"
                aria-expanded="${activeMenu == 'thuoc-tinh' ? 'true' : 'false'}">
                 <span><i class="fa-solid fa-sliders"></i> Quản lý thuộc tính</span>
                 <i class="fa-solid fa-chevron-down" style="font-size:10px;transition:transform 0.2s;"></i>
-            </a>
+            </button>
             <div class="collapse ${activeMenu == 'thuoc-tinh' ? 'show' : ''}" id="sub-thuoc-tinh">
                 <ul class="sub-menu">
                     <li><a href="${pageContext.request.contextPath}/thuoc-tinh/cpu/hien-thi"        class="nav-link-custom ${activeSub=='cpu'        ?'active-sub':''}"><i class="fa-solid fa-microchip me-1"></i> Cấu hình CPU</a></li>

@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Getter
@@ -19,12 +17,10 @@ public class HinhThucThanhToan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne
-    @JoinColumn(name = "id_hoa_don", referencedColumnName = "id")
-    @NotFound(action = NotFoundAction.IGNORE)
-    private HoaDon hoaDon;
+
     @Column(name = "ten_hinh_thuc_thanh_toan")
     private String tenHinhThuc;
+
     @Column(name = "trang_thai")
     private String TrangThai;
 }

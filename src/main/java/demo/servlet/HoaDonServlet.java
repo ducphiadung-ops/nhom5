@@ -23,7 +23,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.util.HashMap;
 import java.util.List;
 import java.io.IOException;
 import java.util.Map;
@@ -31,6 +30,7 @@ import java.util.Map;
 @WebServlet(name = "HoaDonServlet", value = {
         "/hoa-don/hien-thi",
         "/hoa-don/add",
+        "/hoa-don/xoa-cho",
         "/hoa-don/detail",
         "/hoa-don/delete",
         "/hoa-don/update",
@@ -46,6 +46,7 @@ public class HoaDonServlet extends HttpServlet {
     KhachHangRepo khachHangRepo = new KhachHangRepo();
     ChiTietSanPhamRepository chiTietSanPhamRepository = new ChiTietSanPhamRepository();
     MaSeriRepository maSeriRepository = new MaSeriRepository();
+    demo.repository.hoadon.LichSuHoaDonRepo lichSuHoaDonRepo = new demo.repository.hoadon.LichSuHoaDonRepo();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -168,10 +169,13 @@ public class HoaDonServlet extends HttpServlet {
         List<ChiTietSanPham> listSanPham = chiTietSanPhamRepository.getAll();
         List<KhachHang> listKhachHang = khachHangRepo.getAll();
         List<MaSeri> listMaSeri = maSeriRepository.getAll();
+        // Lấy danh sách hình thức thanh toán từ database để JSP hiển thị
+        List<HinhThucThanhToan> listHinhThuc = hinhThucThanhToanRepo.getAll();
 
         req.setAttribute("listSanPham",  listSanPham);
         req.setAttribute("listKhachHang", listKhachHang);
         req.setAttribute("listMaSeri", listMaSeri);
+        req.setAttribute("listHinhThucThanhToan", listHinhThuc);
 
         req.getRequestDispatcher("/demo/hoa_don/ban_hang.jsp")
                 .forward(req, resp);
@@ -217,16 +221,14 @@ public class HoaDonServlet extends HttpServlet {
     }
 
     private void add(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
     }
 
     private void hienthi(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<HinhThucThanhToan> listHTTT = hinhThucThanhToanRepo.getAll();
-        Map<Integer, String> mapThanhToan = new HashMap<>();
 
         String keyword   = req.getParameter("keyword");
         String trangThai = req.getParameter("trangThai");
         String ngayTao   = req.getParameter("ngayTao");
-        // "filtered=true" được gửi lên khi user bấm nút Lọc hoặc Xóa lọc trong JSP
         boolean isFiltered = "true".equals(req.getParameter("filtered"));
 
         // Nếu user chưa bấm lọc lần nào (lần đầu vào trang) → mặc định ngày hôm nay
@@ -237,19 +239,12 @@ public class HoaDonServlet extends HttpServlet {
 
         List<HoaDon> ListHoaDon = hoaDonRepository.timKiemVaLoc(keyword, trangThai, ngayTao);
 
-        for (HinhThucThanhToan httt : listHTTT) {
-            if (httt.getHoaDon() != null) {
-                mapThanhToan.put(httt.getHoaDon().getId(), httt.getTenHinhThuc());
-            }
-        }
-
         // Truyền lại để JSP hiển thị đúng giá trị trên ô lọc ngày
         req.setAttribute("oldNgayTao",  ngayTao);
         req.setAttribute("oldKeyword",  keyword  != null ? keyword  : "");
         req.setAttribute("oldTrangThai",trangThai != null ? trangThai : "");
         req.setAttribute("isFiltered",  isFiltered);
         req.setAttribute("ListHoaDon",  ListHoaDon);
-        req.setAttribute("mapThanhToan",mapThanhToan);
         req.getRequestDispatcher("/demo/hoa_don/hoa_don.jsp").forward(req, resp);
     }
 

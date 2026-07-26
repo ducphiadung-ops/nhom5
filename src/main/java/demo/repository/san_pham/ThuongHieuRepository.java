@@ -50,6 +50,6 @@ public class ThuongHieuRepository {
         }
     }
     public List<ThuongHieu> getDangHoatDong(){
-        return session.createQuery("FROM ThuongHieu where trangThai = true", ThuongHieu.class).getResultList();
+        return session.createQuery("FROM ThuongHieu where trangThai = 1", ThuongHieu.class).getResultList();
     }
 }

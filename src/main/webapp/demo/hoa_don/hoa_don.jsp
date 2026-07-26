@@ -1,10 +1,10 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+﻿<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
-    pageContext.setAttribute("isNhanVien", _isNhanVien);
+    request.setAttribute("isNhanVien", _isNhanVien);
 %>
 <fmt:setLocale value="vi_VN"/>
 <!DOCTYPE html>
@@ -140,6 +140,8 @@
                             <option value="">Tất cả trạng thái</option>
                             <option value="1" ${oldTrangThai == '1' ? 'selected' : ''}>Đã thanh toán</option>
                             <option value="0" ${oldTrangThai == '0' ? 'selected' : ''}>Chưa thanh toán</option>
+                            <option value="2" ${oldTrangThai == '2' ? 'selected' : ''}>Chờ xử lý</option>
+                            <option value="3" ${oldTrangThai == '3' ? 'selected' : ''}>Đã huỷ</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -228,15 +230,31 @@
                                     </div>
                                 </td>
                                 <td class="col-sdt">${hd.khachHang != null ? hd.khachHang.sdt : '—'}</td>
-                                <td class="col-payment" style="font-weight:500;">${mapThanhToan[hd.id]}</td>
+                                <td class="col-payment" style="font-weight:500;">
+                                    ${hd.hinhThucThanhToan != null ? hd.hinhThucThanhToan.tenHinhThuc : '—'}
+                                </td>
                                 <td class="total-amount col-amount">
                                     <fmt:formatNumber value="${hd.tongTien}" type="number" maxFractionDigits="0"/> đ
                                 </td>
                                 <td class="col-date" style="color:var(--text-muted);font-size:12px;">${hd.ngayLap}</td>
                                 <td class="col-status">
-                                    <span class="badge ${hd.trangThai == 1 ? 'badge-success' : 'badge-danger'}">
-                                        ${hd.trangThai == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                                    </span>
+                                            <c:choose>
+                                                <c:when test="${hd.trangThai == 1}">
+                                                    <span class="badge badge-success">Đã thanh toán</span>
+                                                </c:when>
+                                                <c:when test="${hd.trangThai == 0}">
+                                                    <span class="badge badge-danger">Chưa thanh toán</span>
+                                                </c:when>
+                                                <c:when test="${hd.trangThai == 2}">
+                                                    <span class="badge badge-warning">Chờ xử lý</span>
+                                                </c:when>
+                                                <c:when test="${hd.trangThai == 3}">
+                                                    <span class="badge badge-danger">Đã huỷ</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge">${hd.trangThai}</span>
+                                                </c:otherwise>
+                                            </c:choose>
                                 </td>
                                 <td class="col-action">
                                     <div class="action-icons">

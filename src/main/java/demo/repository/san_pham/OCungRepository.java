@@ -13,7 +13,7 @@ public class OCungRepository {
     }
     public List<OCung> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("FROM OCung WHERE trangThai = true", OCung.class).list();
+            return session.createQuery("FROM OCung WHERE trangThai = 1", OCung.class).list();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -4,7 +4,7 @@
 <%
     demo.entity.nhan_vien.NhanVien _nv = (demo.entity.nhan_vien.NhanVien) session.getAttribute("nhanVien");
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
-    pageContext.setAttribute("isNhanVien", _isNhanVien);
+    request.setAttribute("isNhanVien", _isNhanVien);
 %>
 <%-- Nhân viên không được vào trang quản lý nhân viên --%>
 <c:if test="${isNhanVien}">
@@ -414,7 +414,7 @@
 
                 <c:forEach items="${listNV}" var="nv" varStatus="status">
                     <!-- [CẬP NHẬT CHỖ NÀY]: Tự động tối dòng từ đầu nếu nhân viên đang ở trạng thái false (nghỉ việc) -->
-                    <tr class="${!nv.trangThai ? 'row-inactive' : ''}">
+                    <tr class="${nv.trangThai == 1 ? '' : 'row-inactive'}">
                         <td>${status.index + 1}</td>
 
                         <td><span class="cust-code">${nv.maNhanVien}</span></td>
@@ -449,7 +449,7 @@
                                 <label class="switch">
                                     <!-- [CẬP NHẬT CHỖ NÀY]: Thêm từ khóa 'this' vào hàm để xác định vị trí dòng click -->
                                     <input type="checkbox"
-                                        ${nv.trangThai ? 'checked' : ''}
+                                        ${nv.trangThai == 1 ? 'checked' : ''}
                                            onchange="doiTrangThai(${nv.id}, this.checked, this)">
                                     <span class="slider"></span>
                                 </label>
@@ -514,17 +514,21 @@
         // 3. Sử dụng Fetch API để gửi ngầm dữ liệu lên Server lưu Database (Không reload trang)
         let url = "${pageContext.request.contextPath}/nhan-vien/doi-trang-thai?id=" + id + "&trangThai=" + trangThai;
 
-        fetch(url, { method: 'GET' })
+        fetch(url, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Cập nhật thất bại');
-                }
+                if (!response.ok) throw new Error('Cập nhật thất bại');
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) throw new Error('Server báo lỗi');
                 console.log("Đã đồng bộ DB thành công cho NV ID: " + id);
             })
             .catch(error => {
                 console.error(error);
                 alert("Có lỗi xảy ra khi đồng bộ dữ liệu về máy chủ!");
-                // Nếu lỗi hệ thống, hoàn tác lại trạng thái nút và màu dòng
                 element.checked = !trangThai;
                 row.classList.toggle('row-inactive');
             });

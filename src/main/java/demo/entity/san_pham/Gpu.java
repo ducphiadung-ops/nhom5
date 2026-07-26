@@ -23,5 +23,5 @@ public class Gpu {
     @Column(name = "dung_luong_gpu")
     private String dungLuongGpu;
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 }

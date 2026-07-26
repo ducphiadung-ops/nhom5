@@ -29,5 +29,5 @@ public class MaSeri {
     @Column(name = "ngay_nhap")
     private LocalDate ngayNhap;
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 }

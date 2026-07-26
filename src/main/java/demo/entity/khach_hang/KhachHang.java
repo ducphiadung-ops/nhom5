@@ -40,7 +40,7 @@ public class KhachHang {
     private String email;
 
     @Column(name = "trang_thai")
-    private Boolean trangThai;
+    private Integer trangThai;
 
     @OneToMany(mappedBy = "khachHang", fetch = FetchType.EAGER)
     private List<DiaChiKhachHang> diaChiKhachHang;
