@@ -396,34 +396,68 @@
 </div>
 
 <div class="modal-overlay" id="seriModal">
-    <div class="modal-container" style="max-width: 780px;">
+    <div class="modal-container" style="max-width: 820px;">
         <div class="modal-header">
-            <div>
-                <h3 style="color: var(--primary);"><i class="fa-solid fa-barcode"></i> Chọn mã seri</h3>
-                <p id="seriModalSubtitle" style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0;"></p>
+            <div style="flex:1;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button type="button" id="btnBackToProduct"
+                            style="background:var(--primary-light);border:1px solid #bfdbfe;color:var(--primary);
+                                   border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;
+                                   display:flex;align-items:center;gap:6px;">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại
+                    </button>
+                    <div>
+                        <h3 style="color: var(--primary); margin:0;"><i class="fa-solid fa-barcode"></i> Chọn mã seri</h3>
+                        <p id="seriModalSubtitle" style="font-size: 12px; color: var(--text-muted); margin: 3px 0 0;"></p>
+                    </div>
+                </div>
             </div>
             <button class="btn-close-modal" id="btnCloseSeriModal"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="modal-body">
-            <div style="margin-bottom: 16px;">
+        <div class="modal-body" style="padding-bottom:0;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap;">
                 <input type="text" id="seriSearchInput" class="form-control"
                        placeholder="Tìm kiếm mã seri..."
-                       style="width: 100%; max-width: 360px;">
+                       style="flex:1; min-width:200px; max-width:340px;">
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;
+                               cursor:pointer;padding:8px 12px;border:1px solid var(--border-color);
+                               border-radius:6px;background:#f9fafb;user-select:none;">
+                    <input type="checkbox" id="chkSelectAllSeri" style="width:15px;height:15px;cursor:pointer;">
+                    Chọn tất cả
+                </label>
+                <span id="seriSelectedCount"
+                      style="font-size:12px;font-weight:600;color:var(--primary);
+                             background:var(--primary-light);padding:5px 12px;
+                             border-radius:20px;border:1px solid #bfdbfe;white-space:nowrap;">
+                    Đã chọn: 0
+                </span>
             </div>
             <table class="table-cart" style="width: 100%; border: 1px solid var(--border-color);">
                 <thead>
                 <tr>
+                    <th style="width: 5%; text-align: center;"><i class="fa-solid fa-check-square" style="font-size:13px;color:var(--text-muted);"></i></th>
                     <th style="width: 6%; text-align: center;">STT</th>
-                    <th style="width: 28%">Mã seri</th>
+                    <th style="width: 30%">Mã seri</th>
                     <th style="width: 28%">Mã sản phẩm</th>
-                    <th style="width: 20%; text-align: center;">Trạng thái</th>
-                    <th style="width: 18%; text-align: center;">Thao tác</th>
+                    <th style="width: 22%; text-align: center;">Trạng thái</th>
                 </tr>
                 </thead>
                 <tbody id="seriTableBody">
-                <%-- Sẽ được render bằng JS từ dữ liệu nhúng --%>
                 </tbody>
             </table>
+        </div>
+        <%-- Footer xác nhận --%>
+        <div style="padding:16px 24px; border-top:1px solid var(--border-color);
+                    display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
+            <div style="font-size:13px; color:var(--text-muted);">
+                <span id="seriConfirmInfo" style="color:var(--text-main); font-weight:500;"></span>
+            </div>
+            <button type="button" id="btnConfirmAddSeri"
+                    class="btn btn-primary"
+                    style="background:var(--primary); min-width:180px; justify-content:center;"
+                    disabled>
+                <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng
+            </button>
         </div>
     </div>
 </div>
@@ -569,10 +603,13 @@
         });
 
         // ================================================================
-        // --- XỬ LÝ MODAL CHỌN SERI ---
+        // --- XỬ LÝ MODAL CHỌN SERI (multi-select) ---
         // ================================================================
         const btnCloseSeri    = document.getElementById('btnCloseSeriModal');
+        const btnBackToProduct = document.getElementById('btnBackToProduct');
         const seriSearchInput = document.getElementById('seriSearchInput');
+        const chkSelectAll    = document.getElementById('chkSelectAllSeri');
+        const btnConfirmAdd   = document.getElementById('btnConfirmAddSeri');
 
         // Parse dữ liệu seri từ JSON nhúng trong trang
         let allSeriData = [];
@@ -580,14 +617,48 @@
             allSeriData = JSON.parse(document.getElementById('seriDataScript').textContent);
         } catch(err) { allSeriData = []; }
 
-        // Biến lưu thông tin sản phẩm đang chọn seri
-        let currentProduct = {};
+        // Biến lưu thông tin sản phẩm đang chọn seri + seri đã tick
+        let currentProduct  = {};
+        let currentCauhinhId = 0;
+        // Set các seriId đã được tick trong phiên mở modal này
+        let selectedSeriIds = new Set();
 
         if (btnCloseSeri && seriModal) {
             btnCloseSeri.addEventListener('click', function(e) {
                 e.preventDefault();
                 seriModal.classList.remove('active');
+                selectedSeriIds.clear();
             });
+        }
+
+        // Quay lại modal sản phẩm
+        if (btnBackToProduct) {
+            btnBackToProduct.addEventListener('click', function() {
+                seriModal.classList.remove('active');
+                selectedSeriIds.clear();
+                productModal.classList.add('active');
+            });
+        }
+
+        // Cập nhật UI counter + nút xác nhận
+        function updateSeriSelectionUI() {
+            const count = selectedSeriIds.size;
+            document.getElementById('seriSelectedCount').textContent = 'Đã chọn: ' + count;
+            btnConfirmAdd.disabled = (count === 0);
+            if (count > 0) {
+                const totalPrice = count * currentProduct.price;
+                document.getElementById('seriConfirmInfo').textContent =
+                    count + ' seri × ' + currentProduct.price.toLocaleString('vi-VN') + ' đ = ' +
+                    totalPrice.toLocaleString('vi-VN') + ' đ';
+            } else {
+                document.getElementById('seriConfirmInfo').textContent = '';
+            }
+            // Cập nhật trạng thái checkbox "chọn tất cả"
+            const visibleCheckboxes = document.querySelectorAll('#seriTableBody input[type="checkbox"]:not([disabled])');
+            const allChecked = visibleCheckboxes.length > 0 &&
+                [...visibleCheckboxes].every(cb => cb.checked);
+            chkSelectAll.checked = allChecked;
+            chkSelectAll.indeterminate = !allChecked && count > 0;
         }
 
         // Hàm render danh sách seri vào bảng
@@ -600,20 +671,53 @@
                     'Không có mã seri nào khả dụng cho sản phẩm này!</td></tr>';
                 return;
             }
+            // Tập hợp seri đã có trong giỏ hàng để disable
+            const inCartSerials = new Set();
+            document.querySelectorAll('#cartTableBody tr[data-serial]').forEach(function(tr) {
+                inCartSerials.add(tr.getAttribute('data-serial'));
+            });
+
             rows.forEach(function(s, idx) {
-                const statusHtml = '<span style="background:var(--success-bg);color:var(--success-text);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;"><i class="fa-solid fa-circle" style="font-size:7px;margin-right:4px;"></i>Còn hàng</span>';
-                const btnHtml = '<button type="button" class="btn btn-primary-light btn-select-seri" ' +
-                      'data-seri-id="' + s.id + '" data-soSeri="' + s.soSeri + '" ' +
-                      'style="padding:5px 12px;font-size:12px;">' +
-                      '<i class="fa-solid fa-check" style="margin-right:4px;"></i>Chọn</button>';
+                const inCart = inCartSerials.has(s.soSeri);
+                const checked = selectedSeriIds.has(s.id);
                 const tr = document.createElement('tr');
+                tr.setAttribute('data-seri-id', s.id);
+                if (inCart) tr.style.opacity = '0.5';
+                if (checked) tr.style.backgroundColor = 'var(--primary-light)';
+
+                const statusHtml = inCart
+                    ? '<span style="background:#f3f4f6;color:var(--text-muted);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">Đã trong giỏ</span>'
+                    : '<span style="background:var(--success-bg);color:var(--success-text);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;"><i class="fa-solid fa-circle" style="font-size:7px;margin-right:4px;"></i>Còn hàng</span>';
+
                 tr.innerHTML =
+                    '<td style="text-align:center;">' +
+                        '<input type="checkbox" class="seri-checkbox" ' +
+                        'data-seri-id="' + s.id + '" data-so-seri="' + s.soSeri + '" ' +
+                        (inCart ? 'disabled title="Đã có trong giỏ hàng"' : '') +
+                        (checked ? 'checked' : '') +
+                        ' style="width:15px;height:15px;cursor:' + (inCart ? 'not-allowed' : 'pointer') + ';accent-color:var(--primary);">' +
+                    '</td>' +
                     '<td style="text-align:center;">' + (idx + 1) + '</td>' +
                     '<td><span style="color:var(--primary);font-weight:700;font-size:13px;">' + s.soSeri + '</span></td>' +
                     '<td><span style="font-size:12px;font-weight:600;">' + s.masp + '</span></td>' +
-                    '<td style="text-align:center;">' + statusHtml + '</td>' +
-                    '<td style="text-align:center;">' + btnHtml + '</td>';
+                    '<td style="text-align:center;">' + statusHtml + '</td>';
                 tbody.appendChild(tr);
+            });
+
+            // Gắn sự kiện checkbox
+            tbody.querySelectorAll('.seri-checkbox').forEach(function(cb) {
+                cb.addEventListener('change', function() {
+                    const id = parseInt(this.dataset.seriId);
+                    const row = this.closest('tr');
+                    if (this.checked) {
+                        selectedSeriIds.add(id);
+                        row.style.backgroundColor = 'var(--primary-light)';
+                    } else {
+                        selectedSeriIds.delete(id);
+                        row.style.backgroundColor = '';
+                    }
+                    updateSeriSelectionUI();
+                });
             });
         }
 
@@ -622,7 +726,7 @@
             const btn = e.target.closest('.btn-open-seri');
             if (!btn) return;
 
-            const cauhinhId = parseInt(btn.dataset.cauhinhId);
+            currentCauhinhId = parseInt(btn.dataset.cauhinhId);
             currentProduct = {
                 masp:    btn.dataset.masp    || '',
                 name:    btn.dataset.name    || '—',
@@ -635,33 +739,54 @@
                 os:      btn.dataset.os      || ''
             };
 
+            // Reset selection khi mở modal mới cho sản phẩm khác
+            selectedSeriIds.clear();
+            if (chkSelectAll) { chkSelectAll.checked = false; chkSelectAll.indeterminate = false; }
+
             // Cập nhật tiêu đề modal
             document.getElementById('seriModalSubtitle').textContent =
-                'Sản phẩm: ' + currentProduct.name +
+                currentProduct.name +
                 (currentProduct.color ? ' — ' + currentProduct.color : '') +
-                ' | Đơn giá: ' + currentProduct.price.toLocaleString('vi-VN') + ' đ';
+                ' | ' + currentProduct.price.toLocaleString('vi-VN') + ' đ / sản phẩm';
 
-            // Lọc seri theo cấu hình
+            // Lọc seri theo cấu hình, chỉ lấy trangThai === 0 (còn hàng)
             const filtered = allSeriData.filter(function(s) {
-                return s.cauhinhId === cauhinhId && s.trangThai === 1;
+                return s.cauhinhId === currentCauhinhId && s.trangThai === 0;
             });
 
             seriSearchInput.value = '';
             renderSeriTable(filtered);
+            updateSeriSelectionUI();
             productModal.classList.remove('active');
             seriModal.classList.add('active');
         });
+
+        // Checkbox "Chọn tất cả"
+        if (chkSelectAll) {
+            chkSelectAll.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('#seriTableBody input.seri-checkbox:not([disabled])');
+                checkboxes.forEach(function(cb) {
+                    const id = parseInt(cb.dataset.seriId);
+                    const row = cb.closest('tr');
+                    if (chkSelectAll.checked) {
+                        cb.checked = true;
+                        selectedSeriIds.add(id);
+                        row.style.backgroundColor = 'var(--primary-light)';
+                    } else {
+                        cb.checked = false;
+                        selectedSeriIds.delete(id);
+                        row.style.backgroundColor = '';
+                    }
+                });
+                updateSeriSelectionUI();
+            });
+        }
 
         // Tìm kiếm trong modal seri
         if (seriSearchInput) {
             seriSearchInput.addEventListener('input', function() {
                 const keyword = this.value.trim().toLowerCase();
-                const cauhinhId = parseInt(
-                    (document.querySelector('.btn-open-seri[data-last-opened]') || {}).dataset?.cauhinhId || 0
-                );
-                // Lấy lại toàn bộ seri đang hiển thị (filter theo subtitle hint)
-                const rows = document.querySelectorAll('#seriTableBody tr');
-                rows.forEach(function(row) {
+                document.querySelectorAll('#seriTableBody tr[data-seri-id]').forEach(function(row) {
                     const text = row.textContent.toLowerCase();
                     row.style.display = (!keyword || text.includes(keyword)) ? '' : 'none';
                 });
@@ -669,71 +794,79 @@
         }
 
         // ================================================================
-        // --- THÊM SẢN PHẨM VÀO GIỎ HÀNG KHI CHỌN SERI ---
+        // --- XÁC NHẬN THÊM NHIỀU SERI VÀO GIỎ HÀNG ---
         // ================================================================
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('.btn-select-seri');
-            if (!btn) return;
-
-            const soSeri = btn.dataset.soSeri || '—';
-            const name    = currentProduct.name;
-            const color   = currentProduct.color;
-            const price   = currentProduct.price;
-            const cpu     = currentProduct.cpu;
-            const ram     = currentProduct.ram;
-            const gpu     = currentProduct.gpu;
-            const storage = currentProduct.storage;
-            const os      = currentProduct.os;
+        btnConfirmAdd.addEventListener('click', function() {
+            if (selectedSeriIds.size === 0) return;
 
             const cartBody = document.getElementById('cartTableBody');
-
-            if (cartBody.querySelector('tr[data-serial="' + soSeri + '"]')) {
-                alert('⚠️ Seri "' + soSeri + '" đã có trong giỏ hàng!');
-                return;
-            }
-
             const emptyRow = document.getElementById('emptyCartRow');
-            if (emptyRow) emptyRow.style.display = 'none';
 
-            const priceFormatted = price.toLocaleString('vi-VN') + ' đ';
+            // Lấy thông tin từng seri được chọn và thêm vào giỏ
+            let addedCount = 0;
+            let skippedCount = 0;
 
-            const colorHtml = color
-                ? ('<div class="product-code" style="margin-top:4px;">' +
-                    '<i class="fa-solid fa-palette" style="margin-right:3px;"></i>' + color +
-                    '</div>')
-                : '';
+            selectedSeriIds.forEach(function(seriId) {
+                const seriData = allSeriData.find(s => s.id === seriId);
+                if (!seriData) return;
 
-            function badge(cls, icon, val) {
-                if (!val) return '';
-                return '<span class="spec-badge ' + cls + '">' +
-                    '<i class="' + icon + '" style="margin-right:3px;font-size:10px;"></i>' + val +
-                    '</span>';
-            }
-            const specHtml =
-                badge('spec-cpu',     'fa-solid fa-microchip', cpu)     +
-                badge('spec-ram',     'fa-solid fa-memory',     ram)     +
-                badge('spec-gpu',     'fa-solid fa-display',    gpu)     +
-                badge('spec-storage', 'fa-solid fa-hard-drive', storage) +
-                badge('spec-os',      'fa-brands fa-windows',   os);
+                const soSeri = seriData.soSeri;
+                // Kiểm tra đã có trong giỏ chưa
+                if (cartBody.querySelector('tr[data-serial="' + soSeri + '"]')) {
+                    skippedCount++;
+                    return;
+                }
 
-            const row = document.createElement('tr');
-            row.setAttribute('data-serial', soSeri);
-            row.setAttribute('data-price',  price);
-            row.innerHTML =
-                '<td><span style="color:var(--primary);font-weight:700;font-size:13px;">' + soSeri + '</span></td>' +
-                '<td><div class="product-name" style="font-size:13px;">' + name + '</div>' + colorHtml + '</td>' +
-                '<td><div class="spec-container">' +
-                    (specHtml || '<span style="color:var(--text-muted);font-size:12px;">Không có thông số</span>') +
-                '</div></td>' +
-                '<td><span style="color:var(--danger-text);font-weight:700;font-size:14px;white-space:nowrap;">' +
-                    priceFormatted + '</span></td>' +
-                '<td style="text-align:center;">' +
-                    '<button type="button" class="btn-delete btn-remove-cart" title="Xóa sản phẩm khỏi giỏ">' +
-                    '<i class="fa-solid fa-trash-can"></i></button></td>';
+                if (emptyRow) emptyRow.style.display = 'none';
 
-            cartBody.appendChild(row);
-            seriModal.classList.remove('active');
+                const { name, color, price, cpu, ram, gpu, storage, os } = currentProduct;
+                const priceFormatted = price.toLocaleString('vi-VN') + ' đ';
+
+                const colorHtml = color
+                    ? '<div class="product-code" style="margin-top:4px;"><i class="fa-solid fa-palette" style="margin-right:3px;"></i>' + color + '</div>'
+                    : '';
+
+                function badge(cls, icon, val) {
+                    if (!val) return '';
+                    return '<span class="spec-badge ' + cls + '"><i class="' + icon + '" style="margin-right:3px;font-size:10px;"></i>' + val + '</span>';
+                }
+                const specHtml =
+                    badge('spec-cpu',     'fa-solid fa-microchip', cpu)     +
+                    badge('spec-ram',     'fa-solid fa-memory',     ram)     +
+                    badge('spec-gpu',     'fa-solid fa-display',    gpu)     +
+                    badge('spec-storage', 'fa-solid fa-hard-drive', storage) +
+                    badge('spec-os',      'fa-brands fa-windows',   os);
+
+                const row = document.createElement('tr');
+                row.setAttribute('data-serial', soSeri);
+                row.setAttribute('data-price',  price);
+                row.innerHTML =
+                    '<td><span style="color:var(--primary);font-weight:700;font-size:13px;">' + soSeri + '</span></td>' +
+                    '<td><div class="product-name" style="font-size:13px;">' + name + '</div>' + colorHtml + '</td>' +
+                    '<td><div class="spec-container">' +
+                        (specHtml || '<span style="color:var(--text-muted);font-size:12px;">Không có thông số</span>') +
+                    '</div></td>' +
+                    '<td><span style="color:var(--danger-text);font-weight:700;font-size:14px;white-space:nowrap;">' + priceFormatted + '</span></td>' +
+                    '<td style="text-align:center;">' +
+                        '<button type="button" class="btn-delete btn-remove-cart" title="Xóa sản phẩm khỏi giỏ">' +
+                        '<i class="fa-solid fa-trash-can"></i></button></td>';
+                cartBody.appendChild(row);
+                addedCount++;
+            });
+
             updateCartTotals();
+            selectedSeriIds.clear();
+
+            // Thông báo kết quả
+            let msg = '✅ Đã thêm ' + addedCount + ' sản phẩm vào giỏ hàng.';
+            if (skippedCount > 0) msg += '\n⚠️ ' + skippedCount + ' seri đã có trong giỏ, bỏ qua.';
+
+            // Đóng modal seri, quay lại modal sản phẩm để tiếp tục chọn
+            seriModal.classList.remove('active');
+            productModal.classList.add('active');
+
+            // Hiện toast nhẹ thay vì alert
+            showToast(msg.replace('\n', ' '), addedCount > 0 ? 'success' : 'warning');
         });
 
         // ================================================================
@@ -858,8 +991,45 @@
     });
 </script>
 
+<%-- Toast notification --%>
+<div id="posToast" style="
+    position:fixed; bottom:28px; right:28px; z-index:99999;
+    background:#1f2937; color:#fff; padding:14px 20px;
+    border-radius:10px; font-size:13px; font-weight:500;
+    box-shadow:0 4px 16px rgba(0,0,0,0.25);
+    display:none; align-items:center; gap:10px;
+    max-width:420px; line-height:1.5;
+    transition: opacity 0.3s ease;">
+    <i id="posToastIcon" class="fa-solid fa-circle-check" style="font-size:16px;flex-shrink:0;"></i>
+    <span id="posToastMsg"></span>
+</div>
+
 <script>
-    // ================================================================
+    function showToast(message, type) {
+        const toast = document.getElementById('posToast');
+        const icon  = document.getElementById('posToastIcon');
+        const msg   = document.getElementById('posToastMsg');
+        msg.textContent = message;
+        if (type === 'success') {
+            toast.style.background = '#065f46';
+            icon.className = 'fa-solid fa-circle-check';
+        } else if (type === 'warning') {
+            toast.style.background = '#92400e';
+            icon.className = 'fa-solid fa-triangle-exclamation';
+        } else {
+            toast.style.background = '#1f2937';
+            icon.className = 'fa-solid fa-circle-info';
+        }
+        toast.style.display = 'flex';
+        toast.style.opacity = '1';
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(function() {
+            toast.style.opacity = '0';
+            setTimeout(function() { toast.style.display = 'none'; }, 300);
+        }, 3000);
+    }
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
