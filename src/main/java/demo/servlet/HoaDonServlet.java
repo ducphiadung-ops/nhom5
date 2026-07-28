@@ -45,8 +45,7 @@ import java.util.List;
         "/hoa-don/api/xoa-seri",
         "/hoa-don/api/cap-nhat-khach",
         "/hoa-don/api/thanh-toan",
-        "/hoa-don/api/chi-tiet",
-        "/hoa-don/khoi-phuc"
+        "/hoa-don/api/chi-tiet"
 })
 public class HoaDonServlet extends HttpServlet {
 
@@ -85,28 +84,6 @@ public class HoaDonServlet extends HttpServlet {
         else if (uri.contains("/api/thanh-toan"))    { apiThanhToan(req, resp); }
         else if (uri.contains("add"))                { add(req, resp); }
         else if (uri.contains("update"))             { update(req, resp); }
-        else if (uri.contains("khoi-phuc"))          { khoiPhucHoaDon(req, resp); }
-    }
-
-    // =====================================================================
-    //  POST /hoa-don/khoi-phuc — Đổi trangThai=3 → 2 (khôi phục hoá đơn đã huỷ)
-    // =====================================================================
-    private void khoiPhucHoaDon(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        try {
-            int id = Integer.parseInt(req.getParameter("id"));
-            HoaDon hd = hoaDonRepository.getOne(id);
-            if (hd == null || hd.getTrangThai() != 3) {
-                resp.sendRedirect(req.getContextPath() + "/hoa-don/hien-thi?filtered=true");
-                return;
-            }
-            hd.setTrangThai(2);
-            hoaDonRepository.update(hd);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // Redirect về trang danh sách với filter hiện tại
-        String ref = req.getHeader("Referer");
-        resp.sendRedirect(ref != null ? ref : req.getContextPath() + "/hoa-don/hien-thi?filtered=true");
     }
 
     // =====================================================================
@@ -183,6 +160,11 @@ public class HoaDonServlet extends HttpServlet {
     private void apiXoaDon(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             int idHoaDon = Integer.parseInt(req.getParameter("idHoaDon"));
+
+            HoaDon hd = hoaDonRepository.getOne(idHoaDon);
+            if (hd == null) { jsonErr(resp, 404, "Không tìm thấy hoá đơn"); return; }
+            if (!isOwner(hd, req)) { jsonErr(resp, 403, "Bạn không có quyền thao tác hoá đơn này"); return; }
+
             // Hoàn trạng thái tất cả seri về 0 (còn hàng)
             List<ChiTietHoaDon> danhSachCT = chiTietHoaDonRepo.getByHoaDonId(idHoaDon);
             for (ChiTietHoaDon ct : danhSachCT) {
@@ -193,11 +175,8 @@ public class HoaDonServlet extends HttpServlet {
                 }
             }
             // Chuyển trạng thái hoá đơn về 3 (đã huỷ) thay vì xoá cứng
-            HoaDon hd = hoaDonRepository.getOne(idHoaDon);
-            if (hd != null) {
-                hd.setTrangThai(3);
-                hoaDonRepository.update(hd);
-            }
+            hd.setTrangThai(3);
+            hoaDonRepository.update(hd);
             jsonOk(resp, "{\"success\":true}");
         } catch (Exception e) {
             e.printStackTrace();
@@ -231,6 +210,7 @@ public class HoaDonServlet extends HttpServlet {
             MaSeri seri   = maSeriRepository.getOne(idSeri);
 
             if (hd == null)   { jsonErr(resp, 404, "Không tìm thấy hoá đơn"); return; }
+            if (!isOwner(hd, req)) { jsonErr(resp, 403, "Bạn không có quyền thao tác hoá đơn này"); return; }
             if (seri == null) { jsonErr(resp, 404, "Không tìm thấy mã seri");  return; }
             if (seri.getTrangThai() != 0) {
                 jsonErr(resp, 400, "Seri này không còn khả dụng");
@@ -282,6 +262,9 @@ public class HoaDonServlet extends HttpServlet {
             if (ct == null) { jsonErr(resp, 404, "Không tìm thấy chi tiết"); return; }
 
             int idHoaDon = ct.getHoaDon().getId();
+            HoaDon hd = hoaDonRepository.getOne(idHoaDon);
+            if (hd == null) { jsonErr(resp, 404, "Không tìm thấy hoá đơn"); return; }
+            if (!isOwner(hd, req)) { jsonErr(resp, 403, "Bạn không có quyền thao tác hoá đơn này"); return; }
 
             // Hoàn trạng thái seri về 0
             MaSeri seri = ct.getIdSeri();
@@ -310,6 +293,7 @@ public class HoaDonServlet extends HttpServlet {
 
             HoaDon hd = hoaDonRepository.getOne(idHoaDon);
             if (hd == null) { jsonErr(resp, 404, "Không tìm thấy hoá đơn"); return; }
+            if (!isOwner(hd, req)) { jsonErr(resp, 403, "Bạn không có quyền thao tác hoá đơn này"); return; }
 
             if (idKhParam == null || idKhParam.trim().isEmpty()) {
                 hd.setKhachHang(null);
@@ -409,6 +393,7 @@ public class HoaDonServlet extends HttpServlet {
 
             HoaDon hd = hoaDonRepository.getOne(idHoaDon);
             if (hd == null) { jsonErr(resp, 404, "Không tìm thấy hoá đơn"); return; }
+            if (!isOwner(hd, req)) { jsonErr(resp, 403, "Bạn không có quyền thao tác hoá đơn này"); return; }
 
             // Tính lại tổng tiền từ chi tiết để đảm bảo chính xác
             capNhatTongTien(idHoaDon);
@@ -490,14 +475,34 @@ public class HoaDonServlet extends HttpServlet {
     }
 
     // =====================================================================
+    //  HELPER: kiểm tra hoá đơn có thuộc về nhân viên đang đăng nhập không
+    // =====================================================================
+    private boolean isOwner(HoaDon hd, HttpServletRequest req) {
+        NhanVien nv = (NhanVien) req.getSession().getAttribute("nhanVien");
+        if (nv == null) return false;
+        if (hd.getNhanVien() == null) return false;
+        return hd.getNhanVien().getId().equals(nv.getId());
+    }
+
+    // =====================================================================
     //  Trang bán hàng - load dữ liệu cho JSP
+    //  Chỉ tải hoá đơn chờ của nhân viên đang đăng nhập
     // =====================================================================
     private void banhang(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        NhanVien nv = (NhanVien) req.getSession().getAttribute("nhanVien");
+
         List<ChiTietSanPham> listSanPham      = chiTietSanPhamRepository.getAll();
         List<KhachHang> listKhachHang          = khachHangRepo.getAll();
         List<MaSeri> listMaSeri                = maSeriRepository.getAll();
         List<HinhThucThanhToan> listHinhThuc   = hinhThucThanhToanRepo.getAll();
-        List<HoaDon> listHoaDonCho             = hoaDonRepository.getHoaDonCho();
+
+        // Chỉ lấy hoá đơn chờ của nhân viên đang đăng nhập
+        List<HoaDon> listHoaDonCho;
+        if (nv != null) {
+            listHoaDonCho = hoaDonRepository.getHoaDonChoByNhanVien(nv.getId());
+        } else {
+            listHoaDonCho = new java.util.ArrayList<>();
+        }
 
         req.setAttribute("listSanPham",          listSanPham);
         req.setAttribute("listKhachHang",         listKhachHang);

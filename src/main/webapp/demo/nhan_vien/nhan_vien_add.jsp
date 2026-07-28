@@ -236,9 +236,8 @@
                         <label>Chức vụ <span>*</span></label>
                         <select name="chucVu" class="form-control" required>
                             <option value="" disabled selected>Chọn chức vụ...</option>
-                            <option value="Quản trị viên">Quản trị viên</option>
-                            <option value="Nhân viên bán hàng">Nhân viên bán hàng</option>
-                            <option value="Nhân viên kỹ thuật">Nhân viên kỹ thuật</option>
+                            <option value="Quản Lý">Quản Lý</option>
+                            <option value="Nhân viên">Nhân viên</option>
                         </select>
                     </div>
 

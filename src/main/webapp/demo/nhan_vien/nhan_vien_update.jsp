@@ -211,9 +211,8 @@
                     <div class="form-group">
                         <label>Chức vụ <span>*</span></label>
                         <select name="chucVu" class="form-control" required>
-                            <option value="Quản trị viên" ${nv.chucVu == 'Quản trị viên' ? 'selected' : ''}>Quản trị viên</option>
-                            <option value="Nhân viên bán hàng" ${nv.chucVu == 'Nhân viên bán hàng' ? 'selected' : ''}>Nhân viên bán hàng</option>
-                            <option value="Nhân viên kỹ thuật" ${nv.chucVu == 'Nhân viên kỹ thuật' ? 'selected' : ''}>Nhân viên kỹ thuật</option>
+                            <option value="Quản Lý" ${nv.chucVu == 'Quản Lý' ? 'selected' : ''}>Quản Lý</option>
+                            <option value="Nhân viên" ${nv.chucVu == 'Nhân viên' ? 'selected' : ''}>Nhân viên</option>
                         </select>
                     </div>
 

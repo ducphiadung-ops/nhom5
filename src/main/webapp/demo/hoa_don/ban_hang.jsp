@@ -738,8 +738,12 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'idHoaDon=' + donId
         })
-            .then(function(r){ return r.json(); })
+            .then(function(r){
+                if (r.status === 403) { showToast('Bạn không có quyền xoá hoá đơn này!', 'error'); throw new Error('403'); }
+                return r.json();
+            })
             .then(function(data) {
+                if (data.error) { showToast(data.error, 'error'); return; }
                 donChoList = donChoList.filter(function(d){ return d.id !== donId; });
                 delete cartByDon[donId];
                 delete khachByDon[donId];
@@ -766,7 +770,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 showToast('Đã xoá hoá đơn.', 'success');
             })
-            .catch(function(){ showToast('Lỗi kết nối!', 'error'); });
+            .catch(function(e){ if (e.message !== '403') showToast('Lỗi kết nối!', 'error'); });
     }
 
     // --- XOÁ SẢN PHẨM KHỎI GIỎ ---
@@ -779,13 +783,17 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'idChiTiet=' + ctId
         })
-            .then(function(r){ return r.json(); })
+            .then(function(r){
+                if (r.status === 403) { showToast('Bạn không có quyền thao tác hoá đơn này!', 'error'); throw new Error('403'); }
+                return r.json();
+            })
             .then(function(data) {
+                if (data.error) { showToast(data.error, 'error'); return; }
                 if (data.success && currentDonId) {
                     loadCartFromServer(currentDonId);
                 }
             })
-            .catch(function(){ showToast('Lỗi xoá sản phẩm!', 'error'); });
+            .catch(function(e){ if (e.message !== '403') showToast('Lỗi xoá sản phẩm!', 'error'); });
     });
 
     // --- BỎ CHỌN KHÁCH ---
@@ -797,11 +805,16 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'idHoaDon=' + currentDonId + '&idKhachHang='
         })
-            .then(function(r){ return r.json(); })
+            .then(function(r){
+                if (r.status === 403) { showToast('Bạn không có quyền thao tác hoá đơn này!', 'error'); throw new Error('403'); }
+                return r.json();
+            })
             .then(function(data) {
+                if (data.error) { showToast(data.error, 'error'); return; }
                 khachByDon[currentDonId] = null;
                 renderKhachHangInfo(null);
-            });
+            })
+            .catch(function(e){ if (e.message !== '403') showToast('Lỗi kết nối!', 'error'); });
     });
 
     // --- TIỀN KHÁCH TRẢ (auto format) ---
@@ -1005,7 +1018,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: params.toString()
             })
-                .then(function(r){ return r.json(); })
+                .then(function(r){
+                    if (r.status === 403) { const err = new Error('403'); err.is403 = true; throw err; }
+                    return r.json();
+                })
                 .then(function(data) {
                     data._seriId = seriId;
                     return data;
@@ -1037,7 +1053,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }).catch(function(err) {
             console.error('Promise.all lỗi:', err);
-            showToast('Có lỗi khi thêm sản phẩm!', 'error');
+            if (err.message === '403') {
+                showToast('Bạn không có quyền thao tác hoá đơn này!', 'error');
+            } else {
+                showToast('Có lỗi khi thêm sản phẩm!', 'error');
+            }
         }).finally(function() {
             btnConfirmAdd.disabled = false;
             btnConfirmAdd.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ hàng';
@@ -1071,13 +1091,18 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'idHoaDon=' + currentDonId + '&idKhachHang=' + kh.id
         })
-            .then(function(r){ return r.json(); })
+            .then(function(r){
+                if (r.status === 403) { showToast('Bạn không có quyền thao tác hoá đơn này!', 'error'); throw new Error('403'); }
+                return r.json();
+            })
             .then(function(data) {
+                if (data.error) { showToast(data.error, 'error'); return; }
                 khachByDon[currentDonId] = kh;
                 renderKhachHangInfo(kh);
                 document.getElementById('customerModal').classList.remove('active');
                 showToast('Đã chọn khách hàng: ' + kh.name, 'success');
-            });
+            })
+            .catch(function(e){ if (e.message !== '403') showToast('Lỗi kết nối!', 'error'); });
     });
 
     // ============================================================
@@ -1135,7 +1160,10 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: bodyStr
         })
-            .then(function(r){ return r.json(); })
+            .then(function(r){
+                if (r.status === 403) { showToast('Bạn không có quyền thao tác hoá đơn này!', 'error'); throw new Error('403'); }
+                return r.json();
+            })
             .then(function(data) {
                 if (data.error) { showToast(data.error, 'error'); return; }
                 const doneId = currentDonId;
@@ -1165,7 +1193,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 showToast('✅ Thanh toán thành công! ' + ma + ' — Tiền thừa: ' + Number(data.tienThua||0).toLocaleString('vi-VN') + ' đ', 'success');
             })
-            .catch(function() { showToast('Lỗi kết nối!', 'error'); })
+            .catch(function(e) {
+                if (e.message !== '403') showToast('Lỗi kết nối!', 'error');
+            })
             .finally(function() {
                 if (document.getElementById('btnThanhToan').disabled && currentDonId) {
                     document.getElementById('btnThanhToan').disabled = false;

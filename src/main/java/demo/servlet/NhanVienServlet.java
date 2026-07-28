@@ -154,12 +154,25 @@ public class NhanVienServlet extends HttpServlet {
             nv.setChucVu(chucVu);
             nv.setTrangThai(1);
 
-            // Gán tài khoản & mật khẩu mặc định
-            nv.setTaiKhoan("NV_" + System.currentTimeMillis());
-            nv.setMatKhau("123456");
+            // Tài khoản = email, mật khẩu tạm để tránh null, sẽ cập nhật sau khi có ID
+            nv.setTaiKhoan(email != null ? email.trim() : "tmp");
+            nv.setMatKhau("tmp");
 
-            service.add(nv);
-// gui mail
+            service.add(nv); // Sau persist, Hibernate đã điền nv.getId()
+
+            // Tạo mật khẩu theo chức vụ và ID thực tế
+            Integer newId = nv.getId();
+            String matKhau;
+            if ("Quản Lý".equalsIgnoreCase(chucVu != null ? chucVu.trim() : "")) {
+                matKhau = String.format("admin_%03d", newId);
+            } else {
+                matKhau = String.format("nv_%03d", newId);
+            }
+            nv.setMatKhau(matKhau);
+
+            service.update(nv);
+
+            // Gửi mail thông báo tài khoản
             try {
                 EmailUtil.sendMail(
                         nv.getEmail(),

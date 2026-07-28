@@ -148,7 +148,7 @@ public class HoaDonRepository {
         return list;
     }
 
-    // Lấy danh sách hóa đơn chờ (trangThai = 2)
+    // Lấy danh sách hóa đơn chờ (trangThai = 2) — toàn bộ, dùng cho trang quản lý
     public List<HoaDon> getHoaDonCho() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             return session.createQuery(
@@ -156,6 +156,24 @@ public class HoaDonRepository {
                     "AND h.maHoaDon IS NOT NULL AND h.maHoaDon NOT LIKE '%null%' " +
                     "ORDER BY h.ngayLap DESC",
                     HoaDon.class).list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    // Lấy danh sách hóa đơn chờ (trangThai = 2) CHỈ của một nhân viên cụ thể
+    // Dùng cho trang bán hàng tại quầy — mỗi nhân viên chỉ thấy đơn chờ của mình
+    public List<HoaDon> getHoaDonChoByNhanVien(Integer idNhanVien) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            return session.createQuery(
+                    "FROM HoaDon h WHERE h.trangThai = 2 " +
+                    "AND h.nhanVien.id = :idNhanVien " +
+                    "AND h.maHoaDon IS NOT NULL AND h.maHoaDon NOT LIKE '%null%' " +
+                    "ORDER BY h.ngayLap DESC",
+                    HoaDon.class)
+                    .setParameter("idNhanVien", idNhanVien)
+                    .list();
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();

@@ -102,8 +102,6 @@
         /* Row đã huỷ — làm mờ */
         .row-da-huy { opacity: 0.45; }
         .row-da-huy:hover { opacity: 0.75; transition: opacity 0.2s; }
-        .btn-restore { background:transparent;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;color:#9ca3af;font-size:15px;transition:0.2s; }
-        .btn-restore:hover { color:#1a56db;background:#e6efff; }
         /* Empty state */
         .empty-state{padding:48px 0;text-align:center;color:var(--text-muted);}
         .empty-state i{font-size:40px;margin-bottom:12px;opacity:0.4;display:block;}
@@ -263,25 +261,11 @@
                                 </td>
                                 <td class="col-action">
                                     <div class="action-icons">
-                                        <%-- Hoá đơn đã huỷ: icon khôi phục; còn lại: icon xem chi tiết --%>
-                                        <c:choose>
-                                            <c:when test="${hd.trangThai == 3}">
-                                                <form method="post"
-                                                      action="${pageContext.request.contextPath}/hoa-don/khoi-phuc"
-                                                      style="display:inline;"
-                                                      onsubmit="return confirm('Khôi phục hoá đơn ${hd.maHoaDon} về trạng thái Chờ xử lý?');">
-                                                    <input type="hidden" name="id" value="${hd.id}">
-                                                    <button type="submit" class="btn-restore" title="Khôi phục hoá đơn">
-                                                        <i class="fa-solid fa-rotate-left"></i>
-                                                    </button>
-                                                </form>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <a href="${pageContext.request.contextPath}/hoa-don/detail?id=${hd.id}" title="Xem chi tiết">
-                                                    <i class="fa-regular fa-eye"></i>
-                                                </a>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <c:if test="${hd.trangThai != 3}">
+                                            <a href="${pageContext.request.contextPath}/hoa-don/detail?id=${hd.id}" title="Xem chi tiết">
+                                                <i class="fa-regular fa-eye"></i>
+                                            </a>
+                                        </c:if>
                                     </div>
                                 </td>
                             </tr>

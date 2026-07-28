@@ -360,9 +360,8 @@
                     <label>Chức vụ</label>
                     <select class="form-control" style="padding-left: 14px;">
                         <option>Tất cả chức vụ</option>
-                        <option>Quản trị viên</option>
-                        <option>Nhân viên bán hàng</option>
-                        <option>Nhân viên kỹ thuật</option>
+                        <option>Quản Lý</option>
+                        <option>Nhân viên</option>
                     </select>
                 </div>
 
