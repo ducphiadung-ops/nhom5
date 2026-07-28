@@ -11,22 +11,80 @@ import org.hibernate.query.Query;
 
 public class HoaDonRepository {
     public List<HoaDon> getAllHoaDon() {
-        Session session  = HibernateConfig.getFACTORY().openSession();
-        return session.createQuery("from HoaDon").list(); }
-
-    public HoaDon getOne(Integer id) {
-        Session session  = HibernateConfig.getFACTORY().openSession();
-        return session.find(HoaDon.class, id);}
-
-    public void add(HoaDon hoaDon) {
-        Session session  = HibernateConfig.getFACTORY().openSession();
-        try {
-            session.getTransaction().begin();
-            session.save(hoaDon);
-            session.getTransaction().commit();
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            return session.createQuery("from HoaDon", HoaDon.class).list();
         } catch (Exception e) {
             e.printStackTrace();
-            session.getTransaction().rollback();
+            return new ArrayList<>();
+        }
+    }
+
+    public HoaDon getOne(Integer id) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            return session.find(HoaDon.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Load hoá đơn kèm tất cả lazy relations — dùng cho trang chi tiết
+    public HoaDon getOneWithDetails(Integer id) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            HoaDon hd = session.find(HoaDon.class, id);
+            if (hd == null) return null;
+            // Initialize tất cả trong cùng 1 session
+            try { org.hibernate.Hibernate.initialize(hd.getLichSuThanhToan()); } catch (Exception e) {}
+            try { org.hibernate.Hibernate.initialize(hd.getListChiTiet()); } catch (Exception e) {}
+            if (hd.getListChiTiet() != null) {
+                for (ChiTietHoaDon ct : hd.getListChiTiet()) {
+                    try { org.hibernate.Hibernate.initialize(ct.getCauHinhSanPham()); } catch (Exception e) {}
+                    if (ct.getCauHinhSanPham() != null) {
+                        try { org.hibernate.Hibernate.initialize(ct.getCauHinhSanPham().getSanPham()); } catch (Exception e) {}
+                        try { org.hibernate.Hibernate.initialize(ct.getCauHinhSanPham().getCpu()); } catch (Exception e) {}
+                        try { org.hibernate.Hibernate.initialize(ct.getCauHinhSanPham().getRam()); } catch (Exception e) {}
+                        try { org.hibernate.Hibernate.initialize(ct.getCauHinhSanPham().getGpu()); } catch (Exception e) {}
+                        try { org.hibernate.Hibernate.initialize(ct.getCauHinhSanPham().getOCung()); } catch (Exception e) {}
+                    }
+                    try { org.hibernate.Hibernate.initialize(ct.getIdSeri()); } catch (Exception e) {}
+                }
+            }
+            if (hd.getKhachHang() != null) {
+                try { org.hibernate.Hibernate.initialize(hd.getKhachHang().getDiaChiKhachHang()); } catch (Exception e) {}
+            }
+            return hd;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Lấy ID tiếp theo để sinh mã trước khi insert
+    public Integer getNextId() {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            Object result = session.createNativeQuery(
+                    "SELECT ISNULL(MAX(id), 0) + 1 FROM hoa_don").uniqueResult();
+            return result != null ? ((Number) result).intValue() : 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return (int)(System.currentTimeMillis() % 100000);
+        }
+    }
+
+    public Integer add(HoaDon hoaDon) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            org.hibernate.Transaction tx = session.beginTransaction();
+            try {
+                // Dùng persist thay save — chuẩn JPA hơn
+                session.persist(hoaDon);
+                session.flush();
+                tx.commit();
+                return hoaDon.getId();
+            } catch (Exception e) {
+                tx.rollback();
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 
@@ -90,12 +148,13 @@ public class HoaDonRepository {
         return list;
     }
 
-    // Lấy danh sách hóa đơn chờ (trangThai = 2 = Chờ xử lý)
+    // Lấy danh sách hóa đơn chờ (trangThai = 2)
     public List<HoaDon> getHoaDonCho() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             return session.createQuery(
-                    "SELECT h FROM HoaDon h LEFT JOIN h.khachHang " +
-                    "WHERE h.trangThai = 2 ORDER BY h.ngayLap DESC",
+                    "FROM HoaDon h WHERE h.trangThai = 2 " +
+                    "AND h.maHoaDon IS NOT NULL AND h.maHoaDon NOT LIKE '%null%' " +
+                    "ORDER BY h.ngayLap DESC",
                     HoaDon.class).list();
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,6 +172,22 @@ public class HoaDonRepository {
         } catch (Exception e) {
             e.printStackTrace();
             return "HD" + System.currentTimeMillis();
+        }
+    }
+
+    // Sinh mã hoá đơn theo năm: HD2026_001 (dựa vào id sau khi lưu)
+    public String taoMaHoaDonTheoNam(Integer id) {
+        int nam = java.time.LocalDate.now().getYear();
+        return String.format("HD%d_%03d", nam, id);
+    }
+
+    public void update(HoaDon hoaDon) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            org.hibernate.Transaction tx = session.beginTransaction();
+            session.merge(hoaDon);
+            tx.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

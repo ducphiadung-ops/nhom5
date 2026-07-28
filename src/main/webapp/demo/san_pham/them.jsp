@@ -280,10 +280,6 @@
                             <c:forEach items="${listGpu}" var="gpu"><option value="${gpu.id}">${gpu.tenGpu}</option></c:forEach>
                         </select>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Thời hạn bảo hành (Tháng) *</label>
-                        <input type="number" name="hanBaoHanh" class="form-control" value="12" min="1" required>
-                    </div>
                 </div>
             </div>
 

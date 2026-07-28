@@ -19,7 +19,15 @@ public class MaSeriRepository {
 
     public MaSeri getOne(Integer id){
         try(Session session= HibernateConfig.getFACTORY().openSession()){
-            return session.find(MaSeri.class, id);
+            MaSeri ms = session.find(MaSeri.class, id);
+            // Kích hoạt lazy load cauHinhSanPham trước khi đóng session
+            if (ms != null && ms.getCauHinhSanPham() != null) {
+                org.hibernate.Hibernate.initialize(ms.getCauHinhSanPham());
+                if (ms.getCauHinhSanPham().getSanPham() != null) {
+                    org.hibernate.Hibernate.initialize(ms.getCauHinhSanPham().getSanPham());
+                }
+            }
+            return ms;
         }
     }
 

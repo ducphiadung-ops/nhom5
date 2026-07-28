@@ -72,6 +72,9 @@ public class HoaDon {
     @Column(name = "trang_thai")
     private Integer trangThai;
 
+    @Column(name = "is_deleted")
+    private Integer isDeleted = 0;
+
     @OneToMany(mappedBy = "hoaDon")
     private List<LichSuThanhToan> lichSuThanhToan;
     public List<LichSuThanhToan> getLichSuThanhToan() {

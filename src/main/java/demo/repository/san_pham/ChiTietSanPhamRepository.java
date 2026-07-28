@@ -79,6 +79,19 @@ public class ChiTietSanPhamRepository {
         }
     }
 
+    public List<ChiTietSanPham> findByCauHinhId(Integer idCauHinh) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            return session.createQuery(
+                    "SELECT ct FROM ChiTietSanPham ct WHERE ct.cauHinhSanPham.id = :id",
+                    ChiTietSanPham.class)
+                    .setParameter("id", idCauHinh)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new java.util.ArrayList<>();
+        }
+    }
+
     public List<ChiTietSanPham> findBySanPhamId(Integer idSanPham) {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             String hql = "SELECT ct FROM ChiTietSanPham ct " +

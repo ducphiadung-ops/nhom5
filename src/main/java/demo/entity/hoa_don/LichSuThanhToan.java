@@ -26,7 +26,7 @@ public class LichSuThanhToan {
     @Column(name = "so_tien")
     private BigDecimal soTien;
     @Column(name = "trang_thai_thanh_toan")
-    private String trangThaiThanhToan;
+    private Integer trangThaiThanhToan;
     @Column(name = "ngay_thanh_toan")
     private Date ngayThanhToan;
     @Column(name = "ghi_chu")
