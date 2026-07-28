@@ -27,128 +27,42 @@
             --border-color: #e5e7eb;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; height: 100vh; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
 
-        body {
-            display: flex;
-            height: 100vh;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            overflow: hidden;
-        }
-
-                /* 🎨 --- SIDEBAR --- */
-        .sidebar {
-            width: 260px;
-            background-color: #fff;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            padding-bottom: 16px;
-            z-index: 10;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            padding: 20px 20px;
-            gap: 12px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 12px;
-        }
-
-        .brand-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-        }
-
+        /* --- SIDEBAR --- */
+        .sidebar { width: 260px; background-color: #fff; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100vh; padding-bottom: 16px; z-index: 10; }
+        .brand { display: flex; align-items: center; padding: 20px; gap: 12px; border-bottom: 1px solid var(--border-color); margin-bottom: 12px; }
+        .brand-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; }
         .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
-        .brand-text h1 { font-size: 16px; font-weight: 700; color: #1e3a8a; margin-bottom: 0px;}
+        .brand-text h1 { font-size: 16px; font-weight: 700; color: #1e3a8a; margin-bottom: 0; }
         .brand-text p { font-size: 11px; color: var(--text-muted); margin-bottom: 0; }
-
         .nav-menu { list-style: none; padding: 0 12px; flex: 1; overflow-y: auto; }
         .nav-item { margin-bottom: 4px; }
-
-        .nav-link-custom {
-            display: flex;
-            align-items: center;
-            padding: 11px 16px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-            gap: 12px;
-        }
+        .nav-link-custom { display: flex; align-items: center; padding: 11px 16px; color: var(--text-muted); text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; transition: all 0.2s; gap: 12px; }
         .nav-link-custom i { font-size: 16px; width: 20px; text-align: center; }
         .nav-link-custom:hover { background-color: #f3f4f6; color: var(--text-main); }
         .nav-link-custom.active { background-color: var(--sidebar-active); color: var(--primary); font-weight: 600; }
-
-        .sub-menu {
-            list-style: none;
-            padding-left: 0;
-            margin-top: 4px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .sub-menu .nav-link-custom {
-            padding: 9px 16px 9px 44px !important;
-            font-size: 13px;
-        }
-        .sub-menu .nav-link-custom.active-sub {
-            background-color: var(--sidebar-active);
-            color: var(--primary);
-            font-weight: 600;
-        }
-
+        .sub-menu { list-style: none; padding-left: 0; margin-top: 4px; display: flex; flex-direction: column; gap: 2px; }
+        .sub-menu .nav-link-custom { padding: 9px 16px 9px 44px !important; font-size: 13px; }
+        .sub-menu .nav-link-custom.active-sub { background-color: var(--sidebar-active); color: var(--primary); font-weight: 600; }
         .logout-item { margin-top: auto; padding: 0 12px; }
         .nav-link-custom.logout-link { color: #dc2626; border-top: 1px solid var(--border-color); border-radius: 0; padding-top: 16px; }
-        .nav-link-custom.logout-link:hover { background-color: var(--danger-bg); color: var(--danger-text); border-radius: 8px; }
+        .nav-link-custom.logout-link:hover { background-color: #ffe4e6; color: #be123c; border-radius: 8px; }
 
-
-        /* --- MAIN CONTENT LAYOUT --- */
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .top-header {
-            height: 70px;
-            background-color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 0 32px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
+        /* --- HEADER --- */
+        .top-header { height: 70px; background-color: #fff; display: flex; align-items: center; justify-content: flex-end; padding: 0 32px; border-bottom: 1px solid var(--border-color); }
         .header-actions { display: flex; align-items: center; gap: 24px; }
         .notification { position: relative; color: var(--text-muted); cursor: pointer; font-size: 20px; }
-        .notification::after { content: ''; position: absolute; top: -2px; right: 0px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; border: 2px solid #fff; }
-
+        .notification::after { content: ''; position: absolute; top: -2px; right: 0; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; border: 2px solid #fff; }
         .user-profile { display: flex; align-items: center; gap: 12px; }
         .user-info { text-align: right; }
         .user-name { font-size: 14px; font-weight: 600; color: var(--text-main); }
         .user-role { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
         .avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
 
+        /* --- MAIN CONTENT LAYOUT --- */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .content-area { flex: 1; padding: 24px 32px; overflow-y: auto; }
 
         /* --- FORM HEADER & CARD --- */
@@ -239,108 +153,14 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="brand">
-        <div class="brand-logo">
-            <img src="/img/logo.jpg" alt="Skycomputer Logo">
-        </div>
-        <div class="brand-text">
-            <h1>Skycomputer</h1>
-            <p>Hệ thống quản lý</p>
-        </div>
-    </div>
+<%-- SIDEBAR --%>
+<jsp:include page="/demo/common/sidebar.jsp">
+    <jsp:param name="activeMenu" value="nhan-vien"/>
+</jsp:include>
 
-    <ul class="nav-menu">
-        <li class="nav-item">
-            <a href="/tong_quan" class="nav-link-custom"><i class="fa-solid fa-border-all"></i> Trang tổng quan</a>
-        </li>
-        <li class="nav-item">
-            <a href="${pageContext.request.contextPath}/hoa-don/ban-hang" class="nav-link-custom"><i class="fa-solid fa-store"></i> Bán hàng tại quầy</a>
-        </li>
-
-        <!-- DROPDOWN QUẢN LÝ SẢN PHẨM -->
-        <li class="nav-item">
-            <a class="nav-link-custom d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false">
-                <span><i class="fa-solid fa-box"></i> Quản lý sản phẩm</span>
-                <i class="fa-solid fa-chevron-down" style="font-size: 10px; transition: transform 0.2s;"></i>
-            </a>
-            <div class="collapse" id="sub-san-pham">
-                <ul class="sub-menu">
-                    <li>
-                        <a href="${pageContext.request.contextPath}/san-pham/hien-thi" class="nav-link-custom">
-                            <i class="fa-solid fa-list me-1"></i> Danh sách sản phẩm
-                        </a>
-                    </li>
-                    <li>
-                        <a href="${pageContext.request.contextPath}/san-pham-chi-tiet/hien-thi" class="nav-link-custom">
-                            <i class="fa-solid fa-circle-info me-1"></i> Sản phẩm chi tiết
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-
-        <!-- QUẢN LÝ HÓA ĐƠN -->
-        <li class="nav-item">
-            <a href="${pageContext.request.contextPath}/hoa-don/hien-thi" class="nav-link-custom"><i class="fa-solid fa-file-invoice"></i> Quản lý hóa đơn</a>
-        </li>
-
-        <!-- QUẢN LÝ KHÁCH HÀNG -->
-        <li class="nav-item">
-            <a href="${pageContext.request.contextPath}/khach-hang/hien-thi" class="nav-link-custom"><i class="fa-solid fa-users"></i> Quản lý khách hàng</a>
-        </li>
-
-        <!-- QUẢN LÝ NHÂN VIÊN -->
-        <li class="nav-item">
-            <a href="${pageContext.request.contextPath}/nhan-vien/hien-thi" class="nav-link-custom active"><i class="fa-solid fa-id-badge"></i> Quản lý nhân viên</a>
-        </li>
-        <!-- DROPDOWN QUẢN LÝ THUỘC TÍNH -->
-        <li class="nav-item">
-            <a class="nav-link-custom d-flex justify-content-between align-items-center" data-bs-toggle="collapse" role="button" aria-expanded="false">
-                <span><i class="fa-solid fa-sliders"></i> Quản lý thuộc tính</span>
-                <i class="fa-solid fa-chevron-down" style="font-size: 10px; transition: transform 0.2s;"></i>
-            </a>
-            <div class="collapse" id="sub-thuoc-tinh">
-                <ul class="sub-menu">
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/cpu/hien-thi" class="nav-link-custom"><i class="fa-solid fa-microchip me-1"></i> Cấu hình CPU</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/ram/hien-thi" class="nav-link-custom"><i class="fa-solid fa-memory me-1"></i> Cấu hình RAM</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/o-cung/hien-thi" class="nav-link-custom"><i class="fa-solid fa-hard-drive me-1"></i> Ổ cứng</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/gpu/hien-thi" class="nav-link-custom"><i class="fa-solid fa-clone me-1"></i> Card đồ họa (GPU)</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/man-hinh/hien-thi" class="nav-link-custom"><i class="fa-solid fa-display me-1"></i> Màn hình</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/mau-sac/hien-thi" class="nav-link-custom"><i class="fa-solid fa-palette me-1"></i> Màu sắc</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/pin/hien-thi" class="nav-link-custom"><i class="fa-solid fa-battery-three-quarters me-1"></i> Thông số Pin</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/danh-muc/hien-thi" class="nav-link-custom"><i class="fa-solid fa-layer-group me-1"></i> Danh mục sản phẩm</a></li>
-                    <li><a href="${pageContext.request.contextPath}/thuoc-tinh/thuong-hieu/hien-thi" class="nav-link-custom"><i class="fa-solid fa-copyright me-1"></i> Thương hiệu</a></li>
-                </ul>
-            </div>
-        </li>
-    </ul>
-
-    <div class="logout-item">
-        <a href="${pageContext.request.contextPath}/dang-xuat" class="nav-link-custom logout-link">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
-        </a>
-    </div>
-</aside>
-
-<!-- MAIN WRAPPER -->
 <main class="main-wrapper">
-    <!-- Top Header -->
-    <header class="top-header">
-        <div class="header-actions">
-            <div class="notification">
-                <i class="fa-regular fa-bell"></i>
-            </div>
-            <div class="user-profile">
-                <div class="user-info">
-                    <div class="user-name">Admin User</div>
-                    <div class="user-role">QUẢN TRỊ VIÊN</div>
-                </div>
-                <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="avatar">
-            </div>
-        </div>
-    </header>
+    <%-- HEADER --%>
+    <jsp:include page="/demo/common/header.jsp"/>
 
     <!-- Content Area -->
     <div class="content-area">
