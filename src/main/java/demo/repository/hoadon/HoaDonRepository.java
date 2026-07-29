@@ -148,6 +148,88 @@ public class HoaDonRepository {
         return list;
     }
 
+    // Lấy một trang hóa đơn theo bộ lọc — dùng cho trang quản lý (phân trang)
+    public List<HoaDon> timKiemVaLocPhanTrang(String keyword, String trangThai, String ngayTao,
+                                               int page, int pageSize) {
+        List<HoaDon> list = new ArrayList<>();
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            StringBuilder hql = new StringBuilder(
+                "SELECT h FROM HoaDon h " +
+                "LEFT JOIN h.khachHang kh " +
+                "LEFT JOIN h.nhanVien nv " +
+                "WHERE 1=1 "
+            );
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                hql.append("AND (h.maHoaDon LIKE :keyword " +
+                        "OR kh.tenKhachHang LIKE :keyword " +
+                        "OR kh.sdt LIKE :keyword) ");
+            }
+            if (trangThai != null && !trangThai.trim().isEmpty()) {
+                hql.append("AND h.trangThai = :trangThai ");
+            }
+            if (ngayTao != null && !ngayTao.trim().isEmpty()) {
+                hql.append("AND CAST(h.ngayLap as date) = :ngayTao ");
+            }
+            hql.append("ORDER BY h.ngayLap DESC ");
+
+            Query<HoaDon> query = session.createQuery(hql.toString(), HoaDon.class);
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                query.setParameter("keyword", "%" + keyword.trim() + "%");
+            }
+            if (trangThai != null && !trangThai.trim().isEmpty()) {
+                query.setParameter("trangThai", Integer.parseInt(trangThai));
+            }
+            if (ngayTao != null && !ngayTao.trim().isEmpty()) {
+                query.setParameter("ngayTao", java.sql.Date.valueOf(ngayTao));
+            }
+            query.setFirstResult((page - 1) * pageSize);
+            query.setMaxResults(pageSize);
+            list = query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Đếm tổng số hóa đơn theo bộ lọc — dùng để tính tổng số trang
+    public long demTongHoaDon(String keyword, String trangThai, String ngayTao) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            StringBuilder hql = new StringBuilder(
+                "SELECT COUNT(h) FROM HoaDon h " +
+                "LEFT JOIN h.khachHang kh " +
+                "LEFT JOIN h.nhanVien nv " +
+                "WHERE 1=1 "
+            );
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                hql.append("AND (h.maHoaDon LIKE :keyword " +
+                        "OR kh.tenKhachHang LIKE :keyword " +
+                        "OR kh.sdt LIKE :keyword) ");
+            }
+            if (trangThai != null && !trangThai.trim().isEmpty()) {
+                hql.append("AND h.trangThai = :trangThai ");
+            }
+            if (ngayTao != null && !ngayTao.trim().isEmpty()) {
+                hql.append("AND CAST(h.ngayLap as date) = :ngayTao ");
+            }
+
+            Query<Long> query = session.createQuery(hql.toString(), Long.class);
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                query.setParameter("keyword", "%" + keyword.trim() + "%");
+            }
+            if (trangThai != null && !trangThai.trim().isEmpty()) {
+                query.setParameter("trangThai", Integer.parseInt(trangThai));
+            }
+            if (ngayTao != null && !ngayTao.trim().isEmpty()) {
+                query.setParameter("ngayTao", java.sql.Date.valueOf(ngayTao));
+            }
+            Long result = query.uniqueResult();
+            return result != null ? result : 0L;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0L;
+        }
+    }
+
     // Lấy danh sách hóa đơn chờ (trangThai = 2) — toàn bộ, dùng cho trang quản lý
     public List<HoaDon> getHoaDonCho() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {

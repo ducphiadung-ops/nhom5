@@ -3,8 +3,8 @@ package demo.servlet;
 import demo.entity.*;
 import demo.entity.san_pham.*;
 import demo.repository.*;
-
 import demo.repository.san_pham.*;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -57,7 +57,6 @@ public class SanPhamServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
 
-        // Nhân viên không được vào trang thêm / sửa sản phẩm
         if (!path.equals("/san-pham/hien-thi")) {
             Object nvObj = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
             demo.entity.nhan_vien.NhanVien nv = (nvObj instanceof demo.entity.nhan_vien.NhanVien)
@@ -84,7 +83,6 @@ public class SanPhamServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
 
-        // Nhân viên không được thêm/sửa/xóa sản phẩm
         Object nvObjPost = req.getSession(false) != null ? req.getSession().getAttribute("nhanVien") : null;
         demo.entity.nhan_vien.NhanVien nv = (nvObjPost instanceof demo.entity.nhan_vien.NhanVien)
                 ? (demo.entity.nhan_vien.NhanVien) nvObjPost : null;
@@ -127,6 +125,9 @@ public class SanPhamServlet extends HttpServlet {
         try {
             String ten = req.getParameter("tenSanPham");
             String moTa = req.getParameter("moTa");
+            if (moTa == null || moTa.trim().isEmpty()) {
+                moTa = "Sản phẩm Laptop chính hãng"; // Đảm bảo mo_ta không bị NULL trong DB
+            }
 
             if (ten == null || ten.trim().isEmpty()) {
                 session.setAttribute("errorMessage", "Thất bại: Tên sản phẩm không được để trống!");
@@ -136,21 +137,8 @@ public class SanPhamServlet extends HttpServlet {
 
             ten = ten.trim().replaceAll("\\s+", " ");
 
-            if (ten.length() < 5 || ten.length() > 150) {
-                session.setAttribute("errorMessage", "Thất bại: Tên sản phẩm phải từ 5 đến 150 ký tự!");
-                resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                return;
-            }
-
-            String regexTen = "^[a-zA-Z0-9 ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰYÝỲỶỸỵỷỹýỳỹ\\-_ .()]+$";
-            if (!ten.matches(regexTen)) {
-                session.setAttribute("errorMessage", "Thất bại: Tên sản phẩm chứa ký tự đặc biệt không hợp lệ!");
-                resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                return;
-            }
-
             if (sanPhamRepo.checkTrungTen(ten)) {
-                session.setAttribute("errorMessage", "Thất bại: Tên sản phẩm [" + ten + "] đã tồn tại trong hệ thống!");
+                session.setAttribute("errorMessage", "Thất bại: Tên sản phẩm [" + ten + "] đã tồn tại!");
                 resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
                 return;
             }
@@ -163,13 +151,9 @@ public class SanPhamServlet extends HttpServlet {
 
             Integer idThuongHieu = Integer.parseInt(req.getParameter("idThuongHieu"));
             Integer idDanhMuc = Integer.parseInt(req.getParameter("idDanhMuc"));
-            Integer hanBaoHanh = Integer.parseInt(req.getParameter("hanBaoHanh"));
 
-            if (hanBaoHanh <= 0) {
-                session.setAttribute("errorMessage", "Thất bại: Hạn bảo hành phải lớn hơn 0 tháng!");
-                resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                return;
-            }
+            String hanBaoHanhRaw = req.getParameter("hanBaoHanh");
+            Integer hanBaoHanh = (hanBaoHanhRaw != null && !hanBaoHanhRaw.trim().isEmpty()) ? Integer.parseInt(hanBaoHanhRaw.trim()) : 12;
 
             String[] arrGiaBan = req.getParameterValues("giaBanDong");
             String[] arrMauSac = req.getParameterValues("idMauSacDong");
@@ -185,101 +169,39 @@ public class SanPhamServlet extends HttpServlet {
             }
 
             // ==========================================
-            // 🟢 VALIDATE TOÀN BỘ LOGIC GIÁ & IMEI
+            // 🟢 1. TÍNH TOÁN CÁC MÃ IMEI VÀ ĐẾM TỒN KHO THỰC TẾ
             // ==========================================
-            Set<String> formUniqueCheck = new HashSet<>();
-            List<String> danhSachImeiLoiDinhDang = new ArrayList<>();
-            List<String> danhSachImeiTrungTrenForm = new ArrayList<>();
-            List<String> danhSachImeiTrungHeThong = new ArrayList<>();
-            String regexImeiHopLe = "^[A-Z0-9\\-_]{8,30}$";
+            int tongSoLuongMayTrongKho = 0;
+            List<List<String>> listImeiTheoDong = new ArrayList<>();
 
             for (int i = 0; i < arrMauSac.length; i++) {
-                BigDecimal giaBan = (arrGiaBan != null && arrGiaBan.length > i && !arrGiaBan[i].trim().isEmpty())
-                        ? new BigDecimal(arrGiaBan[i].trim()) : BigDecimal.ZERO;
-                BigDecimal giaNhap = (arrGiaNhap != null && arrGiaNhap.length > i && !arrGiaNhap[i].trim().isEmpty())
-                        ? new BigDecimal(arrGiaNhap[i].trim()) : BigDecimal.ZERO;
-                String chuoiImei = (arrSoSeri != null && arrSoSeri.length > i) ? arrSoSeri[i] : "";
+                String chuoiImei = (arrSoSeri != null && arrSoSeri.length > i && arrSoSeri[i] != null) ? arrSoSeri[i].trim() : "";
 
-                // Validate logic giá tiền
-                if (giaNhap.compareTo(BigDecimal.ZERO) <= 0 || giaBan.compareTo(BigDecimal.ZERO) <= 0) {
-                    session.setAttribute("errorMessage", "Thất bại: Đơn giá bán và nhập kho phải lớn hơn 0đ!");
-                    resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                    return;
-                }
-                if (giaBan.compareTo(giaNhap) < 0) {
-                    session.setAttribute("errorMessage", "Thất bại: Giá bán không được nhỏ hơn giá nhập kho!");
-                    resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                    return;
+                // Lọc chuỗi "undefined" do JS lỗi gán nhầm
+                if (chuoiImei.equalsIgnoreCase("undefined")) {
+                    chuoiImei = "";
                 }
 
-                // Tách các mã IMEI từ TextArea
-                String[] mangImei = new String[0];
-                if (chuoiImei != null && !chuoiImei.trim().isEmpty()) {
-                    String cleanChuoi = chuoiImei.replaceAll("\\r\\n", "\n").replaceAll("\\r", "\n");
-                    mangImei = cleanChuoi.split("[,\n]+");
-                }
-
-                if (mangImei.length == 0) {
-                    session.setAttribute("errorMessage", "Thất bại: Mọi dòng cấu hình biến thể bắt buộc phải có ít nhất 1 mã IMEI!");
-                    resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                    return;
-                }
+                String[] mangImei = chuoiImei.split("[,\n\r]+");
+                List<String> listSingleValid = new ArrayList<>();
 
                 for (String imei : mangImei) {
-                    // Làm sạch IMEI: Xóa khoảng trắng, in hoa
                     String cleanImei = imei.trim().replaceAll("\\s+", "").toUpperCase();
-                    if (cleanImei.isEmpty()) continue;
-
-                    // Validate Định dạng (8-30 ký tự, A-Z, 0-9, -, _)
-                    if (!cleanImei.matches(regexImeiHopLe)) {
-                        if (!danhSachImeiLoiDinhDang.contains(cleanImei)) {
-                            danhSachImeiLoiDinhDang.add(cleanImei);
-                        }
-                    }
-
-                    // Check trùng trên Form
-                    if (!formUniqueCheck.add(cleanImei)) {
-                        if (!danhSachImeiTrungTrenForm.contains(cleanImei)) {
-                            danhSachImeiTrungTrenForm.add(cleanImei);
-                        }
-                    }
-
-                    // Check trùng Database
-                    if (maSeriRepo.checkTrungImei(cleanImei)) {
-                        if (!danhSachImeiTrungHeThong.contains(cleanImei)) {
-                            danhSachImeiTrungHeThong.add(cleanImei);
-                        }
+                    if (!cleanImei.isEmpty() && !cleanImei.equalsIgnoreCase("UNDEFINED")) {
+                        listSingleValid.add(cleanImei);
                     }
                 }
+
+                listImeiTheoDong.add(listSingleValid);
+                tongSoLuongMayTrongKho += listSingleValid.size(); // Cộng số lượng máy thực tế có IMEI
             }
 
             // ==========================================
-            // ❌ TRẢ VỀ CÁC THÔNG BÁO LỖI NẾU IMEI VI PHẠM
-            // ==========================================
-            if (!danhSachImeiLoiDinhDang.isEmpty()) {
-                session.setAttribute("errorMessage", "Thất bại: Các mã IMEI sau sai định dạng (chỉ gồm A-Z, 0-9, -, _ và từ 8-30 ký tự): " + String.join(", ", danhSachImeiLoiDinhDang));
-                resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                return;
-            }
-
-            if (!danhSachImeiTrungTrenForm.isEmpty()) {
-                session.setAttribute("errorMessage", "Không thể thêm! Phát hiện mã IMEI trùng nhau ngay trên form nhập: " + String.join(", ", danhSachImeiTrungTrenForm));
-                resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                return;
-            }
-
-            if (!danhSachImeiTrungHeThong.isEmpty()) {
-                session.setAttribute("errorMessage", "Không thể thêm! Các mã IMEI sau đã tồn tại trong kho Database: " + String.join(", ", danhSachImeiTrungHeThong));
-                resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                return;
-            }
-
-            // ==========================================
-            // 🟢 TIẾP TỤC LUỒNG LƯU VÀO DATABASE NẾU THÀNH CÔNG
+            // 🟢 2. TẠO SẢN PHẨM CHA CHUẨN (TRẠNG THÁI LUÔN BẰNG 1)
             // ==========================================
             BigDecimal giaDaiDien = (arrGiaBan != null && arrGiaBan.length > 0 && !arrGiaBan[0].trim().isEmpty())
                     ? new BigDecimal(arrGiaBan[0].trim()) : BigDecimal.ZERO;
-            String maTuSinh = "SP" + Long.toHexString(System.currentTimeMillis() / 1000).toUpperCase();
+            String maTuSinh = "SP" + (System.currentTimeMillis() % 1000000);
 
             SanPham sp = new SanPham();
             sp.setMaSanPham(maTuSinh);
@@ -289,21 +211,25 @@ public class SanPhamServlet extends HttpServlet {
             sp.setThuongHieu(thuongHieuRepo.getOne(idThuongHieu));
             sp.setDanhMuc(danhMucRepo.getOne(idDanhMuc));
             sp.setNgayTao(LocalDate.now());
-            sp.setTrangThai(1);
-            sp.setSoLuongTon(0);
+            sp.setTrangThai(1); // 🟢 ÉP CHẶT TRẠNG THÁI = 1 (HOẠT ĐỘNG)
+            sp.setSoLuongTon(tongSoLuongMayTrongKho); // 🟢 GÁN NGAY TỔNG TỒN KHO THỰC TẾ
             sp.setHanBaoHanh(hanBaoHanh);
 
             sanPhamRepo.add(sp);
 
-            sp = sanPhamRepo.getOne(sp.getId() != null ? sp.getId() : sanPhamRepo.getAll().get(sanPhamRepo.getAll().size() - 1).getId());
+            List<SanPham> listAllSp = sanPhamRepo.getAll();
+            if (listAllSp != null && !listAllSp.isEmpty()) {
+                sp = listAllSp.get(listAllSp.size() - 1);
+            }
 
+            // ==========================================
+            // 🟢 3. LƯU CẤU HÌNH, PHIẾU NHẬP VÀ DANH SÁCH IMEI
+            // ==========================================
             Integer idCpu = Integer.parseInt(req.getParameter("idCpu"));
             Integer idGpu = Integer.parseInt(req.getParameter("idGpu"));
             Integer idManHinh = Integer.parseInt(req.getParameter("idManHinh"));
             Integer idPin = Integer.parseInt(req.getParameter("idPin"));
             String heDieuHanh = req.getParameter("heDieuHanh");
-
-            int tongSoLuongMayTrongKho = 0;
             Integer idNhaCungCapDuocChon = Integer.parseInt(req.getParameter("idNhaCungCapForm"));
 
             PhieuNhap phieuNhapAo = new PhieuNhap();
@@ -319,7 +245,8 @@ public class SanPhamServlet extends HttpServlet {
 
                 BigDecimal giaBan = new BigDecimal(arrGiaBan[i].trim());
                 BigDecimal giaNhap = new BigDecimal(arrGiaNhap[i].trim());
-                String chuoiImei = arrSoSeri[i];
+                List<String> validImeisList = listImeiTheoDong.get(i);
+                int soLuongImeiHopLe = validImeisList.size();
 
                 CauHinhSanPham ch = new CauHinhSanPham();
                 ch.setSanPham(sp);
@@ -333,18 +260,6 @@ public class SanPhamServlet extends HttpServlet {
                 ch.setOCung(oCungRepo.getOne(idOCung));
                 cauHinhRepo.add(ch);
 
-                String[] mangImei = chuoiImei.replaceAll("\\r\\n", "\n").replaceAll("\\r", "\n").split("[,\n]+");
-                List<String> validImeisList = new ArrayList<>();
-                for (String imei : mangImei) {
-                    // Xóa khoảng trắng lần nữa trước khi add vào List lưu DB
-                    String cleanImei = imei.trim().replaceAll("\\s+", "").toUpperCase();
-                    if (!cleanImei.isEmpty()) {
-                        validImeisList.add(cleanImei);
-                    }
-                }
-
-                int soLuongImeiHopLe = validImeisList.size();
-
                 ChiTietPhieuNhap ctpn = new ChiTietPhieuNhap();
                 ctpn.setPhieuNhap(phieuNhapAo);
                 ctpn.setCauHinhSanPham(ch);
@@ -357,7 +272,7 @@ public class SanPhamServlet extends HttpServlet {
                 ctsp.setCauHinhSanPham(ch);
                 ctsp.setDonGia(giaBan);
                 ctsp.setGiaNhap(giaNhap);
-                ctsp.setTonKho(soLuongImeiHopLe);
+                ctsp.setTonKho(soLuongImeiHopLe); // Tồn kho từng biến thể
                 ctsp.setHanBaoHanh(hanBaoHanh);
                 ctsp.setTrangThai(1);
                 ctspRepo.add(ctsp);
@@ -371,16 +286,11 @@ public class SanPhamServlet extends HttpServlet {
                     maSeriObj.setTrangThai(1);
                     maSeriRepo.add(maSeriObj);
                 }
-                tongSoLuongMayTrongKho += soLuongImeiHopLe;
             }
 
-            sp.setSoLuongTon(tongSoLuongMayTrongKho);
-            sanPhamRepo.update(sp);
-
-            session.setAttribute("successMessage", "Thêm mới sản phẩm cha và toàn bộ biến thể thành công!");
+            session.setAttribute("successMessage", "Thêm mới sản phẩm thành công! Tổng số máy nhập kho: " + tongSoLuongMayTrongKho);
         } catch (Exception e) {
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-            session.setAttribute("errorMessage", "Lỗi lưu DB thực tế: " + errorMsg);
+            session.setAttribute("errorMessage", "Lỗi CSDL: " + e.getMessage());
             e.printStackTrace();
         }
         resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
@@ -414,7 +324,6 @@ public class SanPhamServlet extends HttpServlet {
             String idDanhMucRaw = req.getParameter("idDanhMuc");
             String trangThaiRaw = req.getParameter("trangThai");
 
-            // 🟢 1. VALIDATE BẮT BUỘC NHẬP DỮ LIỆU
             if (idRaw == null || idRaw.trim().isEmpty()) {
                 session.setAttribute("errorMessage", "Không tìm thấy mã ID sản phẩm cần cập nhật!");
                 resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
@@ -429,31 +338,10 @@ public class SanPhamServlet extends HttpServlet {
                 return;
             }
 
-            // 🟢 2. CHUẨN HÓA KHOẢNG TRẮNG DƯ THỪA (Ví dụ: "Dell   XPS" -> "Dell XPS")
             ten = ten.trim().replaceAll("\\s+", " ");
 
-            // 🟢 3. VALIDATE ĐỘ DÀI TÊN SẢN PHẨM (Từ 5 đến 150 ký tự)
-            if (ten.length() < 5 || ten.length() > 150) {
-                session.setAttribute("errorMessage", "Thất bại: Tên sản phẩm phải từ 5 đến 150 ký tự!");
-                resp.sendRedirect(req.getContextPath() + "/san-pham/sua?id=" + id);
-                return;
-            }
-
-            String regexTen = "^[a-zA-Z0-9 ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰYÝỲỶỸỵỷỹýỳỹ\\-_ .()]+$";
-            if (!ten.matches(regexTen)) {
-                session.setAttribute("errorMessage", "Thất bại: Tên sản phẩm chứa ký tự đặc biệt không hợp lệ!");
-                resp.sendRedirect(req.getContextPath() + "/san-pham/sua?id=" + id);
-                return;
-            }
-
             if (sanPhamRepo.checkTrungTenKhiSua(ten, id)) {
-                session.setAttribute("errorMessage", "Thất bại: Tên sản phẩm [" + ten + "] đã được sử dụng bởi sản phẩm khác!");
-                resp.sendRedirect(req.getContextPath() + "/san-pham/sua?id=" + id);
-                return;
-            }
-
-            if (idThuongHieuRaw == null || idDanhMucRaw == null) {
-                session.setAttribute("errorMessage", "Thất bại: Vui lòng chọn đầy đủ Thương hiệu và Danh mục!");
+                session.setAttribute("errorMessage", "Thất bại: Tên sản phẩm [" + ten + "] đã được sử dụng!");
                 resp.sendRedirect(req.getContextPath() + "/san-pham/sua?id=" + id);
                 return;
             }
@@ -470,16 +358,9 @@ public class SanPhamServlet extends HttpServlet {
                 sp.setTrangThai(trangThai);
                 sanPhamRepo.update(sp);
                 session.setAttribute("successMessage", "Cập nhật sản phẩm thành công!");
-            } else {
-                session.setAttribute("errorMessage", "Không tìm thấy sản phẩm cần cập nhật trong cơ sở dữ liệu!");
             }
-
-        } catch (NumberFormatException e) {
-            session.setAttribute("errorMessage", "Thất bại: Dữ liệu ID hoặc thuộc tính không phải là số hợp lệ!");
-            e.printStackTrace();
         } catch (Exception e) {
-            String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-            session.setAttribute("errorMessage", "Cập nhật thất bại do lỗi hệ thống: " + errorMsg);
+            session.setAttribute("errorMessage", "Cập nhật thất bại: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -497,13 +378,11 @@ public class SanPhamServlet extends HttpServlet {
                 if (sp != null) {
                     sp.setTrangThai(sp.getTrangThai() != null && sp.getTrangThai() == 1 ? 0 : 1);
                     sanPhamRepo.update(sp);
-                    session.setAttribute("successMessage", "Cập nhật trạng thái kinh doanh thành công!");
-                } else {
-                    session.setAttribute("errorMessage", "Không tìm thấy sản phẩm!");
+                    session.setAttribute("successMessage", "Cập nhật trạng thái thành công!");
                 }
             }
         } catch (Exception e) {
-            session.setAttribute("errorMessage", "Cập nhật trạng thái thất bại do hệ thống!");
+            session.setAttribute("errorMessage", "Thao tác thất bại!");
             e.printStackTrace();
         }
         resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");

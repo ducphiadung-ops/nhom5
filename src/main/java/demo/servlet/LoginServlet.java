@@ -20,11 +20,10 @@ public class LoginServlet extends HttpServlet {
 
     private final NhanVienService nhanVienService = new NhanVienService();
 
-    /**
-     * Xóa dấu tiếng Việt và chuyển về chữ thường để so sánh không phân biệt dấu.
-     * "Nhân Viên" -> "nhan vien"
-     * "NHÂN VIÊN" -> "nhan vien"
-     */
+    // 🟢 SỬA ĐƯỜNG DẪN JSP CHO ĐÚNG VỚI VỊ TRÍ FILE THỰC TẾ TRONG WEBAPP
+    private static final String JSP_DANG_NHAP = "/demo/login/dang_nhap.jsp";
+    private static final String JSP_DANG_KY   = "/demo/login/dang_ky.jsp";
+
     public static String removeDiacritics(String str) {
         if (str == null) return "";
         String normalized = Normalizer.normalize(str, Normalizer.Form.NFD);
@@ -33,15 +32,9 @@ public class LoginServlet extends HttpServlet {
                 .toLowerCase().trim();
     }
 
-    /**
-     * Kiểm tra chức vụ có phải nhân viên không (bất kể cách viết dấu/hoa/thường).
-     * Nhân Viên / nhan vien / NHÂN VIÊN / Nhân viên / Bán Hàng → true
-     * Admin / Quản Lý / Giám Đốc → false
-     */
     public static boolean isNhanVienRole(String chucVu) {
         if (chucVu == null || chucVu.trim().isEmpty()) return false;
         String normalized = removeDiacritics(chucVu);
-        // Các từ khóa đặc trưng của nhân viên (không dấu)
         return normalized.contains("nhan vien")
                 || normalized.contains("nhanvien")
                 || normalized.contains("ban hang")
@@ -53,9 +46,9 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String uri = req.getRequestURI();
-        if (uri.contains("/login/dang_nhap")) {
-            // Nếu đã đăng nhập thì chuyển về trang chính
+        String path = req.getServletPath(); // Dùng getServletPath() chính xác hơn getRequestURI()
+
+        if ("/login/dang_nhap".equals(path)) {
             HttpSession session = req.getSession(false);
             if (session != null && session.getAttribute("nhanVien") != null) {
                 NhanVien nv = (NhanVien) session.getAttribute("nhanVien");
@@ -66,50 +59,50 @@ public class LoginServlet extends HttpServlet {
                 }
                 return;
             }
-            req.getRequestDispatcher("/demo/login/dang_nhap.jsp").forward(req, resp);
-        } else if (uri.contains("/login/dang_ky")) {
-            req.getRequestDispatcher("/demo/login/dang_ky.jsp").forward(req, resp);
+            req.getRequestDispatcher(JSP_DANG_NHAP).forward(req, resp);
+        } else if ("/login/dang_ky".equals(path)) {
+            req.getRequestDispatcher(JSP_DANG_KY).forward(req, resp);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
-        String uri = req.getRequestURI();
+        String path = req.getServletPath();
 
-        if (uri.contains("/login/dang_nhap")) {
+        if ("/login/dang_nhap".equals(path)) {
             String taiKhoan = req.getParameter("username");
             String matKhau  = req.getParameter("password");
 
             if (taiKhoan == null || taiKhoan.trim().isEmpty()
                     || matKhau == null || matKhau.trim().isEmpty()) {
                 req.setAttribute("errorMessage", "Vui lòng nhập đầy đủ tài khoản và mật khẩu.");
-                req.getRequestDispatcher("/demo/login/dang_nhap.jsp").forward(req, resp);
+                req.getRequestDispatcher(JSP_DANG_NHAP).forward(req, resp);
                 return;
             }
 
             NhanVien nv = nhanVienService.findByTaiKhoanAndMatKhau(taiKhoan.trim(), matKhau.trim());
 
             if (nv == null) {
+                // Khi nhập sai: Set attribute báo lỗi và forward về lại JSP login
                 req.setAttribute("errorMessage", "Tài khoản hoặc mật khẩu không đúng. Vui lòng thử lại.");
                 req.setAttribute("oldUsername", taiKhoan);
-                req.getRequestDispatcher("/demo/login/dang_nhap.jsp").forward(req, resp);
+                req.getRequestDispatcher(JSP_DANG_NHAP).forward(req, resp);
                 return;
             }
 
-            // Lưu thông tin vào session
+            // Đăng nhập thành công
             HttpSession session = req.getSession(true);
             session.setAttribute("nhanVien", nv);
 
-            // Kiểm tra chức vụ (không phân biệt dấu/hoa/thường)
             if (isNhanVienRole(nv.getChucVu())) {
                 resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
             } else {
                 resp.sendRedirect(req.getContextPath() + "/tong_quan");
             }
 
-        } else if (uri.contains("/login/dang_ky")) {
-            req.getRequestDispatcher("/demo/login/dang_ky.jsp").forward(req, resp);
+        } else if ("/login/dang_ky".equals(path)) {
+            req.getRequestDispatcher(JSP_DANG_KY).forward(req, resp);
         }
     }
 }
