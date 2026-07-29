@@ -35,8 +35,6 @@ public class SanPham {
     private String moTa;
     @Column(name = "so_luong_ton")
     private Integer soLuongTon;
-    @Column(name = "han_bao_hanh")
-    private Integer hanBaoHanh;
     @Column(name = "ngay_tao")
     private LocalDate ngayTao;
     @Column(name = "ngay_sua")

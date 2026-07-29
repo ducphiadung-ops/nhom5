@@ -37,9 +37,6 @@ public class ChiTietSanPham {
     @Column(name = "ton_kho")
     private Integer tonKho;
 
-    @Column(name = "han_bao_hanh")
-    private Integer hanBaoHanh;
-
     @Column(name = "trang_thai")
     private Integer trangThai;
 }

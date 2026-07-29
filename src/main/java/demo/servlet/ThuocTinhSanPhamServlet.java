@@ -118,7 +118,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
                 Cpu obj = new Cpu();
                 obj.setTenCpu(req.getParameter("tenCpu"));
                 obj.setTheHeCpu(req.getParameter("theHeCpu"));
-                obj.setTrangThai(1);
+                obj.setTrangThai(true);
                 cpuRepo.add(obj);
                 session.setAttribute("successMessage", "Thêm mới cấu hình CPU thành công!");
                 resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/cpu/hien-thi");
@@ -127,7 +127,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
                 Ram obj = new Ram();
                 obj.setTenRam(req.getParameter("tenRam"));
                 obj.setDungLuongRam(req.getParameter("dungLuongRam"));
-                obj.setTrangThai(1);
+                obj.setTrangThai(true);
                 ramRepo.add(obj);
                 session.setAttribute("successMessage", "Thêm mới cấu hình RAM thành công!");
                 resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/ram/hien-thi");
@@ -136,7 +136,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
                 OCung obj = new OCung();
                 obj.setTenOCung(req.getParameter("tenOCung"));
                 obj.setDungLuongOCung(req.getParameter("dungLuongOCung"));
-                obj.setTrangThai(1);
+                obj.setTrangThai(true);
                 oCungRepo.add(obj);
                 session.setAttribute("successMessage", "Thêm mới Ổ cứng thành công!");
                 resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/o-cung/hien-thi");
@@ -145,7 +145,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
                 Gpu obj = new Gpu();
                 obj.setTenGpu(req.getParameter("tenGPU"));
                 obj.setDungLuongGpu(req.getParameter("dungLuongGPU"));
-                obj.setTrangThai(1);
+                obj.setTrangThai(true);
                 gpuRepo.add(obj);
                 session.setAttribute("successMessage", "Thêm mới Card đồ họa (GPU) thành công!");
                 resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/gpu/hien-thi");
@@ -156,7 +156,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
                 obj.setKichThuoc(req.getParameter("kichThuoc"));
                 obj.setDoPhanGiai(req.getParameter("doPhanGiai"));
                 obj.setTanSoQuet(req.getParameter("tanSoQuet"));
-                obj.setTrangThai(1);
+                obj.setTrangThai(true);
                 manHinhRepo.add(obj);
                 session.setAttribute("successMessage", "Thêm mới Màn hình thành công!");
                 resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/man-hinh/hien-thi");
@@ -164,7 +164,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
             else if (uri.contains("/thuoc-tinh/mau-sac/them")) {
                 MauSac obj = new MauSac();
                 obj.setTenMauSac(req.getParameter("tenMauSac"));
-                obj.setTrangThai(1);
+                obj.setTrangThai(true);
                 mauSacRepo.add(obj);
                 session.setAttribute("successMessage", "Thêm mới Màu sắc thành công!");
                 resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/mau-sac/hien-thi");
@@ -173,7 +173,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
                 Pin obj = new Pin();
                 obj.setTenPin(req.getParameter("tenPin"));
                 obj.setDungLuongPin(req.getParameter("dungLuongPin"));
-                obj.setTrangThai(1);
+                obj.setTrangThai(true);
                 pinRepo.add(obj);
                 session.setAttribute("successMessage", "Thêm mới Pin thành công!");
                 resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/pin/hien-thi");
@@ -181,7 +181,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
             else if (uri.contains("/thuoc-tinh/danh-muc/them")) {
                 DanhMuc obj = new DanhMuc();
                 obj.setTenDanhMuc(req.getParameter("tenDanhMuc"));
-                obj.setTrangThai(1);
+                obj.setTrangThai(true);
                 danhMucRepo.add(obj);
                 session.setAttribute("successMessage", "Thêm mới Danh mục sản phẩm thành công!");
                 resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/danh-muc/hien-thi");
@@ -189,7 +189,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
             else if (uri.contains("/thuoc-tinh/thuong-hieu/them")) {
                 ThuongHieu obj = new ThuongHieu();
                 obj.setTenThuongHieu(req.getParameter("tenThuongHieu"));
-                obj.setTrangThai(1);
+                obj.setTrangThai(true);
                 thuongHieuRepo.add(obj);
                 session.setAttribute("successMessage", "Thêm mới Thương hiệu/Hãng thành công!");
                 resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/thuong-hieu/hien-thi");
@@ -250,7 +250,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     public void cpuXoa(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             Cpu obj = cpuRepo.getOne(Integer.valueOf(req.getParameter("id")));
-            if (obj != null) { obj.setTrangThai(0); cpuRepo.update(obj); }
+            if (obj != null) { obj.setTrangThai(false); cpuRepo.update(obj); }
         } catch (Exception ignored) {}
         resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/cpu/hien-thi");
     }
@@ -258,7 +258,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     public void ramXoa(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             Ram obj = ramRepo.getOne(Integer.valueOf(req.getParameter("id")));
-            if (obj != null) { obj.setTrangThai(0); ramRepo.update(obj); }
+            if (obj != null) { obj.setTrangThai(false); ramRepo.update(obj); }
         } catch (Exception ignored) {}
         resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/ram/hien-thi");
     }
@@ -266,7 +266,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     public void oCungXoa(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             OCung obj = oCungRepo.getOne(Integer.valueOf(req.getParameter("id")));
-            if (obj != null) { obj.setTrangThai(0); oCungRepo.update(obj); }
+            if (obj != null) { obj.setTrangThai(false); oCungRepo.update(obj); }
         } catch (Exception ignored) {}
         resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/o-cung/hien-thi");
     }
@@ -274,7 +274,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     public void gpuXoa(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             Gpu obj = gpuRepo.getOne(Integer.valueOf(req.getParameter("id")));
-            if (obj != null) { obj.setTrangThai(0); gpuRepo.update(obj); }
+            if (obj != null) { obj.setTrangThai(false); gpuRepo.update(obj); }
         } catch (Exception ignored) {}
         resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/gpu/hien-thi");
     }
@@ -282,7 +282,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     public void manHinhXoa(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             ManHinh obj = manHinhRepo.getOne(Integer.valueOf(req.getParameter("id")));
-            if (obj != null) { obj.setTrangThai(0); manHinhRepo.update(obj); }
+            if (obj != null) { obj.setTrangThai(false); manHinhRepo.update(obj); }
         } catch (Exception ignored) {}
         resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/man-hinh/hien-thi");
     }
@@ -290,7 +290,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     public void mauSacXoa(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             MauSac obj = mauSacRepo.getOne(Integer.valueOf(req.getParameter("id")));
-            if (obj != null) { obj.setTrangThai(0); mauSacRepo.update(obj); }
+            if (obj != null) { obj.setTrangThai(false); mauSacRepo.update(obj); }
         } catch (Exception ignored) {}
         resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/mau-sac/hien-thi");
     }
@@ -298,7 +298,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     public void pinXoa(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             Pin obj = pinRepo.getOne(Integer.valueOf(req.getParameter("id")));
-            if (obj != null) { obj.setTrangThai(0); pinRepo.update(obj); }
+            if (obj != null) { obj.setTrangThai(false); pinRepo.update(obj); }
         } catch (Exception ignored) {}
         resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/pin/hien-thi");
     }
@@ -306,7 +306,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     public void danhMucXoa(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             DanhMuc obj = danhMucRepo.getOne(Integer.valueOf(req.getParameter("id")));
-            if (obj != null) { obj.setTrangThai(0); danhMucRepo.update(obj); }
+            if (obj != null) { obj.setTrangThai(false); danhMucRepo.update(obj); }
         } catch (Exception ignored) {}
         resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/danh-muc/hien-thi");
     }
@@ -314,7 +314,7 @@ public class ThuocTinhSanPhamServlet extends HttpServlet {
     public void thuongHieuXoa(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             ThuongHieu obj = thuongHieuRepo.getOne(Integer.valueOf(req.getParameter("id")));
-            if (obj != null) { obj.setTrangThai(0); thuongHieuRepo.update(obj); }
+            if (obj != null) { obj.setTrangThai(false); thuongHieuRepo.update(obj); }
         } catch (Exception ignored) {}
         resp.sendRedirect(req.getContextPath() + "/thuoc-tinh/thuong-hieu/hien-thi");
     }

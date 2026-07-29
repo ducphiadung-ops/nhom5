@@ -962,7 +962,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ' | ' + currentProduct.price.toLocaleString('vi-VN') + ' đ / cái';
 
         const filtered = allSeriData.filter(function(s) {
-            return s.cauhinhId === currentCauhinhId && s.trangThai === 0;
+            return s.cauhinhId === currentCauhinhId && s.trangThai === 1;
         });
         seriSearchInput.value = '';
         renderSeriTable(filtered);
@@ -1042,7 +1042,7 @@ document.addEventListener('DOMContentLoaded', function() {
             results.forEach(function(r) {
                 if (r.success) {
                     const s = allSeriData.find(function(x){ return x.id === r._seriId; });
-                    if (s) s.trangThai = 1;
+                    if (s) s.trangThai = 0;
                 }
             });
             loadCartFromServer(currentDonId);

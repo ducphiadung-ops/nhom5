@@ -326,10 +326,6 @@
                         <button type="button" class="btn-plus-quick"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">THỜI GIAN BẢO HÀNH (THÁNG) *</label>
-                    <input type="number" name="hanBaoHanh" class="form-control" value="12" required>
-                </div>
             </div>
         </div>
 

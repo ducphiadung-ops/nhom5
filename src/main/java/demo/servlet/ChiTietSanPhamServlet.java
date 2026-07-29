@@ -122,7 +122,6 @@ public class ChiTietSanPhamServlet extends HttpServlet {
             Integer idManHinh = Integer.parseInt(req.getParameter("idManHinh"));
             Integer idPin = Integer.parseInt(req.getParameter("idPin"));
             String heDieuHanh = req.getParameter("heDieuHanh");
-            Integer hanBaoHanh = Integer.parseInt(req.getParameter("hanBaoHanh"));
 
             String[] arrMauSac = req.getParameterValues("idMauSacDong");
             String[] arrRam = req.getParameterValues("idRamDong");
@@ -201,7 +200,6 @@ public class ChiTietSanPhamServlet extends HttpServlet {
                     ctsp.setDonGia(giaBan);
                     ctsp.setGiaNhap(giaNhap);
                     ctsp.setTonKho(soLuongImeiHopLe);
-                    ctsp.setHanBaoHanh(hanBaoHanh);
                     ctsp.setTrangThai(1);
                     ctspRepo.add(ctsp);
 
@@ -219,8 +217,8 @@ public class ChiTietSanPhamServlet extends HttpServlet {
                 }
 
                 if (sp != null) {
-                    sp.setSoLuongTon(sp.getSoLuongTon() + tsTontonSanPhamCha);
-                    sanPhamRepo.update(sp);
+                    // Đếm lại toàn bộ biến thể từ DB và ghi vào san_pham.so_luong_ton
+                    ctspRepo.capNhatSoLuongTonSanPhamCha(sp.getId());
                 }
             }
 
@@ -344,12 +342,10 @@ public class ChiTietSanPhamServlet extends HttpServlet {
 
             BigDecimal donGia = new BigDecimal(req.getParameter("donGia"));
             BigDecimal giaNhap = new BigDecimal(req.getParameter("giaNhap"));
-            Integer hanBaoHanh = Integer.parseInt(req.getParameter("hanBaoHanh"));
             Integer trangThai = "true".equalsIgnoreCase(req.getParameter("trangThai")) ? 1 : 0;
 
             chiTiet.setDonGia(donGia);
             chiTiet.setGiaNhap(giaNhap);
-            chiTiet.setHanBaoHanh(hanBaoHanh);
             chiTiet.setTrangThai(trangThai);
 
             ctspRepo.update(chiTiet);

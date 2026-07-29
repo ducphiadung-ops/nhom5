@@ -143,6 +143,64 @@ public class ChiTietSanPhamRepository {
         }
     }
 
+    // 🟢 Đếm tất cả biến thể theo idSanPham rồi UPDATE thẳng vào san_pham.so_luong_ton
+    public void capNhatSoLuongTonSanPhamCha(Integer idSanPham) {
+        Transaction transaction = null;
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            transaction = session.beginTransaction();
+
+            Long soLuongBienThe = session.createQuery(
+                            "SELECT COUNT(ct) FROM ChiTietSanPham ct WHERE ct.sanPham.id = :idSP",
+                            Long.class)
+                    .setParameter("idSP", idSanPham)
+                    .uniqueResult();
+
+            int soLuong = (soLuongBienThe != null) ? soLuongBienThe.intValue() : 0;
+
+            session.createNativeQuery(
+                            "UPDATE san_pham SET so_luong_ton = :soLuong WHERE id = :idSP")
+                    .setParameter("soLuong", soLuong)
+                    .setParameter("idSP", idSanPham)
+                    .executeUpdate();
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) transaction.rollback();
+            System.out.println("❌ Lỗi capNhatSoLuongTonSanPhamCha: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // 🟢 Đếm tổng số biến thể (kể cả trạng_thái 0 và 1) theo id sản phẩm cha
+    public long countAllBySanPhamId(Integer idSanPham) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            Long count = session.createQuery(
+                            "SELECT COUNT(ct) FROM ChiTietSanPham ct WHERE ct.sanPham.id = :idSP",
+                            Long.class)
+                    .setParameter("idSP", idSanPham)
+                    .uniqueResult();
+            return count != null ? count : 0L;
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi countAllBySanPhamId: " + e.getMessage());
+            return 0L;
+        }
+    }
+
+    // 🟢 Đếm số biến thể CÒN HOẠT ĐỘNG (trạng_thái = 1) theo id sản phẩm cha
+    public long countActiveBySanPhamId(Integer idSanPham) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            Long count = session.createQuery(
+                            "SELECT COUNT(ct) FROM ChiTietSanPham ct WHERE ct.sanPham.id = :idSP AND ct.trangThai = 1",
+                            Long.class)
+                    .setParameter("idSP", idSanPham)
+                    .uniqueResult();
+            return count != null ? count : 0L;
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi countActiveBySanPhamId: " + e.getMessage());
+            return 0L;
+        }
+    }
+
     // 🟢 TÁC VỤ 2: Tự động đồng bộ số lượng tồn kho (ton_kho) dựa theo số IMEI còn trong kho (trang_thai = 1)
     // Đếm tổng số mã seri (bảng ma_seri) có trang_thai = true thuộc cấu hình idCauHinh,
     // rồi UPDATE kết quả đếm được vào cột ton_kho của bảng chi_tiet_san_pham tương ứng.

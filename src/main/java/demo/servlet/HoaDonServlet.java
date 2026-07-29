@@ -165,13 +165,21 @@ public class HoaDonServlet extends HttpServlet {
             if (hd == null) { jsonErr(resp, 404, "Không tìm thấy hoá đơn"); return; }
             if (!isOwner(hd, req)) { jsonErr(resp, 403, "Bạn không có quyền thao tác hoá đơn này"); return; }
 
-            // Hoàn trạng thái tất cả seri về 0 (còn hàng)
+            // Hoàn trạng thái tất cả seri về 1 (còn hàng)
             List<ChiTietHoaDon> danhSachCT = chiTietHoaDonRepo.getByHoaDonId(idHoaDon);
+            java.util.Set<Integer> cauHinhDaHoan = new java.util.HashSet<>();
             for (ChiTietHoaDon ct : danhSachCT) {
                 MaSeri seri = ct.getIdSeri();
                 if (seri != null) {
-                    seri.setTrangThai(0);
+                    seri.setTrangThai(1);
                     maSeriRepository.update(seri);
+                    // Đồng bộ tonKho sau khi hoàn seri về kho
+                    if (seri.getCauHinhSanPham() != null) {
+                        Integer idCH = seri.getCauHinhSanPham().getId();
+                        if (cauHinhDaHoan.add(idCH)) {
+                            chiTietSanPhamRepository.capNhatTonKhoTheoImei(idCH);
+                        }
+                    }
                 }
             }
             // Chuyển trạng thái hoá đơn về 3 (đã huỷ) thay vì xoá cứng
@@ -212,7 +220,7 @@ public class HoaDonServlet extends HttpServlet {
             if (hd == null)   { jsonErr(resp, 404, "Không tìm thấy hoá đơn"); return; }
             if (!isOwner(hd, req)) { jsonErr(resp, 403, "Bạn không có quyền thao tác hoá đơn này"); return; }
             if (seri == null) { jsonErr(resp, 404, "Không tìm thấy mã seri");  return; }
-            if (seri.getTrangThai() != 0) {
+            if (seri.getTrangThai() != 1) {
                 jsonErr(resp, 400, "Seri này không còn khả dụng");
                 return;
             }
@@ -237,9 +245,13 @@ public class HoaDonServlet extends HttpServlet {
             ct.setTrangThai(1);
             Integer ctId = chiTietHoaDonRepo.add(ct);
 
-            // Đánh dấu seri đã được giữ (trangThai = 1)
-            seri.setTrangThai(1);
+            // Đánh dấu seri đã được giữ (trangThai = 0)
+            seri.setTrangThai(0);
             maSeriRepository.update(seri);
+            // Đồng bộ tonKho của chi_tiet_san_pham theo IMEI còn hàng
+            if (seri.getCauHinhSanPham() != null) {
+                chiTietSanPhamRepository.capNhatTonKhoTheoImei(seri.getCauHinhSanPham().getId());
+            }
 
             // Cập nhật tổng tiền hoá đơn
             capNhatTongTien(idHoaDon);
@@ -266,11 +278,15 @@ public class HoaDonServlet extends HttpServlet {
             if (hd == null) { jsonErr(resp, 404, "Không tìm thấy hoá đơn"); return; }
             if (!isOwner(hd, req)) { jsonErr(resp, 403, "Bạn không có quyền thao tác hoá đơn này"); return; }
 
-            // Hoàn trạng thái seri về 0
+            // Hoàn trạng thái seri về 1 (còn hàng)
             MaSeri seri = ct.getIdSeri();
             if (seri != null) {
-                seri.setTrangThai(0);
+                seri.setTrangThai(1);
                 maSeriRepository.update(seri);
+                // Đồng bộ tonKho sau khi hoàn seri về kho
+                if (seri.getCauHinhSanPham() != null) {
+                    chiTietSanPhamRepository.capNhatTonKhoTheoImei(seri.getCauHinhSanPham().getId());
+                }
             }
             chiTietHoaDonRepo.delete(idChiTiet);
             capNhatTongTien(idHoaDon);
@@ -418,13 +434,21 @@ public class HoaDonServlet extends HttpServlet {
             if (nv != null) hd.setNhanVien(nv);
             hoaDonRepository.update(hd);
 
-            // Đánh dấu tất cả seri trong đơn là đã bán (trangThai=1)
+            // Đánh dấu tất cả seri trong đơn là đã bán (trangThai=0)
             List<ChiTietHoaDon> dsCT = chiTietHoaDonRepo.getByHoaDonId(idHoaDon);
+            java.util.Set<Integer> daCauHinhDaCapNhat = new java.util.HashSet<>();
             for (ChiTietHoaDon ct : dsCT) {
                 if (ct.getIdSeri() != null) {
                     MaSeri seri = ct.getIdSeri();
-                    seri.setTrangThai(1);
+                    seri.setTrangThai(0);
                     maSeriRepository.update(seri);
+                    // Đồng bộ tonKho — tránh gọi trùng cùng idCauHinh
+                    if (seri.getCauHinhSanPham() != null) {
+                        Integer idCH = seri.getCauHinhSanPham().getId();
+                        if (daCauHinhDaCapNhat.add(idCH)) {
+                            chiTietSanPhamRepository.capNhatTonKhoTheoImei(idCH);
+                        }
+                    }
                 }
             }
 
@@ -560,12 +584,35 @@ public class HoaDonServlet extends HttpServlet {
         boolean isFiltered = "true".equals(req.getParameter("filtered"));
         if (!isFiltered) ngayTao = java.time.LocalDate.now().toString();
 
-        List<HoaDon> ListHoaDon = hoaDonRepository.timKiemVaLoc(keyword, trangThai, ngayTao);
-        req.setAttribute("oldNgayTao",   ngayTao);
-        req.setAttribute("oldKeyword",   keyword   != null ? keyword   : "");
-        req.setAttribute("oldTrangThai", trangThai != null ? trangThai : "");
-        req.setAttribute("isFiltered",   isFiltered);
-        req.setAttribute("ListHoaDon",   ListHoaDon);
+        // Phân trang
+        final int PAGE_SIZE = 10;
+        int page = 1;
+        try {
+            String pageParam = req.getParameter("page");
+            if (pageParam != null && !pageParam.trim().isEmpty()) {
+                page = Integer.parseInt(pageParam.trim());
+                if (page < 1) page = 1;
+            }
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+
+        long totalRecords = hoaDonRepository.demTongHoaDon(keyword, trangThai, ngayTao);
+        int totalPages = (int) Math.ceil((double) totalRecords / PAGE_SIZE);
+        if (totalPages < 1) totalPages = 1;
+        if (page > totalPages) page = totalPages;
+
+        List<HoaDon> ListHoaDon = hoaDonRepository.timKiemVaLocPhanTrang(keyword, trangThai, ngayTao, page, PAGE_SIZE);
+
+        req.setAttribute("oldNgayTao",    ngayTao);
+        req.setAttribute("oldKeyword",    keyword   != null ? keyword   : "");
+        req.setAttribute("oldTrangThai",  trangThai != null ? trangThai : "");
+        req.setAttribute("isFiltered",    isFiltered);
+        req.setAttribute("ListHoaDon",    ListHoaDon);
+        req.setAttribute("currentPage",   page);
+        req.setAttribute("totalPages",    totalPages);
+        req.setAttribute("totalRecords",  totalRecords);
+        req.setAttribute("pageSize",      PAGE_SIZE);
         req.getRequestDispatcher("/demo/hoa_don/hoa_don.jsp").forward(req, resp);
     }
 

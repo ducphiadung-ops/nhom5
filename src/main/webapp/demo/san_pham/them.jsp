@@ -379,6 +379,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    // Context path để dùng cho fetch API
+    const contextPath = '${pageContext.request.contextPath}';
     let globalIndex = 0;
 
     $(document).ready(function() {
@@ -582,21 +584,133 @@
 
     function xacNhanLuuImeiModal() {
         const index = document.getElementById("currentInputIndexTarget").value;
-        const text = document.getElementById("txtAreaImeiTemp").value.trim();
-        document.getElementById("imei-hidden-" + index).value = text;
+        const rawText = document.getElementById("txtAreaImeiTemp").value.trim();
 
-        const mangImei = text ? text.split(/[,\n\r]+/).map(s => s.trim()).filter(s => s.length > 0) : [];
-        const targetBtn = document.getElementById("badge-count-" + index);
+        // Tách và làm sạch danh sách IMEI vừa nhập trong modal
+        const mangImeiRaw = rawText
+            ? rawText.split(/[,\n\r]+/).map(s => s.trim().replace(/\s+/g, '').toUpperCase()).filter(s => s.length > 0)
+            : [];
 
-        if (targetBtn) {
-            targetBtn.querySelector(".txt-count-imei-label").innerText = mangImei.length + " Máy";
-            if(mangImei.length > 0) {
-                targetBtn.style.backgroundColor = "#d1fae5";
-            } else {
-                targetBtn.style.backgroundColor = "#ecfdf5";
-            }
+        if (mangImeiRaw.length === 0) {
+            _luuImeiVaoDong(index, []);
+            $('#imeiModal').modal('hide');
+            return;
         }
-        $('#imeiModal').modal('hide');
+
+        // ── Check trùng nội bộ trong chính ô nhập ──
+        const seenInBox = new Set();
+        const trungNoiBo = new Set();
+        const mangImeiMoi = []; // danh sách đã deduplicate
+
+        mangImeiRaw.forEach(function(im) {
+            if (seenInBox.has(im)) {
+                trungNoiBo.add(im); // ghi nhận trùng nhưng KHÔNG thêm lần 2
+            } else {
+                seenInBox.add(im);
+                mangImeiMoi.push(im);
+            }
+        });
+
+        // Nếu có trùng nội bộ → thông báo ngay, cập nhật textarea rồi tiếp tục xử lý
+        if (trungNoiBo.size > 0) {
+            document.getElementById("txtAreaImeiTemp").value = mangImeiMoi.join("\n");
+            $('#txtAreaImeiTemp').trigger('input');
+            hienThongBaoToast(
+                "Đã xoá " + trungNoiBo.size + " IMEI nhập trùng trong ô nhập, chỉ giữ lại 1 bản: <b>" + Array.from(trungNoiBo).join(", ") + "</b>",
+                "warning"
+            );
+        }
+
+        // Thu thập tất cả IMEI đã được điền ở các biến thể KHÁC (không tính biến thể đang mở modal)
+        const imeiDaDiem = [];
+        document.querySelectorAll("textarea[name='soSeriDong']").forEach(function(ta) {
+            const hiddenIndexEl = ta.id; // "imei-hidden-X"
+            const taIndex = hiddenIndexEl.replace("imei-hidden-", "");
+            if (taIndex !== String(index) && ta.value.trim()) {
+                ta.value.trim().split(/[,\n\r]+/).forEach(function(s) {
+                    const clean = s.trim().replace(/\s+/g, '').toUpperCase();
+                    if (clean.length > 0) imeiDaDiem.push(clean);
+                });
+            }
+        });
+
+        // Hiển thị trạng thái đang kiểm tra
+        const btnXacNhan = document.querySelector('#imeiModal .btn-dark-custom');
+        const originalText = btnXacNhan.innerHTML;
+        btnXacNhan.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Đang kiểm tra...';
+        btnXacNhan.disabled = true;
+
+        // Gọi API check trùng DB + trùng form
+        const params = new URLSearchParams();
+        params.append("imeiList", mangImeiMoi.join(","));
+        params.append("imeiDaDiem", imeiDaDiem.join(","));
+
+        fetch(contextPath + "/san-pham/check-imei", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString()
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            btnXacNhan.innerHTML = originalText;
+            btnXacNhan.disabled = false;
+
+            const trungDB = data.trungDB || [];
+            const trungForm = data.trungForm || [];
+            const tatCaTrung = [...new Set([...trungDB, ...trungForm])];
+
+            // Lọc ra danh sách IMEI hợp lệ (không trùng)
+            const imeiHopLe = mangImeiMoi.filter(function(im) {
+                return !tatCaTrung.includes(im);
+            });
+
+            // Nếu có IMEI trùng → hiển thị thông báo chi tiết
+            if (tatCaTrung.length > 0) {
+                let thongBaoPhan = [];
+                if (trungDB.length > 0) {
+                    thongBaoPhan.push("Trùng trong Database: <b>" + trungDB.join(", ") + "</b>");
+                }
+                if (trungForm.length > 0) {
+                    thongBaoPhan.push("Trùng với biến thể khác trên form: <b>" + trungForm.join(", ") + "</b>");
+                }
+
+                // Hiển thị toast cảnh báo
+                const soTrung = tatCaTrung.length;
+                const soGiu = imeiHopLe.length;
+                let msg = "Đã xoá " + soTrung + " IMEI bị trùng. ";
+                if (soGiu > 0) {
+                    msg += "Giữ lại " + soGiu + " IMEI hợp lệ.";
+                } else {
+                    msg += "Không có IMEI hợp lệ nào được lưu.";
+                }
+                hienThongBaoToast(msg + "<br><small>" + thongBaoPhan.join("<br>") + "</small>", "warning");
+
+                // Cập nhật lại textarea trong modal với danh sách sạch
+                document.getElementById("txtAreaImeiTemp").value = imeiHopLe.join("\n");
+                $('#txtAreaImeiTemp').trigger('input');
+            }
+
+            // Lưu danh sách IMEI hợp lệ vào hidden textarea của dòng biến thể
+            _luuImeiVaoDong(index, imeiHopLe);
+            $('#imeiModal').modal('hide');
+        })
+        .catch(function(err) {
+            btnXacNhan.innerHTML = originalText;
+            btnXacNhan.disabled = false;
+            console.error("Lỗi check IMEI:", err);
+            hienThongBaoToast("Không thể kết nối kiểm tra IMEI. Vui lòng thử lại!", "error");
+        });
+    }
+
+    // Hàm nội bộ: lưu danh sách IMEI vào hidden textarea và cập nhật badge đếm
+    function _luuImeiVaoDong(index, imeiHopLe) {
+        document.getElementById("imei-hidden-" + index).value = imeiHopLe.join("\n");
+
+        const targetBtn = document.getElementById("badge-count-" + index);
+        if (targetBtn) {
+            targetBtn.querySelector(".txt-count-imei-label").innerText = imeiHopLe.length + " Máy";
+            targetBtn.style.backgroundColor = imeiHopLe.length > 0 ? "#d1fae5" : "#ecfdf5";
+        }
     }
 
     function clearModalTextArea() {
@@ -642,7 +756,7 @@
 
         const toastHtml = '' +
             '<div class="custom-toast" style="border-left: 4px solid ' + colorBorder + ';">' +
-            '    <i class="fa-solid ' + iconClass + ' fs-4"></i>' +
+            '    <i class="fa-solid ' + iconClass + ' fs-4 flex-shrink-0"></i>' +
             '    <div>' +
             '        <h6 class="mb-0 fw-bold text-dark" style="font-size: 14px;">' + titleText + '</h6>' +
             '        <small class="text-muted" style="font-size: 13px;">' + message + '</small>' +

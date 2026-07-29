@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +28,8 @@ import java.util.Set;
         "/san-pham/them",
         "/san-pham/sua",
         "/san-pham/xoa",
-        "/san-pham/giao-dien-them"
+        "/san-pham/giao-dien-them",
+        "/san-pham/check-imei"
 })
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
@@ -101,6 +103,8 @@ public class SanPhamServlet extends HttpServlet {
             xuLyCapNhat(req, resp);
         } else if (path.equals("/san-pham/xoa")) {
             xuLyXoa(req, resp);
+        } else if (path.equals("/san-pham/check-imei")) {
+            xuLyCheckImei(req, resp);
         } else {
             resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
         }
@@ -163,13 +167,6 @@ public class SanPhamServlet extends HttpServlet {
 
             Integer idThuongHieu = Integer.parseInt(req.getParameter("idThuongHieu"));
             Integer idDanhMuc = Integer.parseInt(req.getParameter("idDanhMuc"));
-            Integer hanBaoHanh = Integer.parseInt(req.getParameter("hanBaoHanh"));
-
-            if (hanBaoHanh <= 0) {
-                session.setAttribute("errorMessage", "Thất bại: Hạn bảo hành phải lớn hơn 0 tháng!");
-                resp.sendRedirect(req.getContextPath() + "/san-pham/giao-dien-them");
-                return;
-            }
 
             String[] arrGiaBan = req.getParameterValues("giaBanDong");
             String[] arrMauSac = req.getParameterValues("idMauSacDong");
@@ -291,7 +288,6 @@ public class SanPhamServlet extends HttpServlet {
             sp.setNgayTao(LocalDate.now());
             sp.setTrangThai(1);
             sp.setSoLuongTon(0);
-            sp.setHanBaoHanh(hanBaoHanh);
 
             sanPhamRepo.add(sp);
 
@@ -358,7 +354,6 @@ public class SanPhamServlet extends HttpServlet {
                 ctsp.setDonGia(giaBan);
                 ctsp.setGiaNhap(giaNhap);
                 ctsp.setTonKho(soLuongImeiHopLe);
-                ctsp.setHanBaoHanh(hanBaoHanh);
                 ctsp.setTrangThai(1);
                 ctspRepo.add(ctsp);
 
@@ -384,6 +379,74 @@ public class SanPhamServlet extends HttpServlet {
             e.printStackTrace();
         }
         resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
+    }
+
+    // ==========================================
+    // 🟢 API CHECK TRÙNG IMEI - Trả về JSON
+    // POST /san-pham/check-imei
+    // Body param: imeiList = chuỗi IMEI phân cách bởi dấu phẩy
+    // Response: {"trungDB":["IMEI1","IMEI2"],"trungForm":[]}
+    // ==========================================
+    private void xuLyCheckImei(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json;charset=UTF-8");
+        resp.setHeader("Cache-Control", "no-cache");
+
+        String imeiListParam = req.getParameter("imeiList");
+        // imeiDaDiemParam: danh sách IMEI đã được lưu ở các biến thể khác trên form (để check trùng form)
+        String imeiDaDiemParam = req.getParameter("imeiDaDiem");
+
+        List<String> trungDB = new ArrayList<>();
+        List<String> trungForm = new ArrayList<>();
+
+        if (imeiListParam != null && !imeiListParam.trim().isEmpty()) {
+            String[] mangImei = imeiListParam.trim().split(",");
+
+            // Tập IMEI đã điền ở biến thể khác
+            Set<String> setDaDiem = new HashSet<>();
+            if (imeiDaDiemParam != null && !imeiDaDiemParam.trim().isEmpty()) {
+                for (String s : imeiDaDiemParam.trim().split(",")) {
+                    String clean = s.trim().toUpperCase();
+                    if (!clean.isEmpty()) setDaDiem.add(clean);
+                }
+            }
+
+            for (String raw : mangImei) {
+                String imei = raw.trim().toUpperCase();
+                if (imei.isEmpty()) continue;
+
+                // Check trùng database
+                if (maSeriRepo.checkTrungImei(imei)) {
+                    trungDB.add(imei);
+                }
+                // Check trùng IMEI đã điền ở biến thể khác
+                else if (setDaDiem.contains(imei)) {
+                    trungForm.add(imei);
+                }
+            }
+        }
+
+        // Xây dựng JSON response thủ công (không cần thư viện ngoài)
+        StringBuilder json = new StringBuilder("{");
+        json.append("\"trungDB\":[");
+        for (int i = 0; i < trungDB.size(); i++) {
+            if (i > 0) json.append(",");
+            json.append("\"").append(escapeJson(trungDB.get(i))).append("\"");
+        }
+        json.append("],\"trungForm\":[");
+        for (int i = 0; i < trungForm.size(); i++) {
+            if (i > 0) json.append(",");
+            json.append("\"").append(escapeJson(trungForm.get(i))).append("\"");
+        }
+        json.append("]}");
+
+        PrintWriter out = resp.getWriter();
+        out.print(json.toString());
+        out.flush();
+    }
+
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     private void hienThiDanhSach(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
