@@ -99,14 +99,23 @@
         .action-icons{display:flex;gap:10px;justify-content:center;}
         .action-icons a{color:var(--text-muted);}
         .action-icons a:hover{color:var(--primary);}
-        /* Row đã huỷ — làm mờ */
-        .row-da-huy { opacity: 0.45; }
-        .row-da-huy:hover { opacity: 0.75; transition: opacity 0.2s; }
         /* Empty state */
         .empty-state{padding:48px 0;text-align:center;color:var(--text-muted);}
         .empty-state i{font-size:40px;margin-bottom:12px;opacity:0.4;display:block;}
         .empty-state p{font-size:14px;font-weight:500;}
         .empty-state span{font-size:12px;}
+        .row-da-huy { opacity: 0.45; }
+        .row-da-huy:hover { opacity: 0.75; transition: opacity 0.2s; }
+        /* Row đã huỷ — làm mờ */
+        .pagination-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-top:1px solid var(--border-color);background:#fff;border-radius:0 0 10px 10px;flex-wrap:wrap;gap:10px;}
+        .pagination-info{font-size:12px;color:var(--text-muted);}
+        .pagination-info strong{color:var(--text-main);}
+        .pagination-pages{display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
+        .pg-btn{min-width:32px;height:32px;padding:0 8px;border-radius:6px;border:1px solid var(--border-color);background:#fff;color:var(--text-main);font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;transition:all .15s;white-space:nowrap;}
+        .pg-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light);}
+        .pg-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600;cursor:default;pointer-events:none;}
+        .pg-btn.disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+        .pg-dots{font-size:12px;color:var(--text-muted);padding:0 4px;align-self:flex-end;line-height:32px;}
     </style>
 </head>
 <body>
@@ -219,7 +228,7 @@
                     <c:otherwise>
                         <c:forEach items="${ListHoaDon}" var="hd" varStatus="stt">
                             <tr class="${hd.trangThai == 3 ? 'row-da-huy' : ''}">
-                                <td class="col-stt">${stt.index + 1}</td>
+                                <td class="col-stt">${(currentPage - 1) * pageSize + stt.index + 1}</td>
                                 <td class="col-ma">
                                     <a href="${pageContext.request.contextPath}/hoa-don/detail?id=${hd.id}" class="invoice-id">${hd.maHoaDon}</a>
                                 </td>
@@ -274,8 +283,75 @@
                 </c:choose>
                 </tbody>
             </table>
+        </div><%-- end table-container --%>
+
+        <%-- THANH PHÂN TRANG --%>
+        <%-- Xây dựng base URL giữ nguyên toàn bộ tham số lọc, chỉ thay page --%>
+        <c:set var="baseUrl" value="${pageContext.request.contextPath}/hoa-don/hien-thi?filtered=true&keyword=${oldKeyword}&trangThai=${oldTrangThai}&ngayTao=${oldNgayTao}&page=" />
+
+        <c:if test="${totalPages > 1 || totalRecords > 0}">
+        <div class="pagination-bar">
+            <%-- Thông tin --%>
+            <div class="pagination-info">
+                Hiển thị
+                <strong>${(currentPage - 1) * pageSize + 1}</strong>
+                –
+                <strong>${(currentPage - 1) * pageSize + ListHoaDon.size()}</strong>
+                trong <strong>${totalRecords}</strong> hóa đơn
+            </div>
+
+            <%-- Các nút trang --%>
+            <div class="pagination-pages">
+                <%-- Nút Trước --%>
+                <a href="${baseUrl}${currentPage - 1}"
+                   class="pg-btn ${currentPage <= 1 ? 'disabled' : ''}">
+                    <i class="fa-solid fa-chevron-left" style="font-size:10px;"></i>
+                </a>
+
+                <%-- Số trang: hiển thị tối đa 7 nút, dùng dấu ... khi nhiều trang --%>
+                <c:choose>
+                    <c:when test="${totalPages <= 7}">
+                        <%-- Ít trang: hiện hết --%>
+                        <c:forEach begin="1" end="${totalPages}" var="p">
+                            <a href="${baseUrl}${p}" class="pg-btn ${p == currentPage ? 'active' : ''}">${p}</a>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <%-- Nhiều trang: trang đầu + ... + window ±2 + ... + trang cuối --%>
+                        <%-- Trang 1 --%>
+                        <a href="${baseUrl}1" class="pg-btn ${1 == currentPage ? 'active' : ''}">1</a>
+
+                        <%-- Dấu ... trái nếu currentPage > 4 --%>
+                        <c:if test="${currentPage > 4}">
+                            <span class="pg-dots">…</span>
+                        </c:if>
+
+                        <%-- Window xung quanh currentPage --%>
+                        <c:forEach begin="1" end="${totalPages}" var="p">
+                            <c:if test="${p > 1 && p < totalPages && p >= currentPage - 2 && p <= currentPage + 2}">
+                                <a href="${baseUrl}${p}" class="pg-btn ${p == currentPage ? 'active' : ''}">${p}</a>
+                            </c:if>
+                        </c:forEach>
+
+                        <%-- Dấu ... phải nếu currentPage < totalPages - 3 --%>
+                        <c:if test="${currentPage < totalPages - 3}">
+                            <span class="pg-dots">…</span>
+                        </c:if>
+
+                        <%-- Trang cuối --%>
+                        <a href="${baseUrl}${totalPages}" class="pg-btn ${totalPages == currentPage ? 'active' : ''}">${totalPages}</a>
+                    </c:otherwise>
+                </c:choose>
+
+                <%-- Nút Sau --%>
+                <a href="${baseUrl}${currentPage + 1}"
+                   class="pg-btn ${currentPage >= totalPages ? 'disabled' : ''}">
+                    <i class="fa-solid fa-chevron-right" style="font-size:10px;"></i>
+                </a>
+            </div>
         </div>
-    </div>
+        </c:if>
+    </div><%-- end content-area --%>
 </main>
 
 <script>

@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- FontAwesome Icons (Dùng cho icon Google nếu cần) -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -53,30 +53,24 @@
             max-width: 1000px;
             padding: 0 40px;
             align-items: center;
-            gap: 80px; /* Khoảng cách giữa logo và form */
+            gap: 80px;
         }
 
-        /* --- PHẦN LOGO BÊN TRÁI (ĐÃ CẤU HÌNH ĐỂ THAY ẢNH DỄ DÀNG) --- */
         .login-logo-wrapper {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             max-width: 450px;
-            height: 450px; /* Khung cố định chiều cao */
+            height: 450px;
         }
 
         .login-logo-wrapper img {
             width: 100%;
             height: 100%;
-            /*
-               Mẹo: 'contain' giúp ảnh tự co giãn vừa khung mà KHÔNG bị bóp méo tỉ lệ.
-               Bạn chỉ cần thay đường dẫn ảnh ở thẻ <img> bên dưới là xong.
-            */
             object-fit: contain;
         }
 
-        /* --- PHẦN FORM ĐĂNG NHẬP BÊN PHẢI --- */
         .login-form-wrapper {
             width: 380px;
             display: flex;
@@ -133,7 +127,6 @@
             box-shadow: 0 0 0 4px rgba(26, 86, 219, 0.1);
         }
 
-        /* Remember và Forgot password */
         .form-options {
             display: flex;
             justify-content: space-between;
@@ -156,17 +149,6 @@
             cursor: pointer;
         }
 
-        .forgot-link {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .forgot-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Các nút bấm */
         .btn {
             width: 100%;
             padding: 12px;
@@ -192,22 +174,6 @@
             background-color: var(--primary-hover);
         }
 
-        .btn-google {
-            background-color: #ffffff;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-google:hover {
-            background-color: #f9fafb;
-        }
-
-        .btn-google img {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* Hàng đăng ký cuối cùng */
         .signup-text {
             text-align: center;
             font-size: 13px;
@@ -215,24 +181,13 @@
             margin-top: 16px;
         }
 
-        .signup-text a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .signup-text a:hover {
-            text-decoration: underline;
-        }
-
-        /* Responsive cho màn hình nhỏ */
         @media (max-width: 850px) {
             .login-container {
                 justify-content: center;
                 padding: 20px;
             }
             .login-logo-wrapper {
-                display: none; /* Ẩn logo ở màn hình điện thoại nhỏ */
+                display: none;
             }
         }
     </style>
@@ -243,8 +198,8 @@
 
     <!-- 1. KHU VỰC LOGO BÊN TRÁI -->
     <div class="login-logo-wrapper">
-        <!-- Sau này bạn chỉ cần sửa đường dẫn src này thành ảnh mới của bạn -->
-        <img src="/img/logo.jpg">
+        <!-- Đã thêm ${pageContext.request.contextPath} vào đường dẫn ảnh -->
+        <img src="${pageContext.request.contextPath}/img/logo.jpg" alt="Logo">
     </div>
 
     <!-- 2. KHU VỰC FORM ĐĂNG NHẬP BÊN PHẢI -->
@@ -254,7 +209,9 @@
             <p>Chào mừng bạn quay trở lại</p>
         </div>
 
-        <form action="/login/dang_nhap" method="POST">
+        <!-- 🟢 ĐÃ SỬA: Thêm ${pageContext.request.contextPath} để không bị lỗi 404 khi submit -->
+        <form action="${pageContext.request.contextPath}/login/dang_nhap" method="POST">
+
             <!-- Thông báo lỗi -->
             <% if (request.getAttribute("errorMessage") != null) { %>
             <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:12px 16px; margin-bottom:20px; display:flex; align-items:center; gap:10px; font-size:13px; color:#dc2626;">
@@ -289,7 +246,7 @@
         </form>
 
         <div class="signup-text">
-            Skycomputer &copy; 2025 &mdash; Hệ thống quản lý nội bộ
+            Skycomputer &copy; 2026 &mdash; Hệ thống quản lý nội bộ
         </div>
     </div>
 

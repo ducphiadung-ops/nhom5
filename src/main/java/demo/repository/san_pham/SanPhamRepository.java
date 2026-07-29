@@ -23,8 +23,13 @@ public class  SanPhamRepository {
 
     public List<SanPham> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            // 🟢 Đã thêm SanPham.class
-            return session.createQuery("FROM SanPham WHERE trangThai = 1", SanPham.class).getResultList();
+            // Thêm "ORDER BY sp.id DESC" để ID mới nhất (lớn nhất) luôn nằm lên đầu
+            String hql = "FROM SanPham sp ORDER BY sp.id DESC";
+            Query<SanPham> query = session.createQuery(hql, SanPham.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 

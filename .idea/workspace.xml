@@ -8,57 +8,37 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
-  <component name="BackgroundAgentGlobalSettings">
-    <option name="selectedModelId" value="auto" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d10d1b0-9c0e-419b-8246-6aef80ccf8f8" name="Changes" comment="">
+    <list default="true" id="33ae4335-889f-4723-affe-89f3f4f2aaf0" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/nhom5_DA1_war.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/nhom5_DA1_war_exploded.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/copilotDiffState.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/webContexts.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HoaDonRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HoaDonRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/SanPhamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/SanPhamRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/NhanVienServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/NhanVienServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/LoginServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/LoginServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/util/HibernateConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/util/HibernateConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/common/header.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/common/header.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien_add.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien_add.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien_update.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/nhan_vien/nhan_vien_update.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/login/dang_nhap.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/login/dang_nhap.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CopilotPersistence">
-    <persistenceIdMap>
-      <entry key="_C:/Users/Admin/Desktop/nhom5_DA1" value="3FzsKkDozR1nyt3lFyw3uDxc7K0" />
-    </persistenceIdMap>
-  </component>
-  <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="143" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-        <option value="Jsp File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;ducphiadung-ops&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/ducphiadung-ops/nhom5.git&quot;,
-    &quot;accountId&quot;: &quot;096b23bc-ae53-4b66-9175-ff5e97faa9b1&quot;
-  }
-}</component>
   <component name="LogFilters">
     <option name="FILTER_ERRORS" value="false" />
     <option name="FILTER_WARNINGS" value="false" />
@@ -66,165 +46,18 @@
     <option name="FILTER_DEBUG" value="true" />
     <option name="CUSTOM_FILTER" />
   </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
-      </MavenGeneralSettings>
-    </option>
-  </component>
-  <component name="McpProjectServerCommands">
-    <commands />
-    <urls />
-  </component>
-  <component name="NextEditCompletionFeaturesState">
-    <decayedCancelled>
-      <entry key="MS100" value="1.8967264193626072" />
-      <entry key="MS500" value="3.7597184623499453" />
-      <entry key="S2" value="9.911065420731939" />
-      <entry key="S5" value="20.299359522771773" />
-      <entry key="S10" value="30.807326783330716" />
-      <entry key="S30" value="45.850565138334694" />
-      <entry key="S60" value="51.748457745414" />
-      <entry key="M2" value="55.18315455374369" />
-      <entry key="M5" value="57.42424934457721" />
-      <entry key="M10" value="58.203676586068156" />
-      <entry key="M15" value="58.467220946126744" />
-      <entry key="M30" value="58.73668455480659" />
-      <entry key="H1" value="59.187775790584595" />
-      <entry key="H2" value="63.06793512034178" />
-      <entry key="H4" value="85.62593011250479" />
-      <entry key="D1" value="486.78224767699373" />
-      <entry key="W1" value="938.0822472538723" />
-    </decayedCancelled>
-    <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="0.0" />
-      <entry key="S10" value="0.0" />
-      <entry key="S30" value="1.8489384800707686E-215" />
-      <entry key="S60" value="6.05906690503194E-108" />
-      <entry key="M2" value="3.6573714041220116E-54" />
-      <entry key="M5" value="7.56206993799944E-22" />
-      <entry key="M10" value="4.703828610721074E-11" />
-      <entry key="M15" value="1.9092097236587755E-7" />
-      <entry key="M30" value="8.591393979725267E-4" />
-      <entry key="H1" value="0.07069059193381112" />
-      <entry key="H2" value="0.9454875828614772" />
-      <entry key="H4" value="7.493934817278501" />
-      <entry key="D1" value="181.0539573644377" />
-      <entry key="W1" value="410.2275599136406" />
-    </decayedSelected>
-    <decayedShown>
-      <entry key="MS100" value="1.7689495548888239" />
-      <entry key="MS500" value="3.686334119968309" />
-      <entry key="S2" value="9.75675546715278" />
-      <entry key="S5" value="20.173787842236322" />
-      <entry key="S10" value="30.71346219130558" />
-      <entry key="S30" value="45.80148155530348" />
-      <entry key="S60" value="51.720010193847976" />
-      <entry key="M2" value="55.16774972186095" />
-      <entry key="M5" value="57.41777287531711" />
-      <entry key="M10" value="58.200383104261135" />
-      <entry key="M15" value="58.46501298563833" />
-      <entry key="M30" value="58.736430262629696" />
-      <entry key="H1" value="59.257798821764744" />
-      <entry key="H2" value="64.01256097757054" />
-      <entry key="H4" value="93.118118213928" />
-      <entry key="D1" value="667.8317571247975" />
-      <entry key="W1" value="1348.3084388371672" />
-    </decayedShown>
-  </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
-  </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 4,
-  &quot;fromUser&quot;: false
-}</component>
-  <component name="ProjectId" id="3FzsKkDozR1nyt3lFyw3uDxc7K0" />
-  <component name="ProjectSessionTemplates">
-    <option name="panelTemplate">
-      <template>
-        <option name="modeId" value="Agent" />
-        <option name="model">
-          <model>
-            <option name="modelType" value="builtin_id" />
-            <option name="modelValue" value="auto" />
-          </model>
-        </option>
-        <option name="targetType" value="LOCAL" />
-      </template>
-    </option>
-  </component>
+  <component name="ProjectId" id="3H8IcFcoQyz3hvpFvFO6Bvanc7U" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.HibernateConfig.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Tomcat Server.Tomcat 10.1.55.executor&quot;: &quot;Run&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;copilot.chat.legacySessionMetadata.migrated&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/Desktop/nhom5_DA1/src/main/webapp&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.16015625&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
-  }
-}</component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\webapp" />
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\webapp\demo\san_pham" />
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\webapp\demo" />
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\java\demo" />
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\java\demo\entity\nhan_vien" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\webapp" />
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\webapp\demo\hoa_don" />
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\webapp\demo\ban_hang" />
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\webapp\demo\san_pham" />
-      <recent name="C:\Users\Admin\Desktop\nhom5_DA1\src\main\webapp\img" />
-    </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="demo.servlet" />
-      <recent name="demo.repository.san_pham" />
-      <recent name="demo.entity.khach_hang" />
-      <recent name="demo.entity.nhan_vien" />
-      <recent name="demo.util" />
-    </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="configurationStatuses">
-      <map>
-        <entry key="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory">
-          <value>
-            <map>
-              <entry key="Tomcat 10.1.55" value="STOPPED" />
-            </map>
-          </value>
-        </entry>
-      </map>
-    </option>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunManager" selected="Tomcat Server.Tomcat 10.1.55">
     <configuration name="HibernateConfig" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -241,16 +74,17 @@
       </method>
     </configuration>
     <configuration name="Tomcat 10.1.55" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.55" ALTERNATIVE_JRE_ENABLED="false" nameIsGenerated="true">
+      <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8080/nhom5_DA1_war_exploded/" />
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
         <artifact name="nhom5_DA1:war exploded">
           <settings>
-            <option name="CONTEXT_PATH" value="" />
+            <option name="CONTEXT_PATH" value="/nhom5_DA1_war_exploded" />
           </settings>
         </artifact>
       </deployment>
       <server-settings>
-        <option name="BASE_DIRECTORY_NAME" value="f0c7d25c-991b-4f2b-82da-33ae4cbca908" />
+        <option name="BASE_DIRECTORY_NAME" value="498bbe58-d70f-4149-9de5-2fcc8b3e71f8" />
       </server-settings>
       <predefined_log_file enabled="true" id="Tomcat" />
       <predefined_log_file enabled="true" id="Tomcat Catalina" />
@@ -258,7 +92,7 @@
       <predefined_log_file id="Tomcat Host Manager" />
       <predefined_log_file id="Tomcat Localhost Access" />
       <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="51910" />
+        <option name="DEBUG_PORT" value="52583" />
       </RunnerSettings>
       <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
         <option name="USE_ENV_VARIABLES" value="true" />
@@ -337,34 +171,41 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-30f59d01ecdd-63390994e64e-intellij.indexing.shared.core-IU-262.8665.176" />
-        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.8665.176" />
-      </set>
-    </attachedChunks>
-  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="4d10d1b0-9c0e-419b-8246-6aef80ccf8f8" name="Changes" comment="" />
-      <created>1783089185765</created>
+      <changelist id="33ae4335-889f-4723-affe-89f3f4f2aaf0" name="Default Changelist" comment="" />
+      <created>1785243347229</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1783089185765</updated>
+      <updated>1785243347229</updated>
+      <workItem from="1785243349913" duration="6519000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="NONE" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java</url>
-          <line>50</line>
-          <placement>INTER_LINE</placement>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/demo/util/HibernateConfig.java</url>
+          <line>67</line>
+          <properties class="demo.util.HibernateConfig" method="main">
+            <option name="EMULATED" value="true" />
+          </properties>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>

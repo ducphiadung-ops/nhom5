@@ -560,12 +560,35 @@ public class HoaDonServlet extends HttpServlet {
         boolean isFiltered = "true".equals(req.getParameter("filtered"));
         if (!isFiltered) ngayTao = java.time.LocalDate.now().toString();
 
-        List<HoaDon> ListHoaDon = hoaDonRepository.timKiemVaLoc(keyword, trangThai, ngayTao);
-        req.setAttribute("oldNgayTao",   ngayTao);
-        req.setAttribute("oldKeyword",   keyword   != null ? keyword   : "");
-        req.setAttribute("oldTrangThai", trangThai != null ? trangThai : "");
-        req.setAttribute("isFiltered",   isFiltered);
-        req.setAttribute("ListHoaDon",   ListHoaDon);
+        // Phân trang
+        final int PAGE_SIZE = 10;
+        int page = 1;
+        try {
+            String pageParam = req.getParameter("page");
+            if (pageParam != null && !pageParam.trim().isEmpty()) {
+                page = Integer.parseInt(pageParam.trim());
+                if (page < 1) page = 1;
+            }
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+
+        long totalRecords = hoaDonRepository.demTongHoaDon(keyword, trangThai, ngayTao);
+        int totalPages = (int) Math.ceil((double) totalRecords / PAGE_SIZE);
+        if (totalPages < 1) totalPages = 1;
+        if (page > totalPages) page = totalPages;
+
+        List<HoaDon> ListHoaDon = hoaDonRepository.timKiemVaLocPhanTrang(keyword, trangThai, ngayTao, page, PAGE_SIZE);
+
+        req.setAttribute("oldNgayTao",    ngayTao);
+        req.setAttribute("oldKeyword",    keyword   != null ? keyword   : "");
+        req.setAttribute("oldTrangThai",  trangThai != null ? trangThai : "");
+        req.setAttribute("isFiltered",    isFiltered);
+        req.setAttribute("ListHoaDon",    ListHoaDon);
+        req.setAttribute("currentPage",   page);
+        req.setAttribute("totalPages",    totalPages);
+        req.setAttribute("totalRecords",  totalRecords);
+        req.setAttribute("pageSize",      PAGE_SIZE);
         req.getRequestDispatcher("/demo/hoa_don/hoa_don.jsp").forward(req, resp);
     }
 
