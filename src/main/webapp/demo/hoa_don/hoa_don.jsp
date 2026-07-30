@@ -84,7 +84,7 @@
         .col-amount{width:110px;text-align:right !important;}
         .col-status{width:115px;text-align:center !important;}
         .col-action{width:55px;text-align:center !important;}
-        .invoice-id{color:var(--primary);font-weight:600;text-decoration:none;}
+        .invoice-id{font-weight:600;color:var(--text-main);}
         .employee-name,.customer-info p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .employee-name{max-width:100px;font-weight:500;}
         .customer-info p{max-width:85px;font-weight:600;}
@@ -96,6 +96,7 @@
         .badge-success{background:var(--success-bg);color:var(--success-text);}
         .badge-warning{background:var(--warning-bg);color:var(--warning-text);}
         .badge-danger{background:var(--danger-bg);color:var(--danger-text);}
+        .badge-secondary{background:#f3f4f6;color:#6b7280;}
         .action-icons{display:flex;gap:10px;justify-content:center;}
         .action-icons a{color:var(--text-muted);}
         .action-icons a:hover{color:var(--primary);}
@@ -152,7 +153,6 @@
                             <option value="">Tất cả trạng thái</option>
                             <option value="1" ${oldTrangThai == '1' ? 'selected' : ''}>Đã thanh toán</option>
                             <option value="0" ${oldTrangThai == '0' ? 'selected' : ''}>Chưa thanh toán</option>
-                            <option value="2" ${oldTrangThai == '2' ? 'selected' : ''}>Chờ xử lý</option>
                             <option value="3" ${oldTrangThai == '3' ? 'selected' : ''}>Đã huỷ</option>
                         </select>
                     </div>
@@ -230,7 +230,7 @@
                             <tr class="${hd.trangThai == 3 ? 'row-da-huy' : ''}">
                                 <td class="col-stt">${(currentPage - 1) * pageSize + stt.index + 1}</td>
                                 <td class="col-ma">
-                                    <a href="${pageContext.request.contextPath}/hoa-don/detail?id=${hd.id}" class="invoice-id">${hd.maHoaDon}</a>
+                                    <span class="invoice-id">${hd.maHoaDon}</span>
                                 </td>
                                 <td class="col-nv">
                                     <div class="employee-name">${hd.nhanVien != null ? hd.nhanVien.hoTen : '—'}</div>
@@ -261,7 +261,7 @@
                                                     <span class="badge badge-warning">Chờ xử lý</span>
                                                 </c:when>
                                                 <c:when test="${hd.trangThai == 3}">
-                                                    <span class="badge badge-danger">Đã huỷ</span>
+                                                    <span class="badge badge-secondary">Đã huỷ</span>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <span class="badge">${hd.trangThai}</span>

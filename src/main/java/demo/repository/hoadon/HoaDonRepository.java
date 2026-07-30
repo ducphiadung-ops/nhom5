@@ -12,7 +12,9 @@ import org.hibernate.query.Query;
 public class HoaDonRepository {
     public List<HoaDon> getAllHoaDon() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            return session.createQuery("from HoaDon", HoaDon.class).list();
+            return session.createQuery(
+                    "FROM HoaDon h ORDER BY h.ngayLap DESC, h.id DESC",
+                    HoaDon.class).list();
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -120,14 +122,18 @@ public class HoaDonRepository {
             }
 
             if (trangThai != null && !trangThai.trim().isEmpty()) {
+                // Người dùng chọn cụ thể → lọc đúng giá trị đó
                 hql.append("AND h.trangThai = :trangThai ");
+            } else {
+                // Không chọn → mặc định ẩn hóa đơn chờ (status 2) khỏi danh sách
+                hql.append("AND h.trangThai <> 2 ");
             }
 
             if (ngayTao != null && !ngayTao.trim().isEmpty()) {
                 hql.append("AND CAST(h.ngayLap as date) = :ngayTao ");
             }
 
-            hql.append("ORDER BY h.ngayLap DESC ");
+            hql.append("ORDER BY h.ngayLap DESC, h.id DESC ");
 
             Query<HoaDon> query = session.createQuery(hql.toString(), HoaDon.class);
 
@@ -165,12 +171,16 @@ public class HoaDonRepository {
                         "OR kh.sdt LIKE :keyword) ");
             }
             if (trangThai != null && !trangThai.trim().isEmpty()) {
+                // Người dùng chọn cụ thể → lọc đúng giá trị đó
                 hql.append("AND h.trangThai = :trangThai ");
+            } else {
+                // Không chọn → mặc định ẩn hóa đơn chờ (status 2) khỏi danh sách
+                hql.append("AND h.trangThai <> 2 ");
             }
             if (ngayTao != null && !ngayTao.trim().isEmpty()) {
                 hql.append("AND CAST(h.ngayLap as date) = :ngayTao ");
             }
-            hql.append("ORDER BY h.ngayLap DESC ");
+            hql.append("ORDER BY h.ngayLap DESC, h.id DESC ");
 
             Query<HoaDon> query = session.createQuery(hql.toString(), HoaDon.class);
             if (keyword != null && !keyword.trim().isEmpty()) {
@@ -206,7 +216,11 @@ public class HoaDonRepository {
                         "OR kh.sdt LIKE :keyword) ");
             }
             if (trangThai != null && !trangThai.trim().isEmpty()) {
+                // Người dùng chọn cụ thể → lọc đúng giá trị đó
                 hql.append("AND h.trangThai = :trangThai ");
+            } else {
+                // Không chọn → mặc định ẩn hóa đơn chờ (status 2) khỏi danh sách
+                hql.append("AND h.trangThai <> 2 ");
             }
             if (ngayTao != null && !ngayTao.trim().isEmpty()) {
                 hql.append("AND CAST(h.ngayLap as date) = :ngayTao ");
@@ -301,6 +315,46 @@ public class HoaDonRepository {
             tx.commit();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    // =====================================================================
+    //  Lấy danh sách hóa đơn chờ (trangThai=2) được tạo TRƯỚC ngày hôm nay
+    //  Dùng để cron job kiểm tra và hủy các đơn chờ quá hạn
+    // =====================================================================
+    public List<HoaDon> getDonChoQuaHan() {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            java.sql.Date homNay = java.sql.Date.valueOf(java.time.LocalDate.now());
+            return session.createQuery(
+                    "FROM HoaDon h WHERE h.trangThai = 2 " +
+                    "AND h.ngayLap < :homNay",
+                    HoaDon.class)
+                    .setParameter("homNay", homNay)
+                    .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    // =====================================================================
+    //  Cập nhật hàng loạt: tất cả đơn chờ (trangThai=2) tạo trước hôm nay
+    //  → chuyển sang trangThai=3 (đã hủy)
+    //  Trả về số bản ghi đã cập nhật
+    // =====================================================================
+    public int huyDonChoQuaHan() {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            org.hibernate.Transaction tx = session.beginTransaction();
+            java.sql.Date homNay = java.sql.Date.valueOf(java.time.LocalDate.now());
+            int soLuong = session.createNativeQuery(
+                    "UPDATE hoa_don SET trang_thai = 3 " +
+                    "WHERE trang_thai = 2 AND CAST(ngay_lap AS DATE) < :homNay AND is_deleted = 0"
+            ).setParameter("homNay", homNay).executeUpdate();
+            tx.commit();
+            return soLuong;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 }

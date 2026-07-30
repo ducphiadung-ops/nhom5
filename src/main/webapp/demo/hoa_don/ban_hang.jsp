@@ -778,6 +778,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = e.target.closest('.btn-remove-item');
         if (!btn) return;
         const ctId = parseInt(btn.getAttribute('data-ct-id'));
+
+        // Lưu thông tin seri trước khi xóa để cập nhật tồn kho
+        let removedSoSeri = null;
+        if (currentDonId && cartByDon[currentDonId]) {
+            const item = cartByDon[currentDonId].find(function(i){ return i.id === ctId; });
+            if (item) removedSoSeri = item.soSeri;
+        }
+
         fetch(CTX + '/hoa-don/api/xoa-seri', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -790,6 +798,25 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(function(data) {
                 if (data.error) { showToast(data.error, 'error'); return; }
                 if (data.success && currentDonId) {
+                    // Cập nhật lại trangThai của seri trong allSeriData về còn hàng
+                    if (removedSoSeri) {
+                        const seri = allSeriData.find(function(s){ return s.soSeri === removedSoSeri; });
+                        if (seri) {
+                            seri.trangThai = 1;
+                            // Cập nhật badge tồn kho trong bảng sản phẩm
+                            const remaining = allSeriData.filter(function(s) {
+                                return s.cauhinhId === seri.cauhinhId && s.trangThai === 1;
+                            }).length;
+                            const productRows = document.querySelectorAll('#dbProductList tr[data-name]');
+                            productRows.forEach(function(row) {
+                                const openBtn = row.querySelector('.btn-open-seri');
+                                if (openBtn && parseInt(openBtn.getAttribute('data-cauhinh-id')) === seri.cauhinhId) {
+                                    const tonSpan = row.querySelector('td:nth-child(6) span');
+                                    if (tonSpan) tonSpan.textContent = remaining;
+                                }
+                            });
+                        }
+                    }
                     loadCartFromServer(currentDonId);
                 }
             })
@@ -1045,6 +1072,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (s) s.trangThai = 0;
                 }
             });
+
+            // Cập nhật số tồn kho hiển thị ngay trên bảng sản phẩm (không cần reload trang)
+            if (ok > 0) {
+                const addedCauhinhId = currentCauhinhId;
+                // Đếm số seri còn trangThai === 1 (còn hàng) của cấu hình này
+                const remaining = allSeriData.filter(function(s) {
+                    return s.cauhinhId === addedCauhinhId && s.trangThai === 1;
+                }).length;
+                // Tìm hàng sản phẩm tương ứng trong bảng modal và cập nhật badge tồn
+                const productRows = document.querySelectorAll('#dbProductList tr[data-name]');
+                productRows.forEach(function(row) {
+                    const btn = row.querySelector('.btn-open-seri');
+                    if (btn && parseInt(btn.getAttribute('data-cauhinh-id')) === addedCauhinhId) {
+                        const tonSpan = row.querySelector('td:nth-child(6) span');
+                        if (tonSpan) tonSpan.textContent = remaining;
+                    }
+                });
+            }
+
             loadCartFromServer(currentDonId);
             document.getElementById('seriModal').classList.remove('active');
             if (ok > 0) {

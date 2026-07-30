@@ -81,6 +81,14 @@
                             <label class="form-label">Kích thước (Inches)</label>
                             <input type="text" name="kichThuoc" class="form-control py-2" placeholder="Ví dụ: 15.6 inch">
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Độ phân giải</label>
+                            <input type="text" name="doPhanGiai" class="form-control py-2" placeholder="Ví dụ: 1920x1080 (Full HD)">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tần số quét</label>
+                            <input type="text" name="tanSoQuet" class="form-control py-2" placeholder="Ví dụ: 144Hz, 60Hz">
+                        </div>
                         <button type="submit" class="btn btn-primary w-100 py-2 fw-medium" style="border-radius:8px;"><i class="fa-solid fa-save me-2"></i>Lưu thuộc tính</button>
                     </form>
                 </div>
@@ -95,6 +103,8 @@
                                 <th style="width:60px;">STT</th>
                                 <th class="text-start">Thông số màn hình</th>
                                 <th>Kích thước</th>
+                                <th>Độ phân giải</th>
+                                <th>Tần số quét</th>
                                 <th>Trạng thái</th>
                                 <c:if test="${not isNhanVien}"><th style="width:150px;">Thao tác</th></c:if>
                             </tr></thead>
@@ -104,6 +114,8 @@
                                     <td>${status.index + 1}</td>
                                     <td class="text-start fw-semibold text-dark">${mh.tenManHinh}</td>
                                     <td class="text-secondary">${empty mh.kichThuoc ? '—' : mh.kichThuoc}</td>
+                                    <td class="text-secondary">${empty mh.doPhanGiai ? '—' : mh.doPhanGiai}</td>
+                                    <td class="text-secondary">${empty mh.tanSoQuet ? '—' : mh.tanSoQuet}</td>
                                     <td><c:choose><c:when test="${mh.trangThai == 1}"><span class="badge-active">Sử dụng</span></c:when><c:otherwise><span class="badge-inactive">Ngừng dùng</span></c:otherwise></c:choose></td>
                                     <c:if test="${not isNhanVien}">
                                     <td>
@@ -115,7 +127,7 @@
                                     </c:if>
                                 </tr>
                             </c:forEach>
-                            <c:if test="${empty listManHinh}"><tr><td colspan="5" class="text-center py-5 text-muted">Chưa có dữ liệu Màn hình nào!</td></tr></c:if>
+                            <c:if test="${empty listManHinh}"><tr><td colspan="7" class="text-center py-5 text-muted">Chưa có dữ liệu Màn hình nào!</td></tr></c:if>
                             </tbody>
                         </table>
                     </div>
