@@ -19,6 +19,23 @@ public class RamRepository {
             return null;
         }
     }
+
+    public List<Ram> getAllDistinctByDungLuong() {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            // Lấy id nhỏ nhất đại diện cho mỗi giá trị dung lượng, tránh hiển thị trùng
+            List<Integer> ids = session.createQuery(
+                    "SELECT MIN(r.id) FROM Ram r WHERE r.trangThai = 1 GROUP BY r.dungLuongRam",
+                    Integer.class).list();
+            if (ids == null || ids.isEmpty()) return new java.util.ArrayList<>();
+            return session.createQuery(
+                    "FROM Ram WHERE id IN :ids ORDER BY id", Ram.class)
+                    .setParameter("ids", ids)
+                    .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new java.util.ArrayList<>();
+        }
+    }
     public Ram getOne(Integer id){
         try(Session session = HibernateConfig.getFACTORY().openSession()){
             return session.find(Ram.class, id);

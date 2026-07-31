@@ -14,11 +14,23 @@
   <component name="ChangeListManager">
     <list default="true" id="4d10d1b0-9c0e-419b-8246-6aef80ccf8f8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HoaDonRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HoaDonRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/ThuocTinhSanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/ThuocTinhSanPhamServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/ban_hang.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/man-hinh/man-hinh-index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/thuoc-tinh/man-hinh/man-hinh-index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/listener/HoaDonHuyCronListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/listener/HoaDonHuyCronListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ChiTietSanPhamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ChiTietSanPhamRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/OCungRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/OCungRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/RamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/RamRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/SanPhamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/SanPhamRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/common/sidebar.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/common/sidebar.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/chi_tiet_hoa_don.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/chi_tiet_hoa_don.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/hien_thi.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/hien_thi.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them_chi_tiet.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them_chi_tiet.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/tong_quan.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/tong_quan.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +43,7 @@
     </persistenceIdMap>
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="145" />
+    <option name="cachedIndexableFilesCount" value="146" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -76,23 +88,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.8967264193626072" />
-      <entry key="MS500" value="3.7597184623499453" />
-      <entry key="S2" value="9.911065420731939" />
-      <entry key="S5" value="20.299359522771773" />
-      <entry key="S10" value="30.807326783330716" />
-      <entry key="S30" value="45.850565138334694" />
-      <entry key="S60" value="51.748457745414" />
-      <entry key="M2" value="55.18315455374369" />
-      <entry key="M5" value="57.42424934457721" />
-      <entry key="M10" value="58.203676586068156" />
-      <entry key="M15" value="58.467220946126744" />
-      <entry key="M30" value="58.73668455480659" />
-      <entry key="H1" value="59.187775790584595" />
-      <entry key="H2" value="63.06793512034178" />
-      <entry key="H4" value="85.62593011250479" />
-      <entry key="D1" value="486.78224767699373" />
-      <entry key="W1" value="938.0822472538723" />
+      <entry key="MS100" value="1.8305378060911086" />
+      <entry key="MS500" value="4.210444253862711" />
+      <entry key="S2" value="10.24003191554674" />
+      <entry key="S5" value="21.611800047102157" />
+      <entry key="S10" value="36.76951391131813" />
+      <entry key="S30" value="63.48095259156582" />
+      <entry key="S60" value="75.36992123640842" />
+      <entry key="M2" value="82.63705142840939" />
+      <entry key="M5" value="87.51126390870313" />
+      <entry key="M10" value="89.23061514242937" />
+      <entry key="M15" value="89.81476858851634" />
+      <entry key="M30" value="90.40855182232738" />
+      <entry key="H1" value="91.02251433751005" />
+      <entry key="H2" value="94.98086115961088" />
+      <entry key="H4" value="117.56958869990093" />
+      <entry key="D1" value="518.7349295685112" />
+      <entry key="W1" value="970.0693918045603" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -100,37 +112,37 @@
       <entry key="S2" value="0.0" />
       <entry key="S5" value="0.0" />
       <entry key="S10" value="0.0" />
-      <entry key="S30" value="1.8489384800707686E-215" />
-      <entry key="S60" value="6.05906690503194E-108" />
-      <entry key="M2" value="3.6573714041220116E-54" />
-      <entry key="M5" value="7.56206993799944E-22" />
-      <entry key="M10" value="4.703828610721074E-11" />
-      <entry key="M15" value="1.9092097236587755E-7" />
-      <entry key="M30" value="8.591393979725267E-4" />
-      <entry key="H1" value="0.07069059193381112" />
-      <entry key="H2" value="0.9454875828614772" />
-      <entry key="H4" value="7.493934817278501" />
-      <entry key="D1" value="181.0539573644377" />
-      <entry key="W1" value="410.2275599136406" />
+      <entry key="S30" value="1.4082113632593624E-215" />
+      <entry key="S60" value="5.287841631498911E-108" />
+      <entry key="M2" value="3.416688695758853E-54" />
+      <entry key="M5" value="7.358939423536376E-22" />
+      <entry key="M10" value="4.640221996956719E-11" />
+      <entry key="M15" value="1.8919594195200097E-7" />
+      <entry key="M30" value="8.552492950172874E-4" />
+      <entry key="H1" value="0.07053037016164974" />
+      <entry key="H2" value="0.9444154908977923" />
+      <entry key="H4" value="7.489684911605122" />
+      <entry key="D1" value="181.03684031925428" />
+      <entry key="W1" value="410.2220192068756" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.7689495548888239" />
-      <entry key="MS500" value="3.686334119968309" />
-      <entry key="S2" value="9.75675546715278" />
-      <entry key="S5" value="20.173787842236322" />
-      <entry key="S10" value="30.71346219130558" />
-      <entry key="S30" value="45.80148155530348" />
-      <entry key="S60" value="51.720010193847976" />
-      <entry key="M2" value="55.16774972186095" />
-      <entry key="M5" value="57.41777287531711" />
-      <entry key="M10" value="58.200383104261135" />
-      <entry key="M15" value="58.46501298563833" />
-      <entry key="M30" value="58.736430262629696" />
-      <entry key="H1" value="59.257798821764744" />
-      <entry key="H2" value="64.01256097757054" />
-      <entry key="H4" value="93.118118213928" />
-      <entry key="D1" value="667.8317571247975" />
-      <entry key="W1" value="1348.3084388371672" />
+      <entry key="MS100" value="1.6640889383745685" />
+      <entry key="MS500" value="4.126098082603577" />
+      <entry key="S2" value="10.188486697998318" />
+      <entry key="S5" value="21.543167936317488" />
+      <entry key="S10" value="36.69323495627909" />
+      <entry key="S30" value="63.42696880684356" />
+      <entry key="S60" value="75.33596103674508" />
+      <entry key="M2" value="82.61786561460728" />
+      <entry key="M5" value="87.50298610648004" />
+      <entry key="M10" value="89.2263687432364" />
+      <entry key="M15" value="89.81191341328069" />
+      <entry key="M30" value="90.40796399705084" />
+      <entry key="H1" value="91.09221104128545" />
+      <entry key="H2" value="95.9243320234439" />
+      <entry key="H4" value="125.05748592964713" />
+      <entry key="D1" value="699.7673153964716" />
+      <entry key="W1" value="1380.2900417002027" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">

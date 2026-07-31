@@ -333,14 +333,18 @@
                         </div>
                         <div class="modal-body px-4">
                             <input type="hidden" id="currentInputIndexTarget">
-                            <label class="form-label text-secondary mb-2">Hệ thống tự động loại bỏ ký tự lạ. Mỗi mã cách nhau bằng dấu xuống dòng hoặc dấu phẩy.</label>
-                            <textarea id="txtAreaImeiTemp" class="form-control font-monospace" rows="5" placeholder="Ví dụ:&#10;IMEI-DELL-001&#10;IMEI-DELL-002" style="text-transform: uppercase; font-size: 13px;"></textarea>
+                            <label class="form-label text-secondary mb-2">Chỉ nhập số, từ 13–15 ký tự. Mỗi IMEI trên một dòng.</label>
+                            <textarea id="txtAreaImeiTemp" class="form-control font-monospace" rows="5"
+                                      placeholder="Ví dụ: 12345678987654"
+                                      style="font-size: 13px;"></textarea>
+
+                            <div id="imeiErrorBox" class="d-none mt-2 p-2 rounded" style="background:#fff1f2; border:1px solid #fca5a5; font-size:12px; color:#dc2626; line-height:1.7;"></div>
 
                             <div class="mt-3 d-flex justify-content-between align-items-center">
                                 <span class="small text-muted fw-semibold">Số lượng máy đếm thực tế:</span>
                                 <span id="lblCountImeiModal" class="badge bg-success font-monospace" style="font-size:13px;">0 Máy</span>
                             </div>
-                            <div class="p-2 bg-light border rounded mt-2 font-monospace" id="boxImeiListPreview" style="max-height:80px; overflow-y:auto; font-size:11px;">Chưa có mã nào</div>
+                            <div class="p-2 bg-light border rounded mt-2 font-monospace" id="boxImeiListPreview" style="max-height:100px; overflow-y:auto; font-size:11px;">Chưa có mã nào</div>
                         </div>
                         <div class="modal-footer border-0 p-4 pt-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearModalTextArea()">XÓA TRỐNG</button>
@@ -390,18 +394,23 @@
         });
 
         $('#txtAreaImeiTemp').on('input', function() {
-            let txt = $(this).val().toUpperCase();
-            txt = txt.replace(/[^A-Z0-9,\n\r\-_]/g, '');
-            $(this).val(txt);
+            const imeiRegex = /^\d{13,15}$/;
+            const txt = $(this).val().trim();
+            const lines = txt ? txt.split('\n').map(s => s.trim()).filter(s => s.length > 0) : [];
 
-            const lines = txt.split(/[,\n\r]+/).map(s => s.trim()).filter(s => s.length > 0);
-            $('#lblCountImeiModal').text(lines.length + " Máy");
+            // Ẩn error box khi người dùng đang gõ lại
+            $('#imeiErrorBox').addClass('d-none').html('');
+
+            $('#lblCountImeiModal').text(lines.length + " Máy mới");
 
             if (lines.length > 0) {
                 let htmlPreview = lines.map((l, index) => {
-                    return '<span class="badge bg-white text-dark border me-1 mb-1 d-inline-flex align-items-center">' +
-                        l +
-                        '<i class="fa-solid fa-xmark ms-1 text-danger cursor-pointer" style="cursor: pointer; font-size: 11px;" onclick="xóaNhanhMotMaImei(' + index + ')"></i>' +
+                    const ok = imeiRegex.test(l);
+                    return '<span class="badge me-1 mb-1 d-inline-flex align-items-center ' +
+                        (ok ? 'bg-white text-dark border' : 'border border-danger-subtle text-danger') + '" ' +
+                        'style="font-size:11px; background-color:' + (ok ? '#ffffff' : '#fff1f2') + ';">' +
+                        l + (ok ? '' : ' ⚠️') +
+                        '<i class="fa-solid fa-xmark ms-1 text-danger" style="cursor:pointer; font-size:10px;" onclick="xóaNhanhMotMaImei(' + index + ')"></i>' +
                         '</span>';
                 }).join('');
                 $('#boxImeiListPreview').html(htmlPreview);
@@ -422,8 +431,33 @@
         if (targetBtn) {
             document.getElementById("modalImeiHeaderTitle").innerText = "Nhập kho: " + targetBtn.getAttribute("data-config") + " - " + targetBtn.getAttribute("data-color");
         }
-        document.getElementById("txtAreaImeiTemp").value = document.getElementById("imei-hidden-" + index).value;
-        $('#txtAreaImeiTemp').trigger('input');
+
+        // Xóa trắng textarea — không cho sửa IMEI đã lưu
+        document.getElementById("txtAreaImeiTemp").value = "";
+
+        // Ẩn error box
+        const errorBox = document.getElementById("imeiErrorBox");
+        errorBox.classList.add("d-none");
+        errorBox.innerHTML = "";
+
+        // Hiển thị IMEI đã lưu ở preview (chỉ đọc)
+        const textDaLuu = document.getElementById("imei-hidden-" + index).value;
+        const mangDaLuu = textDaLuu ? textDaLuu.split('\n').filter(s => s.trim().length > 0) : [];
+
+        if (mangDaLuu.length > 0) {
+            $('#lblCountImeiModal').text(mangDaLuu.length + " Máy đã lưu");
+            $('#boxImeiListPreview').html(
+                '<div class="mb-1 fw-semibold text-secondary" style="font-size:11px;">IMEI đã lưu (không thể chỉnh sửa):</div>' +
+                mangDaLuu.map(l =>
+                    '<span class="badge me-1 mb-1 border border-success-subtle" ' +
+                    'style="font-size:11px; background-color:#f0fdf4; color:#16a34a;">' + l.trim() + '</span>'
+                ).join('')
+            );
+        } else {
+            $('#lblCountImeiModal').text("0 Máy đã lưu");
+            $('#boxImeiListPreview').html("Chưa có mã nào");
+        }
+
         $('#imeiModal').modal('show');
     }
 
@@ -585,62 +619,95 @@
     function xacNhanLuuImeiModal() {
         const index = document.getElementById("currentInputIndexTarget").value;
         const rawText = document.getElementById("txtAreaImeiTemp").value.trim();
+        const errorBox = document.getElementById("imeiErrorBox");
+        const imeiRegex = /^\d{13,15}$/;
 
-        // Tách và làm sạch danh sách IMEI vừa nhập trong modal
-        const mangImeiRaw = rawText
-            ? rawText.split(/[,\n\r]+/).map(s => s.trim().replace(/\s+/g, '').toUpperCase()).filter(s => s.length > 0)
+        // Lấy danh sách IMEI mới nhập (bỏ dòng trống)
+        const dongMoi = rawText
+            ? rawText.split('\n').map(s => s.trim()).filter(s => s.length > 0)
             : [];
 
-        if (mangImeiRaw.length === 0) {
-            _luuImeiVaoDong(index, []);
-            $('#imeiModal').modal('hide');
+        // Không nhập gì thì đóng modal, không thay đổi dữ liệu cũ
+        if (dongMoi.length === 0) {
+            errorBox.innerHTML = "<strong>⚠️ Vui lòng nhập ít nhất một IMEI.</strong>";
+            errorBox.classList.remove("d-none");
             return;
         }
 
-        // ── Check trùng nội bộ trong chính ô nhập ──
+        // ── BƯỚC 1: Validate format — chỉ số, 13–15 ký tự ──
+        const loiList = [];
+        dongMoi.forEach(function(imei, i) {
+            if (!imeiRegex.test(imei)) {
+                loiList.push("Dòng " + (i + 1) + ": <strong>\"" + imei + "\"</strong> — IMEI chỉ gồm chữ số, từ 13–15 ký tự.");
+            }
+        });
+
+        if (loiList.length > 0) {
+            errorBox.innerHTML = "⚠️ Có IMEI không hợp lệ:<br>" + loiList.join("<br>");
+            errorBox.classList.remove("d-none");
+            return; // Dừng hoàn toàn, không gọi API
+        }
+
+        // Format hợp lệ — ẩn error box
+        errorBox.classList.add("d-none");
+        errorBox.innerHTML = "";
+
+        // ── BƯỚC 2: Deduplicate nội bộ ──
         const seenInBox = new Set();
         const trungNoiBo = new Set();
-        const mangImeiMoi = []; // danh sách đã deduplicate
+        const mangImeiMoi = [];
 
-        mangImeiRaw.forEach(function(im) {
+        dongMoi.forEach(function(im) {
             if (seenInBox.has(im)) {
-                trungNoiBo.add(im); // ghi nhận trùng nhưng KHÔNG thêm lần 2
+                trungNoiBo.add(im);
             } else {
                 seenInBox.add(im);
                 mangImeiMoi.push(im);
             }
         });
 
-        // Nếu có trùng nội bộ → thông báo ngay, cập nhật textarea rồi tiếp tục xử lý
         if (trungNoiBo.size > 0) {
             document.getElementById("txtAreaImeiTemp").value = mangImeiMoi.join("\n");
             $('#txtAreaImeiTemp').trigger('input');
             hienThongBaoToast(
-                "Đã xoá " + trungNoiBo.size + " IMEI nhập trùng trong ô nhập, chỉ giữ lại 1 bản: <b>" + Array.from(trungNoiBo).join(", ") + "</b>",
+                "Đã xoá " + trungNoiBo.size + " IMEI nhập trùng, chỉ giữ lại 1 bản: <b>" + Array.from(trungNoiBo).join(", ") + "</b>",
                 "warning"
             );
         }
 
-        // Thu thập tất cả IMEI đã được điền ở các biến thể KHÁC (không tính biến thể đang mở modal)
+        // ── BƯỚC 3: Thu thập IMEI đã điền ở các biến thể KHÁC ──
         const imeiDaDiem = [];
         document.querySelectorAll("textarea[name='soSeriDong']").forEach(function(ta) {
-            const hiddenIndexEl = ta.id; // "imei-hidden-X"
-            const taIndex = hiddenIndexEl.replace("imei-hidden-", "");
+            const taIndex = ta.id.replace("imei-hidden-", "");
             if (taIndex !== String(index) && ta.value.trim()) {
-                ta.value.trim().split(/[,\n\r]+/).forEach(function(s) {
-                    const clean = s.trim().replace(/\s+/g, '').toUpperCase();
+                ta.value.trim().split('\n').forEach(function(s) {
+                    const clean = s.trim();
                     if (clean.length > 0) imeiDaDiem.push(clean);
                 });
             }
         });
 
-        // Hiển thị trạng thái đang kiểm tra
+        // ── BƯỚC 3b: Check IMEI mới nhập có trùng IMEI đã lưu của CHÍNH biến thể này không ──
+        const hiddenTaHienTai = document.getElementById("imei-hidden-" + index);
+        const textDaLuuHienTai = hiddenTaHienTai ? hiddenTaHienTai.value.trim() : "";
+        const mangDaLuuHienTai = textDaLuuHienTai
+            ? textDaLuuHienTai.split('\n').filter(s => s.trim().length > 0)
+            : [];
+        const setDaLuuHienTai = new Set(mangDaLuuHienTai);
+
+        const trungVoiDaLuu = mangImeiMoi.filter(im => setDaLuuHienTai.has(im));
+        if (trungVoiDaLuu.length > 0) {
+            errorBox.innerHTML = "⚠️ Các IMEI sau đã được lưu trước đó cho biến thể này, không thể nhập lại:<br><strong>" + trungVoiDaLuu.join(", ") + "</strong>";
+            errorBox.classList.remove("d-none");
+            return; // Dừng, không lưu
+        }
+
+        // ── BƯỚC 4: Hiển thị trạng thái đang kiểm tra, gọi API check trùng DB ──
         const btnXacNhan = document.querySelector('#imeiModal .btn-dark-custom');
         const originalText = btnXacNhan.innerHTML;
         btnXacNhan.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Đang kiểm tra...';
         btnXacNhan.disabled = true;
 
-        // Gọi API check trùng DB + trùng form
         const params = new URLSearchParams();
         params.append("imeiList", mangImeiMoi.join(","));
         params.append("imeiDaDiem", imeiDaDiem.join(","));
@@ -659,38 +726,24 @@
             const trungForm = data.trungForm || [];
             const tatCaTrung = [...new Set([...trungDB, ...trungForm])];
 
-            // Lọc ra danh sách IMEI hợp lệ (không trùng)
             const imeiHopLe = mangImeiMoi.filter(function(im) {
                 return !tatCaTrung.includes(im);
             });
 
-            // Nếu có IMEI trùng → hiển thị thông báo chi tiết
             if (tatCaTrung.length > 0) {
                 let thongBaoPhan = [];
-                if (trungDB.length > 0) {
-                    thongBaoPhan.push("Trùng trong Database: <b>" + trungDB.join(", ") + "</b>");
-                }
-                if (trungForm.length > 0) {
-                    thongBaoPhan.push("Trùng với biến thể khác trên form: <b>" + trungForm.join(", ") + "</b>");
-                }
+                if (trungDB.length > 0) thongBaoPhan.push("Trùng DB: <b>" + trungDB.join(", ") + "</b>");
+                if (trungForm.length > 0) thongBaoPhan.push("Trùng form: <b>" + trungForm.join(", ") + "</b>");
 
-                // Hiển thị toast cảnh báo
-                const soTrung = tatCaTrung.length;
-                const soGiu = imeiHopLe.length;
-                let msg = "Đã xoá " + soTrung + " IMEI bị trùng. ";
-                if (soGiu > 0) {
-                    msg += "Giữ lại " + soGiu + " IMEI hợp lệ.";
-                } else {
-                    msg += "Không có IMEI hợp lệ nào được lưu.";
-                }
+                let msg = "Đã xoá " + tatCaTrung.length + " IMEI bị trùng. ";
+                msg += imeiHopLe.length > 0 ? "Giữ lại " + imeiHopLe.length + " IMEI hợp lệ." : "Không có IMEI hợp lệ nào.";
                 hienThongBaoToast(msg + "<br><small>" + thongBaoPhan.join("<br>") + "</small>", "warning");
 
-                // Cập nhật lại textarea trong modal với danh sách sạch
                 document.getElementById("txtAreaImeiTemp").value = imeiHopLe.join("\n");
                 $('#txtAreaImeiTemp').trigger('input');
             }
 
-            // Lưu danh sách IMEI hợp lệ vào hidden textarea của dòng biến thể
+            // ── BƯỚC 5: Gộp IMEI mới vào IMEI cũ đã lưu (cộng dồn) ──
             _luuImeiVaoDong(index, imeiHopLe);
             $('#imeiModal').modal('hide');
         })
@@ -702,14 +755,19 @@
         });
     }
 
-    // Hàm nội bộ: lưu danh sách IMEI vào hidden textarea và cập nhật badge đếm
-    function _luuImeiVaoDong(index, imeiHopLe) {
-        document.getElementById("imei-hidden-" + index).value = imeiHopLe.join("\n");
+    // Hàm nội bộ: gộp IMEI mới vào IMEI cũ và cập nhật badge đếm
+    function _luuImeiVaoDong(index, imeiMoi) {
+        const hiddenTa = document.getElementById("imei-hidden-" + index);
+        const textDaLuu = hiddenTa ? hiddenTa.value.trim() : "";
+        const mangDaLuu = textDaLuu ? textDaLuu.split('\n').filter(s => s.trim().length > 0) : [];
+        const mangGop = mangDaLuu.concat(imeiMoi);
+
+        hiddenTa.value = mangGop.join("\n");
 
         const targetBtn = document.getElementById("badge-count-" + index);
         if (targetBtn) {
-            targetBtn.querySelector(".txt-count-imei-label").innerText = imeiHopLe.length + " Máy";
-            targetBtn.style.backgroundColor = imeiHopLe.length > 0 ? "#d1fae5" : "#ecfdf5";
+            targetBtn.querySelector(".txt-count-imei-label").innerText = mangGop.length + " Máy";
+            targetBtn.style.backgroundColor = mangGop.length > 0 ? "#d1fae5" : "#ecfdf5";
         }
     }
 
@@ -879,7 +937,40 @@
     }
 
     function dongYSubmitForm() {
-        document.getElementById("formRealThemSanPham").submit();
+        const btnXacNhan = document.querySelector('#saveConfirmModal .btn-save-confirm');
+        const originalText = btnXacNhan.innerHTML;
+        btnXacNhan.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Đang kiểm tra...';
+        btnXacNhan.disabled = true;
+
+        const tenSanPham = document.getElementById("tenSanPhamInput").value.trim().replace(/\s+/g, ' ');
+
+        const params = new URLSearchParams();
+        params.append("tenSanPham", tenSanPham);
+
+        fetch(contextPath + "/san-pham/check-ten", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString()
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.trung) {
+                // Tên đã tồn tại — đóng modal xác nhận, hiện toast lỗi
+                btnXacNhan.innerHTML = originalText;
+                btnXacNhan.disabled = false;
+                bootstrap.Modal.getInstance(document.getElementById('saveConfirmModal')).hide();
+                hienThongBaoToast("Tên sản phẩm <b>\"" + tenSanPham + "\"</b> đã tồn tại trong hệ thống. Vui lòng đổi tên khác!", "error");
+            } else {
+                // Tên hợp lệ — submit form
+                document.getElementById("formRealThemSanPham").submit();
+            }
+        })
+        .catch(function(err) {
+            btnXacNhan.innerHTML = originalText;
+            btnXacNhan.disabled = false;
+            console.error("Lỗi check tên:", err);
+            hienThongBaoToast("Không thể kiểm tra tên sản phẩm. Vui lòng thử lại!", "error");
+        });
     }
 </script>
 </body>

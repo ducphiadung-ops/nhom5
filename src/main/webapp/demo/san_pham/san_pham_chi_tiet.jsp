@@ -180,6 +180,37 @@
         .action-icon-btn.text-danger:hover {
             color: #dc2626 !important;
         }
+
+        /* BỘ LỌC BIẾN THỂ */
+        .filter-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid var(--border-color); }
+        .search-input-wrapper { position: relative; }
+        .search-input-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+        .search-input-wrapper input { padding-left: 36px; }
+
+        /* PRICE RANGE SLIDER */
+        .price-range-wrapper { padding: 4px 2px 0; }
+        .price-range-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+        .price-range-label span { font-weight: 600; color: var(--primary); }
+        .range-slider-container { position: relative; height: 6px; background: #e2e8f0; border-radius: 4px; margin: 0 2px; }
+        .range-slider-fill { position: absolute; height: 100%; background: var(--primary); border-radius: 4px; pointer-events: none; }
+        input[type="range"].price-slider {
+            -webkit-appearance: none; appearance: none;
+            position: absolute; width: 100%; height: 6px;
+            background: transparent; pointer-events: none; margin: 0;
+        }
+        input[type="range"].price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--primary); border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(26,86,219,.4);
+            cursor: pointer; pointer-events: all;
+        }
+        input[type="range"].price-slider::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--primary); border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(26,86,219,.4);
+            cursor: pointer; pointer-events: all;
+        }
     </style>
 </head>
 <body>
@@ -209,24 +240,172 @@
             <c:remove var="errorMessage" scope="session" />
         </c:if>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h4 class="fw-bold mb-1" style="color: var(--text-main);">Quản lý Biến thể Sản phẩm</h4>
-                <small class="text-muted">Danh sách các phiên bản cấu hình thương mại trong kho</small>
+        <%-- Khi lọc theo sản phẩm: hiển thị breadcrumb + tiêu đề riêng --%>
+        <c:choose>
+            <c:when test="${not empty idSanPhamFilter}">
+                <div class="mb-3">
+                    <a href="${pageContext.request.contextPath}/san-pham/hien-thi"
+                       class="text-decoration-none text-muted" style="font-size: 13px;">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Quay lại danh sách sản phẩm
+                    </a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-light text-dark border px-2 py-1 fw-medium" style="font-size: 12px;">
+                                #${maSanPhamHienTai}
+                            </span>
+                            <h4 class="fw-bold mb-0" style="color: var(--text-main);">${tenDongMayHienTai}</h4>
+                        </div>
+                        <small class="text-muted">Danh sách biến thể (${fn:length(listChiTiet)} biến thể)</small>
+                    </div>
+                    <c:if test="${not isNhanVien}">
+                    <a href="${pageContext.request.contextPath}/san-pham/giao-dien-them" class="btn btn-primary px-4 py-2" style="border-radius: 8px; font-weight: 500; font-size: 14px;">
+                        <i class="fa-solid fa-plus me-2"></i>Thêm biến thể mới
+                    </a>
+                    </c:if>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1" style="color: var(--text-main);">Quản lý Biến thể Sản phẩm</h4>
+                        <small class="text-muted">Danh sách các phiên bản cấu hình thương mại trong kho</small>
+                    </div>
+                    <c:if test="${not isNhanVien}">
+                    <a href="${pageContext.request.contextPath}/san-pham/giao-dien-them" class="btn btn-primary px-4 py-2" style="border-radius: 8px; font-weight: 500; font-size: 14px;">
+                        <i class="fa-solid fa-plus me-2"></i>Thêm biến thể mới
+                    </a>
+                    </c:if>
+                </div>
+            </c:otherwise>
+        </c:choose>
+
+        <%-- Bộ lọc biến thể (chỉ hiện khi đang ở danh sách tất cả, không phải lọc theo SP cha) --%>
+        <c:if test="${empty idSanPhamFilter}">
+        <form action="${pageContext.request.contextPath}/san-pham-chi-tiet/hien-thi" method="GET"
+              class="filter-card" id="formLocBienThe">
+            <div class="row g-3">
+
+                <!-- Tên sản phẩm cha -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-medium text-muted mb-1">Tên sản phẩm</label>
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="tenSanPham" class="form-control form-control-sm py-2"
+                               placeholder="Tìm theo tên SP..." value="${oldTenSanPham}">
+                    </div>
+                </div>
+
+                <!-- CPU -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-medium text-muted mb-1">CPU</label>
+                    <select name="idCpu" class="form-select form-select-sm py-2">
+                        <option value="">Tất cả CPU</option>
+                        <c:forEach items="${listCpuFilter}" var="cpu">
+                            <option value="${cpu.id}" ${oldIdCpu == cpu.id ? 'selected' : ''}>${cpu.tenCpu}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <!-- GPU -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-medium text-muted mb-1">GPU</label>
+                    <select name="idGpu" class="form-select form-select-sm py-2">
+                        <option value="">Tất cả GPU</option>
+                        <c:forEach items="${listGpuFilter}" var="gpu">
+                            <option value="${gpu.id}" ${oldIdGpu == gpu.id ? 'selected' : ''}>${gpu.tenGpu}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <!-- Màu sắc -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-medium text-muted mb-1">Màu sắc</label>
+                    <select name="idMauSac" class="form-select form-select-sm py-2">
+                        <option value="">Tất cả màu</option>
+                        <c:forEach items="${listMauSacFilter}" var="ms">
+                            <option value="${ms.id}" ${oldIdMauSac == ms.id ? 'selected' : ''}>${ms.tenMauSac}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <!-- RAM -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-medium text-muted mb-1">RAM</label>
+                    <select name="idRam" class="form-select form-select-sm py-2">
+                        <option value="">Tất cả RAM</option>
+                        <c:forEach items="${listRamFilter}" var="ram">
+                            <option value="${ram.id}" ${oldIdRam == ram.id ? 'selected' : ''}>${ram.dungLuongRam}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <!-- Ổ cứng -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-medium text-muted mb-1">Ổ cứng</label>
+                    <select name="idOCung" class="form-select form-select-sm py-2">
+                        <option value="">Tất cả ổ cứng</option>
+                        <c:forEach items="${listOCungFilter}" var="oc">
+                            <option value="${oc.id}" ${oldIdOCung == oc.id ? 'selected' : ''}>${oc.dungLuongOCung}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <!-- Trạng thái -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-medium text-muted mb-1">Trạng thái</label>
+                    <select name="trangThai" class="form-select form-select-sm py-2">
+                        <option value="">Tất cả</option>
+                        <option value="1" ${oldTrangThai == '1' ? 'selected' : ''}>Hoạt động</option>
+                        <option value="0" ${oldTrangThai == '0' ? 'selected' : ''}>Không hoạt động</option>
+                    </select>
+                </div>
+
+                <!-- Nút -->
+                <div class="col-md-4 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm px-4 py-2">
+                        <i class="fa-solid fa-filter me-1"></i>Lọc
+                    </button>
+                    <a href="${pageContext.request.contextPath}/san-pham-chi-tiet/hien-thi"
+                       class="btn btn-outline-secondary btn-sm py-2" title="Xoá bộ lọc">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                </div>
+
+                <!-- Thanh kéo khoảng giá — full width, đáy bộ lọc -->
+                <div class="col-12">
+                    <label class="form-label small fw-medium text-muted mb-1">
+                        Khoảng giá bán &nbsp;(từ <strong>0 đ</strong> đến <span id="lblGiaMaxCT" class="text-primary fw-bold"></span>)
+                    </label>
+                    <div class="price-range-wrapper">
+                        <div class="range-slider-container">
+                            <div class="range-slider-fill" id="sliderFillCT"></div>
+                            <input type="range" class="price-slider" id="sliderMaxCT" name="giaMax"
+                                   min="${priceAbsMin}" max="${priceAbsMax}"
+                                   value="${oldGiaMax}" step="100000">
+                        </div>
+                        <div class="price-range-label mt-2">
+                            <span>0 ₫</span>
+                            <span id="lblRightCT"></span>
+                        </div>
+                    </div>
+                    <input type="hidden" name="giaMin" value="0">
+                </div>
+
             </div>
-            <c:if test="${not isNhanVien}">
-            <a href="${pageContext.request.contextPath}/san-pham/giao-dien-them" class="btn btn-primary px-4 py-2" style="border-radius: 8px; font-weight: 500; font-size: 14px;">
-                <i class="fa-solid fa-plus me-2"></i>Thêm biến thể mới
-            </a>
-            </c:if>
-        </div>
+        </form>
+        </c:if>
 
         <div class="content-card">
             <table class="table table-custom align-middle">
                 <thead>
                 <tr>
                     <th style="width: 50px;">STT</th>
+                    <%-- Ẩn cột "Tên SP Cha" khi đang lọc theo sản phẩm (đã hiển thị ở tiêu đề) --%>
+                    <c:if test="${empty idSanPhamFilter}">
                     <th>Tên SP Cha</th>
+                    </c:if>
                     <th>Màu Sắc</th>
                     <th>RAM</th>
                     <th>Ổ Cứng</th>
@@ -239,7 +418,9 @@
                 <c:forEach items="${listChiTiet}" var="ct" varStatus="stt">
                     <tr>
                         <td class="text-muted fw-semibold">${stt.index + 1}</td>
+                        <c:if test="${empty idSanPhamFilter}">
                         <td class="fw-bold text-dark">${ct.sanPham.tenSanPham}</td>
+                        </c:if>
                         <td><span class="badge border text-dark bg-light px-2 py-1"><i class="fa-solid fa-circle me-1 text-secondary" style="font-size:8px;"></i>${ct.cauHinhSanPham.mauSac.tenMauSac}</span></td>
                         <td class="fw-medium">${ct.cauHinhSanPham.ram.dungLuongRam}</td>
                         <td class="fw-medium">${ct.cauHinhSanPham.OCung.dungLuongOCung}</td>
@@ -265,7 +446,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty listChiTiet}">
-                    <tr><td colspan="8" class="text-center py-5 text-muted">Kho hàng biến thể trống!</td></tr>
+                    <tr><td colspan="${not empty idSanPhamFilter ? '7' : '8'}" class="text-center py-5 text-muted">Kho hàng biến thể trống!</td></tr>
                 </c:if>
                 </tbody>
             </table>
@@ -379,6 +560,36 @@
             }
         });
     }
+
+    /* ======= PRICE RANGE SLIDER – BIẾN THỂ ======= */
+    (function () {
+        var absMin = ${priceAbsMin != null ? priceAbsMin : 0};
+        var absMax = ${priceAbsMax != null ? priceAbsMax : 0};
+        var curMax = ${oldGiaMax  != null ? oldGiaMax  : (priceAbsMax != null ? priceAbsMax : 0)};
+
+        var sliderMax = document.getElementById('sliderMaxCT');
+        var fill      = document.getElementById('sliderFillCT');
+        var lblMax    = document.getElementById('lblGiaMaxCT');
+        var lblRight  = document.getElementById('lblRightCT');
+
+        function fmt(v) { return Number(v).toLocaleString('vi-VN') + ' ₫'; }
+        function updateSlider() {
+            var val = parseInt(sliderMax.value);
+            var pct = absMax > absMin ? ((val - absMin) / (absMax - absMin)) * 100 : 100;
+            fill.style.left  = '0%';
+            fill.style.width = pct + '%';
+            if (lblMax)   lblMax.textContent   = fmt(val);
+            if (lblRight) lblRight.textContent = fmt(absMax);
+        }
+
+        if (sliderMax) {
+            sliderMax.min   = absMin;
+            sliderMax.max   = absMax;
+            sliderMax.value = curMax;
+            sliderMax.addEventListener('input', updateSlider);
+            updateSlider();
+        }
+    })();
 </script>
 </body>
 </html>

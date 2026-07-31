@@ -29,7 +29,8 @@ import java.util.Set;
         "/san-pham/sua",
         "/san-pham/xoa",
         "/san-pham/giao-dien-them",
-        "/san-pham/check-imei"
+        "/san-pham/check-imei",
+        "/san-pham/check-ten"
 })
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
@@ -105,6 +106,8 @@ public class SanPhamServlet extends HttpServlet {
             xuLyXoa(req, resp);
         } else if (path.equals("/san-pham/check-imei")) {
             xuLyCheckImei(req, resp);
+        } else if (path.equals("/san-pham/check-ten")) {
+            xuLyCheckTenSanPham(req, resp);
         } else {
             resp.sendRedirect(req.getContextPath() + "/san-pham/hien-thi");
         }
@@ -114,8 +117,8 @@ public class SanPhamServlet extends HttpServlet {
         try { req.setAttribute("listThuongHieu", thuongHieuRepo.getAll()); } catch (Exception e) { req.setAttribute("listThuongHieu", new ArrayList<>()); }
         try { req.setAttribute("listDanhMuc", danhMucRepo.getAll()); } catch (Exception e) { req.setAttribute("listDanhMuc", new ArrayList<>()); }
         try { req.setAttribute("listCpu", cpuRepo.getAll()); } catch (Exception e) { req.setAttribute("listCpu", new ArrayList<>()); }
-        try { req.setAttribute("listRam", ramRepo.getAll()); } catch (Exception e) { req.setAttribute("listRam", new ArrayList<>()); }
-        try { req.setAttribute("listOCung", oCungRepo.getAll()); } catch (Exception e) { req.setAttribute("listOCung", new ArrayList<>()); }
+        try { req.setAttribute("listRam", ramRepo.getAllDistinctByDungLuong()); } catch (Exception e) { req.setAttribute("listRam", new ArrayList<>()); }
+        try { req.setAttribute("listOCung", oCungRepo.getAllDistinctByDungLuong()); } catch (Exception e) { req.setAttribute("listOCung", new ArrayList<>()); }
         try { req.setAttribute("listGpu", gpuRepo.getAll()); } catch (Exception e) { req.setAttribute("listGpu", new ArrayList<>()); }
         try { req.setAttribute("listManHinh", manHinhRepo.getAll()); } catch (Exception e) { req.setAttribute("listManHinh", new ArrayList<>()); }
         try { req.setAttribute("listMauSac", mauSacRepo.getAll()); } catch (Exception e) { req.setAttribute("listMauSac", new ArrayList<>()); }
@@ -444,15 +447,87 @@ public class SanPhamServlet extends HttpServlet {
         out.flush();
     }
 
+    // ==========================================
+    // 🟢 API CHECK TRÙNG TÊN SẢN PHẨM - Trả về JSON
+    // POST /san-pham/check-ten
+    // Body param: tenSanPham = tên cần kiểm tra
+    // Response: {"trung": true/false}
+    // ==========================================
+    private void xuLyCheckTenSanPham(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json;charset=UTF-8");
+        resp.setHeader("Cache-Control", "no-cache");
+
+        String ten = req.getParameter("tenSanPham");
+        boolean trung = false;
+
+        if (ten != null && !ten.trim().isEmpty()) {
+            ten = ten.trim().replaceAll("\\s+", " ");
+            trung = sanPhamRepo.checkTrungTen(ten);
+        }
+
+        PrintWriter out = resp.getWriter();
+        out.print("{\"trung\":" + trung + "}");
+        out.flush();
+    }
+
     private String escapeJson(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     private void hienThiDanhSach(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try { req.setAttribute("listSanPham", sanPhamRepo.getAll()); } catch (Exception e) { req.setAttribute("listSanPham", new ArrayList<>()); }
-        try { req.setAttribute("listThuongHieu", thuongHieuRepo.getAll()); } catch (Exception e) { req.setAttribute("listThuongHieu", new ArrayList<>()); }
-        try { req.setAttribute("listDanhMuc", danhMucRepo.getAll()); } catch (Exception e) { req.setAttribute("listDanhMuc", new ArrayList<>()); }
+        // --- đọc tham số lọc từ request ---
+        String keyword      = req.getParameter("keyword");
+        String maSanPham    = req.getParameter("maSanPham");
+        String idThuongHieuStr = req.getParameter("idThuongHieu");
+        String trangThaiStr = req.getParameter("trangThai");
+        String giaMinStr    = req.getParameter("giaMin");
+        String giaMaxStr    = req.getParameter("giaMax");
+
+        Integer idThuongHieu = null;
+        Integer trangThai    = null;
+        java.math.BigDecimal giaMin = null;
+        java.math.BigDecimal giaMax = null;
+
+        try { if (idThuongHieuStr != null && !idThuongHieuStr.isEmpty()) idThuongHieu = Integer.parseInt(idThuongHieuStr); } catch (Exception ignored) {}
+        try { if (trangThaiStr    != null && !trangThaiStr.isEmpty())    trangThai    = Integer.parseInt(trangThaiStr);    } catch (Exception ignored) {}
+        try { if (giaMinStr       != null && !giaMinStr.isEmpty())       giaMin       = new java.math.BigDecimal(giaMinStr); } catch (Exception ignored) {}
+        try { if (giaMaxStr       != null && !giaMaxStr.isEmpty())       giaMax       = new java.math.BigDecimal(giaMaxStr); } catch (Exception ignored) {}
+
+        // Kiểm tra có lọc gì không; nếu không thì dùng getAll() (chỉ hiện trangThai=1)
+        boolean coLoc = (keyword != null && !keyword.isEmpty())
+                || (maSanPham != null && !maSanPham.isEmpty())
+                || idThuongHieu != null
+                || (trangThaiStr != null && !trangThaiStr.isEmpty())
+                || giaMin != null || giaMax != null;
+
+        List listSanPham;
+        if (coLoc) {
+            listSanPham = sanPhamRepo.locDaKieu(keyword, maSanPham, idThuongHieu, trangThai, giaMin, giaMax);
+        } else {
+            listSanPham = sanPhamRepo.getAll();
+        }
+
+        // --- lấy min/max giá để render thanh kéo ---
+        java.math.BigDecimal[] minMax = sanPhamRepo.getMinMaxGiaBan();
+
+        try { req.setAttribute("listSanPham",   listSanPham); }                                         catch (Exception e) { req.setAttribute("listSanPham", new ArrayList<>()); }
+        try { req.setAttribute("listThuongHieu", thuongHieuRepo.getAll()); }                            catch (Exception e) { req.setAttribute("listThuongHieu", new ArrayList<>()); }
+        try { req.setAttribute("listDanhMuc",    danhMucRepo.getAll()); }                               catch (Exception e) { req.setAttribute("listDanhMuc", new ArrayList<>()); }
+        try { req.setAttribute("mapSoBienThe",   ctspRepo.demBienTheTheoSanPham()); }                   catch (Exception e) { req.setAttribute("mapSoBienThe", new java.util.HashMap<>()); }
+
+        req.setAttribute("priceAbsMin",  minMax[0].longValue());
+        req.setAttribute("priceAbsMax",  minMax[1].longValue());
+        req.setAttribute("priceCurrentMax", giaMax != null ? giaMax.longValue() : minMax[1].longValue());
+
+        // giữ lại giá trị cũ để hiển thị lại form
+        req.setAttribute("oldKeyword",     keyword     != null ? keyword     : "");
+        req.setAttribute("oldMaSanPham",   maSanPham   != null ? maSanPham   : "");
+        req.setAttribute("oldThuongHieu",  idThuongHieu);
+        req.setAttribute("oldTrangThai",   trangThaiStr != null ? trangThaiStr : "");
+        req.setAttribute("oldGiaMin",      giaMin  != null ? giaMin.longValue()  : minMax[0].longValue());
+        req.setAttribute("oldGiaMax",      giaMax  != null ? giaMax.longValue()  : minMax[1].longValue());
+
         req.getRequestDispatcher("/demo/san_pham/hien_thi.jsp").forward(req, resp);
     }
 

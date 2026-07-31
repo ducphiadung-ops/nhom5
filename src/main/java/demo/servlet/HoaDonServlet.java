@@ -515,6 +515,10 @@ public class HoaDonServlet extends HttpServlet {
     private void banhang(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         NhanVien nv = (NhanVien) req.getSession().getAttribute("nhanVien");
 
+        // Huỷ các đơn chờ quá hạn (tạo trước hôm nay) trước khi load danh sách
+        // Đảm bảo kể cả khi cron job chưa kịp chạy, trang bán hàng vẫn luôn phản ánh đúng
+        hoaDonRepository.huyDonChoQuaHan();
+
         List<ChiTietSanPham> listSanPham      = chiTietSanPhamRepository.getAll();
         List<KhachHang> listKhachHang          = khachHangRepo.getAll();
         List<MaSeri> listMaSeri                = maSeriRepository.getAll();

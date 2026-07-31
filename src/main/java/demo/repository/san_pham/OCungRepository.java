@@ -19,6 +19,23 @@ public class OCungRepository {
             return null;
         }
     }
+
+    public List<OCung> getAllDistinctByDungLuong() {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            // Lấy id nhỏ nhất đại diện cho mỗi giá trị dung lượng, tránh hiển thị trùng
+            List<Integer> ids = session.createQuery(
+                    "SELECT MIN(o.id) FROM OCung o WHERE o.trangThai = 1 GROUP BY o.dungLuongOCung",
+                    Integer.class).list();
+            if (ids == null || ids.isEmpty()) return new java.util.ArrayList<>();
+            return session.createQuery(
+                    "FROM OCung WHERE id IN :ids ORDER BY id", OCung.class)
+                    .setParameter("ids", ids)
+                    .list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new java.util.ArrayList<>();
+        }
+    }
     public OCung getOne(Integer id){
         try(Session session = HibernateConfig.getFACTORY().openSession()){
             return session.find(OCung.class, id);

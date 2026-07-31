@@ -51,7 +51,8 @@ public class ChiTietSanPhamRepository {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             String hql = "SELECT ct FROM ChiTietSanPham ct " +
                     "LEFT JOIN FETCH ct.sanPham sp " +
-                    "LEFT JOIN FETCH ct.cauHinhSanPham ch";
+                    "LEFT JOIN FETCH ct.cauHinhSanPham ch " +
+                    "ORDER BY ct.id DESC";
 
             List<ChiTietSanPham> list = session.createQuery(hql, ChiTietSanPham.class).getResultList();
             for (ChiTietSanPham ct : list) {
@@ -97,7 +98,8 @@ public class ChiTietSanPhamRepository {
             String hql = "SELECT ct FROM ChiTietSanPham ct " +
                     "LEFT JOIN FETCH ct.sanPham sp " +
                     "LEFT JOIN FETCH ct.cauHinhSanPham ch " +
-                    "WHERE ct.sanPham.id = :id";
+                    "WHERE ct.sanPham.id = :id " +
+                    "ORDER BY ct.id DESC";
             return session.createQuery(hql, ChiTietSanPham.class)
                     .setParameter("id", idSanPham)
                     .getResultList();
@@ -231,5 +233,110 @@ public class ChiTietSanPhamRepository {
             System.out.println("❌ Lỗi khi đồng bộ tồn kho theo IMEI: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Lọc biến thể đa tiêu chí cho trang Quản lý Biến thể Sản phẩm.
+     * Tất cả tham số đều nullable — null nghĩa là bỏ qua điều kiện đó.
+     */
+    public List<ChiTietSanPham> locDaKieu(String tenSanPham,
+                                          Integer idCpu, Integer idGpu,
+                                          Integer idMauSac, Integer idRam, Integer idOCung,
+                                          Integer trangThai,
+                                          java.math.BigDecimal giaMin, java.math.BigDecimal giaMax) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            StringBuilder hql = new StringBuilder(
+                    "SELECT ct FROM ChiTietSanPham ct " +
+                    "LEFT JOIN FETCH ct.sanPham sp " +
+                    "LEFT JOIN FETCH ct.cauHinhSanPham ch " +
+                    "WHERE 1=1");
+
+            if (tenSanPham != null && !tenSanPham.trim().isEmpty())
+                hql.append(" AND LOWER(sp.tenSanPham) LIKE LOWER(:tenSanPham)");
+            if (idCpu != null)
+                hql.append(" AND ch.cpu.id = :idCpu");
+            if (idGpu != null)
+                hql.append(" AND ch.gpu.id = :idGpu");
+            if (idMauSac != null)
+                hql.append(" AND ch.mauSac.id = :idMauSac");
+            if (idRam != null)
+                hql.append(" AND ch.ram.id = :idRam");
+            if (idOCung != null)
+                hql.append(" AND ch.oCung.id = :idOCung");
+            if (trangThai != null)
+                hql.append(" AND ct.trangThai = :trangThai");
+            if (giaMin != null)
+                hql.append(" AND ct.donGia >= :giaMin");
+            if (giaMax != null)
+                hql.append(" AND ct.donGia <= :giaMax");
+
+            hql.append(" ORDER BY ct.id DESC");
+
+            org.hibernate.query.Query<ChiTietSanPham> query =
+                    session.createQuery(hql.toString(), ChiTietSanPham.class);
+
+            if (tenSanPham != null && !tenSanPham.trim().isEmpty())
+                query.setParameter("tenSanPham", "%" + tenSanPham.trim() + "%");
+            if (idCpu != null)    query.setParameter("idCpu", idCpu);
+            if (idGpu != null)    query.setParameter("idGpu", idGpu);
+            if (idMauSac != null) query.setParameter("idMauSac", idMauSac);
+            if (idRam != null)    query.setParameter("idRam", idRam);
+            if (idOCung != null)  query.setParameter("idOCung", idOCung);
+            if (trangThai != null) query.setParameter("trangThai", trangThai);
+            if (giaMin != null)   query.setParameter("giaMin", giaMin);
+            if (giaMax != null)   query.setParameter("giaMax", giaMax);
+
+            List<ChiTietSanPham> list = query.getResultList();
+
+            // Kích hoạt lazy-load các thuộc tính con
+            for (ChiTietSanPham ct : list) {
+                if (ct.getCauHinhSanPham() != null) {
+                    CauHinhSanPham ch = ct.getCauHinhSanPham();
+                    try { if (ch.getCpu()    != null) ch.getCpu().getTenCpu();          } catch (Exception ignored) {}
+                    try { if (ch.getRam()    != null) ch.getRam().getTenRam();          } catch (Exception ignored) {}
+                    try { if (ch.getOCung()  != null) ch.getOCung().getTenOCung();      } catch (Exception ignored) {}
+                    try { if (ch.getMauSac() != null) ch.getMauSac().getTenMauSac();    } catch (Exception ignored) {}
+                    try { if (ch.getGpu()    != null) ch.getGpu().getTenGpu();          } catch (Exception ignored) {}
+                }
+            }
+            return list;
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi locDaKieu ChiTietSanPham: " + e.getMessage());
+            e.printStackTrace();
+            return new java.util.ArrayList<>();
+        }
+    }
+
+    /** Lấy giá bán nhỏ nhất và lớn nhất trong toàn bộ biến thể */
+    public java.math.BigDecimal[] getMinMaxDonGia() {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            Object[] row = (Object[]) session.createQuery(
+                    "SELECT MIN(ct.donGia), MAX(ct.donGia) FROM ChiTietSanPham ct")
+                    .uniqueResult();
+            java.math.BigDecimal min = row[0] != null ? (java.math.BigDecimal) row[0] : java.math.BigDecimal.ZERO;
+            java.math.BigDecimal max = row[1] != null ? (java.math.BigDecimal) row[1] : java.math.BigDecimal.ZERO;
+            return new java.math.BigDecimal[]{min, max};
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new java.math.BigDecimal[]{java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO};
+        }
+    }
+
+    // Đếm số biến thể (chi_tiet_san_pham) theo từng id sản phẩm cha
+    // Trả về Map<idSanPham, soLuongBienThe>
+    public java.util.Map<Integer, Long> demBienTheTheoSanPham() {
+        java.util.Map<Integer, Long> map = new java.util.HashMap<>();
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            List<Object[]> rows = session.createQuery(
+                    "SELECT ct.sanPham.id, COUNT(ct) FROM ChiTietSanPham ct GROUP BY ct.sanPham.id",
+                    Object[].class).getResultList();
+            for (Object[] row : rows) {
+                map.put((Integer) row[0], (Long) row[1]);
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi khi đếm biến thể theo sản phẩm: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return map;
     }
 }

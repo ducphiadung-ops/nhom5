@@ -297,8 +297,8 @@
                         <td>${imei.ngayNhap}</td>
                         <td>
                             <c:choose>
-                                <c:when test="${imei.trangThai == 1}"><span class="badge-active">Còn trong kho</span></c:when>
-                                <c:otherwise><span class="badge-inactive">Đã bán / Đã hủy</span></c:otherwise>
+                                <c:when test="${imei.trangThai == 1}"><span class="badge-active">Hoạt động</span></c:when>
+                                <c:otherwise><span class="badge-inactive">Không hoạt động</span></c:otherwise>
                             </c:choose>
                         </td>
                         <!-- Thao tác IMEI -->

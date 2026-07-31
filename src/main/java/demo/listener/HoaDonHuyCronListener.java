@@ -12,8 +12,6 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
@@ -23,20 +21,26 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Listener chạy cron job mỗi ngày vào lúc 00:00:
+ * Listener chạy cron job mỗi phút, phát hiện khi sang ngày mới:
  *   - Lấy tất cả hóa đơn chờ (trangThai=2) có ngayLap < hôm nay
  *   - Giải phóng seri đã bị giữ → trả về trangThai=1 (còn hàng)
  *   - Đồng bộ tồn kho cho từng cấu hình sản phẩm
  *   - Đổi trangThai hóa đơn → 3 (đã hủy)
+ *
+ * Dùng polling mỗi phút thay vì tính delay cố định đến 00:00
+ * để tránh mất trigger khi đổi giờ hệ thống hoặc server sleep/wake.
  */
 @WebListener
 public class HoaDonHuyCronListener implements ServletContextListener {
 
     private ScheduledExecutorService scheduler;
 
-    private final HoaDonRepository       hoaDonRepository        = new HoaDonRepository();
-    private final ChiTietHoaDonRepo       chiTietHoaDonRepo       = new ChiTietHoaDonRepo();
-    private final MaSeriRepository        maSeriRepository        = new MaSeriRepository();
+    // Ghi nhớ ngày đã xử lý lần cuối để không chạy lại nhiều lần trong cùng 1 ngày
+    private volatile LocalDate ngayDaXuLy = null;
+
+    private final HoaDonRepository        hoaDonRepository         = new HoaDonRepository();
+    private final ChiTietHoaDonRepo        chiTietHoaDonRepo        = new ChiTietHoaDonRepo();
+    private final MaSeriRepository         maSeriRepository         = new MaSeriRepository();
     private final ChiTietSanPhamRepository chiTietSanPhamRepository = new ChiTietSanPhamRepository();
 
     @Override
@@ -47,26 +51,15 @@ public class HoaDonHuyCronListener implements ServletContextListener {
             return t;
         });
 
-        // Tính delay đến midnight đêm nay (00:00:00 ngày hôm sau)
-        LocalDateTime now       = LocalDateTime.now(ZoneId.systemDefault());
-        LocalDateTime nextMidnight = LocalDateTime.of(
-                LocalDate.now(ZoneId.systemDefault()).plusDays(1),
-                LocalTime.MIDNIGHT
-        );
-        long initialDelay = java.time.Duration.between(now, nextMidnight).getSeconds();
-
+        // Poll mỗi phút — khi phát hiện ngày thay đổi thì chạy job
         scheduler.scheduleAtFixedRate(
-                this::huyDonChoQuaHan,
-                initialDelay,
-                TimeUnit.DAYS.toSeconds(1),
-                TimeUnit.SECONDS
+                this::kiemTraVaHuyDon,
+                0,          // chạy ngay khi khởi động
+                1,
+                TimeUnit.MINUTES
         );
 
-        System.out.println("[HoaDonHuyCron] Scheduler khởi động. Job đầu tiên sau "
-                + initialDelay + "s (lúc 00:00 ngày mai).");
-
-        // Chạy ngay 1 lần khi khởi động để xử lý các đơn chờ còn sót từ hôm trước
-        huyDonChoQuaHan();
+        System.out.println("[HoaDonHuyCron] Scheduler khởi động. Kiểm tra mỗi phút.");
     }
 
     @Override
@@ -74,6 +67,28 @@ public class HoaDonHuyCronListener implements ServletContextListener {
         if (scheduler != null && !scheduler.isShutdown()) {
             scheduler.shutdownNow();
             System.out.println("[HoaDonHuyCron] Scheduler đã dừng.");
+        }
+    }
+
+    // =========================================================
+    //  Kiểm tra ngày — chỉ chạy job khi sang ngày mới
+    // =========================================================
+    private void kiemTraVaHuyDon() {
+        try {
+            LocalDate homNay = LocalDate.now(ZoneId.systemDefault());
+
+            // Lần đầu khởi động: chạy ngay để xử lý đơn còn sót từ hôm trước
+            // Các lần sau: chỉ chạy khi phát hiện sang ngày mới
+            if (ngayDaXuLy == null || homNay.isAfter(ngayDaXuLy)) {
+                System.out.println("[HoaDonHuyCron] Phát hiện ngày mới: " + homNay
+                        + " (lần trước: " + ngayDaXuLy + "). Bắt đầu kiểm tra đơn chờ quá hạn...");
+                // Chạy job trước, chỉ đánh dấu ngày sau khi hoàn thành thành công
+                // Tránh race condition: nếu job lỗi giữa chừng, lần poll tiếp theo sẽ thử lại
+                huyDonChoQuaHan();
+                ngayDaXuLy = homNay;
+            }
+        } catch (Exception e) {
+            System.err.println("[HoaDonHuyCron] Lỗi khi kiểm tra ngày: " + e.getMessage());
         }
     }
 

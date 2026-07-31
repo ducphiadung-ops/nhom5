@@ -190,7 +190,7 @@
 
     <ul class="nav-menu">
         <li class="nav-item">
-            <a href="/tong_quan" class="nav-link-custom"><i class="fa-solid fa-border-all"></i> Trang tổng quan</a>
+            <a href="/tong_quan" class="nav-link-custom"><i class="fa-solid fa-border-all"></i> Trang thống kê</a>
         </li>
         <li class="nav-item">
             <a href="${pageContext.request.contextPath}/hoa-don/ban-hang" class="nav-link-custom"><i class="fa-solid fa-store"></i> Bán hàng tại quầy</a>

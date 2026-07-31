@@ -24,7 +24,7 @@ public class  SanPhamRepository {
     public List<SanPham> getAll() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             // 🟢 Đã thêm SanPham.class
-            return session.createQuery("FROM SanPham WHERE trangThai = 1", SanPham.class).getResultList();
+            return session.createQuery("FROM SanPham WHERE trangThai = 1 ORDER BY id DESC", SanPham.class).getResultList();
         }
     }
 
@@ -175,6 +175,77 @@ public class  SanPhamRepository {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    /**
+     * Lọc sản phẩm đa tiêu chí:
+     * - keyword: tìm tương đối theo tên sản phẩm
+     * - maSanPham: tìm tuyệt đối theo mã sản phẩm (exact, case-insensitive)
+     * - idThuongHieu: lọc theo hãng
+     * - trangThai: lọc theo trạng thái (null = tất cả, mặc định chỉ hiện trangThai=1 nếu cả 3 điều kiện kia đều null)
+     * - giaMin / giaMax: khoảng giá bán
+     */
+    public List<SanPham> locDaKieu(String keyword, String maSanPham, Integer idThuongHieu,
+                                   Integer trangThai, java.math.BigDecimal giaMin, java.math.BigDecimal giaMax) {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            StringBuilder hql = new StringBuilder("FROM SanPham sp WHERE 1=1");
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                hql.append(" AND LOWER(sp.tenSanPham) LIKE LOWER(:keyword)");
+            }
+            if (maSanPham != null && !maSanPham.trim().isEmpty()) {
+                hql.append(" AND LOWER(sp.maSanPham) = LOWER(:maSanPham)");
+            }
+            if (idThuongHieu != null) {
+                hql.append(" AND sp.thuongHieu.id = :idThuongHieu");
+            }
+            if (trangThai != null) {
+                hql.append(" AND sp.trangThai = :trangThai");
+            } else {
+                // Mặc định chỉ hiện sản phẩm đang hoạt động khi không lọc gì
+                hql.append(" AND sp.trangThai = 1");
+            }
+            if (giaMin != null) {
+                hql.append(" AND sp.giaBan >= :giaMin");
+            }
+            if (giaMax != null) {
+                hql.append(" AND sp.giaBan <= :giaMax");
+            }
+            hql.append(" ORDER BY sp.id DESC");
+
+            Query<SanPham> query = session.createQuery(hql.toString(), SanPham.class);
+            if (keyword != null && !keyword.trim().isEmpty())
+                query.setParameter("keyword", "%" + keyword.trim() + "%");
+            if (maSanPham != null && !maSanPham.trim().isEmpty())
+                query.setParameter("maSanPham", maSanPham.trim());
+            if (idThuongHieu != null)
+                query.setParameter("idThuongHieu", idThuongHieu);
+            if (trangThai != null)
+                query.setParameter("trangThai", trangThai);
+            if (giaMin != null)
+                query.setParameter("giaMin", giaMin);
+            if (giaMax != null)
+                query.setParameter("giaMax", giaMax);
+
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /** Lấy giá bán nhỏ nhất và lớn nhất trong toàn bộ sản phẩm đang hoạt động */
+    public java.math.BigDecimal[] getMinMaxGiaBan() {
+        try (Session session = HibernateConfig.getFACTORY().openSession()) {
+            Object[] row = (Object[]) session.createQuery(
+                    "SELECT MIN(sp.giaBan), MAX(sp.giaBan) FROM SanPham sp WHERE sp.trangThai = 1")
+                    .uniqueResult();
+            java.math.BigDecimal min = row[0] != null ? (java.math.BigDecimal) row[0] : java.math.BigDecimal.ZERO;
+            java.math.BigDecimal max = row[1] != null ? (java.math.BigDecimal) row[1] : java.math.BigDecimal.ZERO;
+            return new java.math.BigDecimal[]{min, max};
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new java.math.BigDecimal[]{java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO};
         }
     }
 

@@ -33,12 +33,12 @@
 
     <ul class="nav-menu">
 
-        <%-- Trang tổng quan: ẩn với nhân viên --%>
+        <%-- Trang thống kê: ẩn với nhân viên --%>
         <c:if test="${not isNhanVien}">
             <li class="nav-item">
                 <a href="${pageContext.request.contextPath}/tong_quan"
                    class="nav-link-custom ${activeMenu == 'tong-quan' ? 'active' : ''}">
-                    <i class="fa-solid fa-border-all"></i> Trang tổng quan
+                    <i class="fa-solid fa-border-all"></i> Trang thống kê
                 </a>
             </li>
         </c:if>

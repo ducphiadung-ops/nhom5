@@ -7,7 +7,7 @@
     boolean _isNhanVien = demo.servlet.LoginServlet.isNhanVienRole(_nv != null ? _nv.getChucVu() : null);
     request.setAttribute("isNhanVien", _isNhanVien);
 %>
-<%-- Nhân viên không được vào trang tổng quan --%>
+<%-- Nhân viên không được vào trang thống kê --%>
 <c:if test="${isNhanVien}">
     <c:redirect url="${pageContext.request.contextPath}/san-pham/hien-thi"/>
 </c:if>
@@ -16,7 +16,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang tổng quan - Skycomputer</title>
+    <title>Trang thống kê - Skycomputer</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -289,11 +289,35 @@
     <div class="content-area">
         <div class="page-header">
             <div class="page-title">
-                <h2>Trang tổng quan</h2>
+                <h2>Trang thống kê</h2>
                 <p>Chào mừng trở lại! Dưới đây là tình hình kinh doanh hôm nay.</p>
             </div>
             <div class="page-actions">
-                <button class="btn btn-outline"><i class="fa-regular fa-calendar"></i> Hôm nay</button>
+                <form method="get" action="${pageContext.request.contextPath}/tong_quan"
+                      id="formLocNgay" style="display:flex; align-items:center; gap:8px;">
+                    <div style="position:relative; display:flex; align-items:center;">
+                        <i class="fa-regular fa-calendar"
+                           style="position:absolute; left:10px; color:var(--text-muted); pointer-events:none;"></i>
+                        <input type="date" name="ngayLoc" id="inputNgayLoc"
+                               value="${ngayLocValue}"
+                               style="padding: 10px 12px 10px 34px; border: 1px solid var(--border-color);
+                                      border-radius: 6px; font-size: 13px; font-family: inherit;
+                                      color: var(--text-main); cursor: pointer; background: #fff;"
+                               onchange="this.form.submit()"/>
+                    </div>
+                    <%-- Nút Hôm nay --%>
+                    <button type="button" class="btn btn-outline" title="Xem ngày hôm nay"
+                            onclick="document.getElementById('inputNgayLoc').value='${ngayTodayValue}';
+                                     document.getElementById('formLocNgay').submit();">
+                        <i class="fa-solid fa-calendar-day"></i> Hôm nay
+                    </button>
+                    <%-- Nút Tất cả --%>
+                    <a href="${pageContext.request.contextPath}/tong_quan?ngayLoc=all"
+                       class="btn ${isAll ? 'btn-primary' : 'btn-outline'}"
+                       title="Xem toàn bộ thời gian">
+                        <i class="fa-solid fa-globe"></i> Tất cả
+                    </a>
+                </form>
                 <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Xuất báo cáo</button>
             </div>
         </div>
@@ -308,6 +332,15 @@
                 <!-- Sử dụng EL để lấy giá trị đã được format chuỗi từ Servlet -->
                 <div class="stat-value">${tongDoanhThu != null ? tongDoanhThu : "0"}đ</div>
                 <div class="stat-trend trend-up">
+                    <i class="fa-solid fa-calendar-day" style="font-size:11px;"></i>
+                    <c:choose>
+                        <c:when test="${isAll}">
+                            <span style="color:var(--text-muted); font-weight:400;">Toàn bộ thời gian</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span style="color:var(--text-muted); font-weight:400;">Ngày ${ngayLocHienThi}</span>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
 
@@ -319,6 +352,15 @@
                 </div>
                 <div class="stat-value">${tongHoaDon != null ? tongHoaDon : "0"}</div>
                 <div class="stat-trend trend-up">
+                    <i class="fa-solid fa-calendar-day" style="font-size:11px;"></i>
+                    <c:choose>
+                        <c:when test="${isAll}">
+                            <span style="color:var(--text-muted); font-weight:400;">Toàn bộ thời gian</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span style="color:var(--text-muted); font-weight:400;">Ngày ${ngayLocHienThi}</span>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
 
@@ -330,17 +372,41 @@
                 </div>
                 <div class="stat-value">${tongSanPham != null ? tongSanPham : "0"}</div>
                 <div class="stat-trend trend-down">
+                    <i class="fa-solid fa-calendar-day" style="font-size:11px;"></i>
+                    <c:choose>
+                        <c:when test="${isAll}">
+                            <span style="color:var(--text-muted); font-weight:400;">Toàn bộ thời gian</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span style="color:var(--text-muted); font-weight:400;">Ngày ${ngayLocHienThi}</span>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
 
-            <!-- 4. TỔNG KHÁCH HÀNG -->
+            <!-- 4. KHÁCH HÀNG -->
             <div class="stat-card">
                 <div class="stat-header">
-                    <span class="stat-title">TỔNG KHÁCH HÀNG</span>
+                    <span class="stat-title">KHÁCH HÀNG</span>
                     <div class="stat-icon icon-purple"><i class="fa-solid fa-users"></i></div>
                 </div>
-                <div class="stat-value">${tongKhachHang != null ? tongKhachHang : "0"}</div>
+                <%-- Số KH mua trong kỳ đang lọc --%>
+                <div class="stat-value">${khachHangMua != null ? khachHangMua : "0"}</div>
                 <div class="stat-trend trend-up">
+                    <i class="fa-solid fa-calendar-day" style="font-size:11px;"></i>
+                    <c:choose>
+                        <c:when test="${isAll}">
+                            <span style="color:var(--text-muted); font-weight:400;">Đã từng mua hàng</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span style="color:var(--text-muted); font-weight:400;">Mua trong ngày ${ngayLocHienThi}</span>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+                <%-- Tổng KH trong hệ thống (luôn cố định) --%>
+                <div style="margin-top:6px; font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-database" style="font-size:11px;"></i>
+                    Tổng hệ thống: <strong style="color:var(--text-main);">${tongKhachHang != null ? tongKhachHang : "0"}</strong> khách hàng
                 </div>
             </div>
         </div>

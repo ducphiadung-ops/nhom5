@@ -289,22 +289,90 @@ public class ChiTietSanPhamServlet extends HttpServlet {
 
     private void hienThiDanhSachGiaoDien(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            String idDongMayStr = req.getParameter("idDongMay");
+            // --- lọc theo sản phẩm cha (đường dẫn từ trang danh sách SP) ---
+            String idSanPhamStr = req.getParameter("idSanPham");
+            if (idSanPhamStr == null || idSanPhamStr.trim().isEmpty()) {
+                idSanPhamStr = req.getParameter("idDongMay");
+            }
+
+            // --- đọc tham số bộ lọc ---
+            String tenSanPham  = req.getParameter("tenSanPham");
+            String idCpuStr    = req.getParameter("idCpu");
+            String idGpuStr    = req.getParameter("idGpu");
+            String idMauSacStr = req.getParameter("idMauSac");
+            String idRamStr    = req.getParameter("idRam");
+            String idOCungStr  = req.getParameter("idOCung");
+            String trangThaiStr = req.getParameter("trangThai");
+            String giaMinStr   = req.getParameter("giaMin");
+            String giaMaxStr   = req.getParameter("giaMax");
+
+            Integer idCpu    = null; Integer idGpu    = null;
+            Integer idMauSac = null; Integer idRam    = null;
+            Integer idOCung  = null; Integer trangThai = null;
+            java.math.BigDecimal giaMin = null, giaMax = null;
+
+            try { if (idCpuStr    != null && !idCpuStr.isEmpty())    idCpu    = Integer.parseInt(idCpuStr);    } catch (Exception ignored) {}
+            try { if (idGpuStr    != null && !idGpuStr.isEmpty())    idGpu    = Integer.parseInt(idGpuStr);    } catch (Exception ignored) {}
+            try { if (idMauSacStr != null && !idMauSacStr.isEmpty()) idMauSac = Integer.parseInt(idMauSacStr); } catch (Exception ignored) {}
+            try { if (idRamStr    != null && !idRamStr.isEmpty())    idRam    = Integer.parseInt(idRamStr);    } catch (Exception ignored) {}
+            try { if (idOCungStr  != null && !idOCungStr.isEmpty())  idOCung  = Integer.parseInt(idOCungStr);  } catch (Exception ignored) {}
+            try { if (trangThaiStr != null && !trangThaiStr.isEmpty()) trangThai = Integer.parseInt(trangThaiStr); } catch (Exception ignored) {}
+            try { if (giaMinStr   != null && !giaMinStr.isEmpty())   giaMin   = new java.math.BigDecimal(giaMinStr); } catch (Exception ignored) {}
+            try { if (giaMaxStr   != null && !giaMaxStr.isEmpty())   giaMax   = new java.math.BigDecimal(giaMaxStr); } catch (Exception ignored) {}
+
             List<ChiTietSanPham> listResult;
 
-            if (idDongMayStr != null && !idDongMayStr.trim().isEmpty()) {
-                Integer idDongMay = Integer.parseInt(idDongMayStr);
-                listResult = ctspRepo.findBySanPhamId(idDongMay);
-                if (!listResult.isEmpty()) {
-                    req.setAttribute("tenDongMayHienTai", listResult.get(0).getSanPham().getTenSanPham());
-                } else {
-                    SanPham spCha = sanPhamRepo.getOne(idDongMay);
-                    if (spCha != null) req.setAttribute("tenDongMayHienTai", spCha.getTenSanPham());
+            if (idSanPhamStr != null && !idSanPhamStr.trim().isEmpty()) {
+                // --- xem biến thể của 1 sản phẩm cụ thể ---
+                Integer idSanPham = Integer.parseInt(idSanPhamStr);
+                listResult = ctspRepo.findBySanPhamId(idSanPham);
+
+                SanPham spCha = (!listResult.isEmpty()) ? listResult.get(0).getSanPham() : sanPhamRepo.getOne(idSanPham);
+                if (spCha != null) {
+                    req.setAttribute("tenDongMayHienTai", spCha.getTenSanPham());
+                    req.setAttribute("maSanPhamHienTai",  spCha.getMaSanPham());
+                    req.setAttribute("idSanPhamFilter",   idSanPham);
                 }
             } else {
-                listResult = ctspRepo.getAll();
+                // --- danh sách tất cả biến thể với bộ lọc ---
+                boolean coLoc = (tenSanPham != null && !tenSanPham.isEmpty())
+                        || idCpu != null || idGpu != null || idMauSac != null
+                        || idRam != null || idOCung != null || trangThai != null
+                        || giaMin != null || giaMax != null;
+
+                if (coLoc) {
+                    listResult = ctspRepo.locDaKieu(tenSanPham, idCpu, idGpu, idMauSac, idRam, idOCung, trangThai, giaMin, giaMax);
+                } else {
+                    listResult = ctspRepo.getAll();
+                }
             }
+
             req.setAttribute("listChiTiet", listResult);
+
+            // --- min/max giá để render thanh kéo ---
+            java.math.BigDecimal[] minMax = ctspRepo.getMinMaxDonGia();
+            req.setAttribute("priceAbsMin",     minMax[0].longValue());
+            req.setAttribute("priceAbsMax",     minMax[1].longValue());
+            req.setAttribute("priceCurrentMax", giaMax != null ? giaMax.longValue() : minMax[1].longValue());
+
+            // --- giữ lại giá trị form cũ ---
+            req.setAttribute("oldTenSanPham",  tenSanPham  != null ? tenSanPham  : "");
+            req.setAttribute("oldIdCpu",       idCpu);
+            req.setAttribute("oldIdGpu",       idGpu);
+            req.setAttribute("oldIdMauSac",    idMauSac);
+            req.setAttribute("oldIdRam",       idRam);
+            req.setAttribute("oldIdOCung",     idOCung);
+            req.setAttribute("oldTrangThai",   trangThaiStr != null ? trangThaiStr : "");
+            req.setAttribute("oldGiaMin",      giaMin  != null ? giaMin.longValue()  : minMax[0].longValue());
+            req.setAttribute("oldGiaMax",      giaMax  != null ? giaMax.longValue()  : minMax[1].longValue());
+
+            // --- danh sách thuộc tính cho select box (chỉ lấy đang hoạt động trangThai=1) ---
+            try { req.setAttribute("listCpuFilter",    cpuRepo.getAll());    } catch (Exception e) { req.setAttribute("listCpuFilter",    new ArrayList<>()); }
+            try { req.setAttribute("listGpuFilter",    gpuRepo.getAll());    } catch (Exception e) { req.setAttribute("listGpuFilter",    new ArrayList<>()); }
+            try { req.setAttribute("listMauSacFilter", mauSacRepo.getAll()); } catch (Exception e) { req.setAttribute("listMauSacFilter", new ArrayList<>()); }
+            try { req.setAttribute("listRamFilter",    ramRepo.getAllDistinctByDungLuong());  } catch (Exception e) { req.setAttribute("listRamFilter",    new ArrayList<>()); }
+            try { req.setAttribute("listOCungFilter",  oCungRepo.getAllDistinctByDungLuong()); } catch (Exception e) { req.setAttribute("listOCungFilter",  new ArrayList<>()); }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -42,56 +42,138 @@ public class TongQuanServlet extends HttpServlet {
 
     private void tongquan(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        String todayStr = java.time.LocalDate.now().toString(); // yyyy-MM-dd
+
+        // Xác định chế độ lọc:
+        //   - ngayLoc = "all"        → toàn bộ thời gian
+        //   - ngayLoc = "yyyy-MM-dd" → lọc theo ngày cụ thể
+        //   - ngayLoc = null/empty   → mặc định ngày hôm nay
+        String ngayLocParam = req.getParameter("ngayLoc");
+        boolean isAll = "all".equals(ngayLocParam);
+
+        java.time.LocalDate ngayLoc = null;
+        java.sql.Date ngayLocSql = null;
+        String ngayLocHienThi;
+        String ngayLocValue;
+
+        if (isAll) {
+            ngayLocHienThi = "Toàn bộ";
+            ngayLocValue   = "";          // input date để trống khi chế độ "all"
+        } else {
+            if (ngayLocParam != null && !ngayLocParam.trim().isEmpty()) {
+                try {
+                    ngayLoc = java.time.LocalDate.parse(ngayLocParam.trim());
+                } catch (Exception e) {
+                    ngayLoc = java.time.LocalDate.now();
+                }
+            } else {
+                ngayLoc = java.time.LocalDate.now();
+            }
+            ngayLocSql      = java.sql.Date.valueOf(ngayLoc);
+            ngayLocHienThi  = ngayLoc.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            ngayLocValue    = ngayLoc.toString();
+        }
+
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
 
-            // 1. TỔNG DOANH THU (Dùng BigDecimal vì SQL trả về kiểu tiền tệ/decimal)
-            BigDecimal tongDoanhThu = session.createQuery(
-                            "SELECT SUM(h.tongTien) FROM HoaDon h WHERE h.trangThai = 1", BigDecimal.class)
-                    .uniqueResult();
+            BigDecimal tongDoanhThu;
+            Long tongHoaDon;
+            Long tongSanPhamDaBan;
 
-            // Xử lý null và định dạng: nếu null thì về 0
+            if (isAll) {
+                // --- TOÀN BỘ THỜI GIAN ---
+                tongDoanhThu = session.createQuery(
+                        "SELECT SUM(h.tongTien) FROM HoaDon h WHERE h.trangThai = 1",
+                        BigDecimal.class).uniqueResult();
+
+                tongHoaDon = session.createQuery(
+                        "SELECT COUNT(h) FROM HoaDon h WHERE h.trangThai = 1",
+                        Long.class).uniqueResult();
+
+                tongSanPhamDaBan = session.createQuery(
+                        "SELECT COUNT(cthd) FROM ChiTietHoaDon cthd JOIN cthd.hoaDon h WHERE h.trangThai = 1",
+                        Long.class).uniqueResult();
+            } else {
+                // --- LỌC THEO NGÀY CỤ THỂ ---
+                tongDoanhThu = session.createQuery(
+                        "SELECT SUM(h.tongTien) FROM HoaDon h " +
+                        "WHERE h.trangThai = 1 AND CAST(h.ngayLap AS date) = :ngayLoc",
+                        BigDecimal.class)
+                        .setParameter("ngayLoc", ngayLocSql)
+                        .uniqueResult();
+
+                tongHoaDon = session.createQuery(
+                        "SELECT COUNT(h) FROM HoaDon h " +
+                        "WHERE h.trangThai = 1 AND CAST(h.ngayLap AS date) = :ngayLoc",
+                        Long.class)
+                        .setParameter("ngayLoc", ngayLocSql)
+                        .uniqueResult();
+
+                tongSanPhamDaBan = session.createQuery(
+                        "SELECT COUNT(cthd) FROM ChiTietHoaDon cthd JOIN cthd.hoaDon h " +
+                        "WHERE h.trangThai = 1 AND CAST(h.ngayLap AS date) = :ngayLoc",
+                        Long.class)
+                        .setParameter("ngayLoc", ngayLocSql)
+                        .uniqueResult();
+            }
+
             double doanhThuValue = (tongDoanhThu != null) ? tongDoanhThu.doubleValue() : 0.0;
-
-            // 2. TỔNG HÓA ĐƠN ĐÃ THANH TOÁN
-            Long tongHoaDon = session.createQuery(
-                            "SELECT COUNT(h) FROM HoaDon h WHERE h.trangThai = 1", Long.class)
-                    .uniqueResult();
-            if (tongHoaDon == null) tongHoaDon = 0L;
-
-            // 3. TỔNG SẢN PHẨM ĐÃ BÁN
-            Long tongSanPhamDaBan = session.createQuery(
-                            "SELECT COUNT(cthd) FROM ChiTietHoaDon cthd JOIN cthd.hoaDon h WHERE h.trangThai = 1", Long.class)
-                    .uniqueResult();
+            if (tongHoaDon == null)      tongHoaDon = 0L;
             if (tongSanPhamDaBan == null) tongSanPhamDaBan = 0L;
 
-            // 4. TỔNG KHÁCH HÀNG
+            // 4. KHÁCH HÀNG MUA TRONG KỲ (distinct, chỉ tính KH có tài khoản — không tính khách lẻ)
+            Long khachHangMua;
+            if (isAll) {
+                khachHangMua = session.createQuery(
+                        "SELECT COUNT(DISTINCT h.khachHang.id) FROM HoaDon h " +
+                        "WHERE h.trangThai = 1 AND h.khachHang IS NOT NULL",
+                        Long.class).uniqueResult();
+            } else {
+                khachHangMua = session.createQuery(
+                        "SELECT COUNT(DISTINCT h.khachHang.id) FROM HoaDon h " +
+                        "WHERE h.trangThai = 1 AND h.khachHang IS NOT NULL " +
+                        "AND CAST(h.ngayLap AS date) = :ngayLoc",
+                        Long.class)
+                        .setParameter("ngayLoc", ngayLocSql)
+                        .uniqueResult();
+            }
+            if (khachHangMua == null) khachHangMua = 0L;
+
+            // 5. TỔNG KHÁCH HÀNG trong hệ thống (luôn tổng tất cả, không lọc ngày)
             Long tongKhachHang = session.createQuery(
-                            "SELECT COUNT(k) FROM KhachHang k", Long.class)
-                    .uniqueResult();
+                    "SELECT COUNT(k) FROM KhachHang k", Long.class).uniqueResult();
             if (tongKhachHang == null) tongKhachHang = 0L;
 
             // 5 & 6. LẤY DỮ LIỆU TỪ REPOSITORY
             List<HoaDon> listDonHangGanDay = hoaDonRepo.getTop5();
             List<SanPham> listSanPhamBanChay = sanPhamRepo.getTop5();
 
-            // Đẩy dữ liệu lên JSP
-            // Định dạng chuỗi tiền tệ: dùng Locale để format đúng chuẩn VN (dấu chấm)
-            String doanhThuFormatted = String.format("%,.0f", doanhThuValue)
-                    .replace(",", ".");
+            // Định dạng tiền tệ chuẩn VN
+            String doanhThuFormatted = String.format("%,.0f", doanhThuValue).replace(",", ".");
+
             req.setAttribute("tongDoanhThu", doanhThuFormatted);
             req.setAttribute("tongHoaDon", tongHoaDon);
             req.setAttribute("tongSanPham", tongSanPhamDaBan);
+            req.setAttribute("khachHangMua", khachHangMua);
             req.setAttribute("tongKhachHang", tongKhachHang);
             req.setAttribute("ListDonHangGanDay", listDonHangGanDay);
             req.setAttribute("ListSanPhamBanChay", listSanPhamBanChay);
+            req.setAttribute("ngayLocHienThi", ngayLocHienThi);
+            req.setAttribute("ngayLocValue", ngayLocValue);
+            req.setAttribute("ngayTodayValue", todayStr);
+            req.setAttribute("isAll", isAll);
 
         } catch (Exception e) {
             e.printStackTrace();
-            // Đẩy dữ liệu mặc định nếu lỗi
             req.setAttribute("tongDoanhThu", "0");
             req.setAttribute("tongHoaDon", 0L);
             req.setAttribute("tongSanPham", 0L);
+            req.setAttribute("khachHangMua", 0L);
             req.setAttribute("tongKhachHang", 0L);
+            req.setAttribute("ngayLocHienThi", "Toàn bộ");
+            req.setAttribute("ngayLocValue", "");
+            req.setAttribute("ngayTodayValue", todayStr);
+            req.setAttribute("isAll", false);
         }
 
         req.getRequestDispatcher("/demo/tong_quan.jsp").forward(req, resp);

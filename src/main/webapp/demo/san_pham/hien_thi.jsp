@@ -185,6 +185,31 @@
         .toast-container-custom { position: fixed; top: 24px; right: 24px; z-index: 1090; }
         .custom-toast { min-width: 300px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; padding: 14px 18px; display: flex; align-items: center; gap: 12px; animation: slideInRight 0.3s ease; }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* PRICE RANGE SLIDER */
+        .price-range-wrapper { padding: 4px 2px 0; }
+        .price-range-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+        .price-range-label span { font-weight: 600; color: var(--primary); }
+        .range-slider-container { position: relative; height: 6px; background: #e2e8f0; border-radius: 4px; margin: 0 2px; }
+        .range-slider-fill { position: absolute; height: 100%; background: var(--primary); border-radius: 4px; pointer-events: none; }
+        input[type="range"].price-slider {
+            -webkit-appearance: none; appearance: none;
+            position: absolute; width: 100%; height: 6px;
+            background: transparent; pointer-events: none; margin: 0;
+        }
+        input[type="range"].price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--primary); border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(26,86,219,.4);
+            cursor: pointer; pointer-events: all;
+        }
+        input[type="range"].price-slider::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--primary); border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(26,86,219,.4);
+            cursor: pointer; pointer-events: all; border: 2px solid #fff;
+        }
     </style>
 </head>
 <body>
@@ -232,16 +257,31 @@
         </div>
 
         <!-- BỘ LỌC TÌM KIẾM -->
-        <form action="${pageContext.request.contextPath}/san-pham/hien-thi" method="GET" class="filter-card">
+        <form action="${pageContext.request.contextPath}/san-pham/hien-thi" method="GET" class="filter-card" id="formLocSanPham">
             <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label small fw-medium text-muted mb-1">Tìm kiếm sản phẩm</label>
+
+                <!-- Tìm theo tên (tương đối) -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-medium text-muted mb-1">Tên sản phẩm</label>
                     <div class="search-input-wrapper">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" name="keyword" class="form-control form-control-sm py-2" placeholder="Tên sản phẩm, SKU..." value="${oldKeyword}">
+                        <input type="text" name="keyword" class="form-control form-control-sm py-2"
+                               placeholder="Tìm tương đối theo tên..." value="${oldKeyword}">
                     </div>
                 </div>
-                <div class="col-md-4">
+
+                <!-- Tìm theo mã (tuyệt đối) -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-medium text-muted mb-1">Mã sản phẩm</label>
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-hashtag"></i>
+                        <input type="text" name="maSanPham" class="form-control form-control-sm py-2"
+                               placeholder="Mã chính xác..." value="${oldMaSanPham}">
+                    </div>
+                </div>
+
+                <!-- Hãng sản xuất -->
+                <div class="col-md-3">
                     <label class="form-label small fw-medium text-muted mb-1">Hãng sản xuất</label>
                     <select name="idThuongHieu" class="form-select form-select-sm py-2">
                         <option value="">Tất cả hãng</option>
@@ -250,7 +290,9 @@
                         </c:forEach>
                     </select>
                 </div>
-                <div class="col-md-3">
+
+                <!-- Trạng thái -->
+                <div class="col-md-2">
                     <label class="form-label small fw-medium text-muted mb-1">Trạng thái</label>
                     <select name="trangThai" class="form-select form-select-sm py-2">
                         <option value="">Tất cả trạng thái</option>
@@ -258,9 +300,38 @@
                         <option value="0" ${oldTrangThai == '0' ? 'selected' : ''}>Không hoạt động</option>
                     </select>
                 </div>
-                <div class="col-md-1 d-flex align-items-end">
-                    <button type="submit" class="btn btn-secondary btn-sm w-100 py-2">Lọc</button>
+
+                <!-- Nút lọc -->
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm w-100 py-2">
+                        <i class="fa-solid fa-filter me-1"></i>Lọc
+                    </button>
+                    <a href="${pageContext.request.contextPath}/san-pham/hien-thi"
+                       class="btn btn-outline-secondary btn-sm py-2" title="Xoá bộ lọc">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
                 </div>
+
+                <!-- Thanh kéo lọc khoảng giá -->
+                <div class="col-12">
+                    <label class="form-label small fw-medium text-muted mb-1">
+                        Khoảng giá bán &nbsp;(từ <strong>0 đ</strong> đến <span id="lblGiaMaxSP" class="text-primary fw-bold"></span>)
+                    </label>
+                    <div class="price-range-wrapper">
+                        <div class="range-slider-container">
+                            <div class="range-slider-fill" id="sliderFillSP"></div>
+                            <input type="range" class="price-slider" id="sliderMaxSP" name="giaMax"
+                                   min="${priceAbsMin}" max="${priceAbsMax}"
+                                   value="${oldGiaMax}" step="100000">
+                        </div>
+                        <div class="price-range-label mt-2">
+                            <span>0 ₫</span>
+                            <span id="lblRightSP"></span>
+                        </div>
+                    </div>
+                    <input type="hidden" name="giaMin" value="0">
+                </div>
+
             </div>
         </form>
 
@@ -285,7 +356,7 @@
                     <th class="text-end" style="width: 14%;">Giá bán</th>
                     <th class="text-center" style="width: 8%;">Số lượng</th>
                     <th class="text-center" style="width: 12%;">Trạng thái</th>
-                    <th class="text-center" style="width: 8%;">Thao tác</th>
+                    <th class="text-center" style="width: 11%;">Thao tác</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -312,7 +383,7 @@
                         </td>
 
                         <td class="text-center">
-                            <span class="badge bg-light text-primary border border-primary-subtle px-2 py-1" style="font-size: 13px;">${sp.soLuongTon}</span>
+                            <span class="badge bg-light text-primary border border-primary-subtle px-2 py-1" style="font-size: 13px;">${mapSoBienThe[sp.id] != null ? mapSoBienThe[sp.id] : 0}</span>
                         </td>
 
                         <td class="text-center">
@@ -328,6 +399,13 @@
 
                         <td class="text-center">
                             <div class="d-flex justify-content-center gap-3">
+                                <a href="${pageContext.request.contextPath}/san-pham-chi-tiet/hien-thi?idSanPham=${sp.id}"
+                                   title="Xem biến thể theo sản phẩm"
+                                   style="color: var(--text-muted); text-decoration: none; transition: all 0.2s ease-in-out; display: inline-block;"
+                                   onmouseover="this.style.color='var(--primary)';this.style.transform='scale(1.2)'"
+                                   onmouseout="this.style.color='var(--text-muted)';this.style.transform='scale(1)'">
+                                    <i class="fa-solid fa-list-ul fs-5"></i>
+                                </a>
                                 <c:if test="${not isNhanVien}">
                                 <a href="${pageContext.request.contextPath}/san-pham/sua?id=${sp.id}" title="Sửa">
                                     <i class="fa-regular fa-pen-to-square fs-5 action-icon-btn"></i>
@@ -400,6 +478,38 @@
         const myModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
         myModal.show();
     }
+
+    /* ======= PRICE RANGE SLIDER ======= */
+    (function () {
+        var absMin  = ${priceAbsMin};
+        var absMax  = ${priceAbsMax};
+        var curMax  = ${oldGiaMax};
+
+        var sliderMax = document.getElementById('sliderMaxSP');
+        var fill      = document.getElementById('sliderFillSP');
+        var lblMax    = document.getElementById('lblGiaMaxSP');
+        var lblRight  = document.getElementById('lblRightSP');
+
+        function fmt(v) {
+            return Number(v).toLocaleString('vi-VN') + ' ₫';
+        }
+        function updateSlider() {
+            var val = parseInt(sliderMax.value);
+            var pct = absMax > absMin ? ((val - absMin) / (absMax - absMin)) * 100 : 100;
+            fill.style.left  = '0%';
+            fill.style.width = pct + '%';
+            lblMax.textContent  = fmt(val);
+            lblRight.textContent = fmt(absMax);
+        }
+
+        if (sliderMax) {
+            sliderMax.min   = absMin;
+            sliderMax.max   = absMax;
+            sliderMax.value = curMax;
+            sliderMax.addEventListener('input', updateSlider);
+            updateSlider();
+        }
+    })();
 </script>
 </body>
 </html>

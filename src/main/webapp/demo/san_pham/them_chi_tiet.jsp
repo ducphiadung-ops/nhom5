@@ -151,7 +151,7 @@
 
     <ul class="nav-menu">
         <li class="nav-item">
-            <a href="/tong_quan" class="nav-link-custom"><i class="fa-solid fa-border-all"></i> Trang tổng quan</a>
+            <a href="/tong_quan" class="nav-link-custom"><i class="fa-solid fa-border-all"></i> Trang thống kê</a>
         </li>
         <li class="nav-item">
             <a href="${pageContext.request.contextPath}/hoa-don/ban-hang" class="nav-link-custom"><i class="fa-solid fa-store"></i> Bán hàng tại quầy</a>
@@ -408,9 +408,11 @@
                             </button>
                         </div>
 
-                        <textarea id="txtAreaImeiTemp" class="form-control mb-3" rows="5"
-                                  placeholder="Nhập IMEI, mỗi IMEI trên một dòng, đúng 15 chữ số..."
+                        <textarea id="txtAreaImeiTemp" class="form-control mb-2" rows="5"
+                                  placeholder="Ví dụ: 12345678987654&#10;Mỗi IMEI trên một dòng, chỉ gồm chữ số, từ 13–15 ký tự."
                                   style="font-size: 13px; font-family: monospace; border-color: #cbd5e1; background-color: #ffffff;"></textarea>
+
+                        <div id="imeiErrorBox" class="d-none mb-2 p-2 rounded" style="background:#fff1f2; border:1px solid #fca5a5; font-size:12px; color:#dc2626; line-height:1.6;"></div>
 
                         <div class="mb-3 fw-medium text-dark" style="font-size: 13px;">
                             Danh sách IMEI: <span id="lblCountImeiModal" class="fw-bold text-success">0 IMEI</span>
@@ -451,10 +453,21 @@
 
         $('#txtAreaImeiTemp').on('input', function() {
             const txt = $(this).val().trim();
-            const lines = txt ? txt.split('\n').filter(l => l.trim().length > 0) : [];
-            $('#lblCountImeiModal').text(lines.length + " IMEI");
-            if(lines.length > 0) {
-                $('#boxImeiListPreview').html(lines.map(l => `<span class="badge bg-light text-dark border border-secondary-subtle me-1 mb-1">${l}</span>`).join(''));
+            const lines = txt ? txt.split('\n').map(s => s.trim()).filter(l => l.length > 0) : [];
+            const imeiRegex = /^\d{13,15}$/;
+
+            // Ẩn error box khi người dùng đang gõ lại
+            $('#imeiErrorBox').addClass('d-none').html('');
+
+            $('#lblCountImeiModal').text(lines.length + " IMEI mới");
+            if (lines.length > 0) {
+                $('#boxImeiListPreview').html(lines.map(l => {
+                    const ok = imeiRegex.test(l);
+                    return `<span class="badge me-1 mb-1 ${ok
+                        ? 'bg-light text-dark border border-secondary-subtle'
+                        : 'text-danger border border-danger-subtle'}"
+                        style="font-size:11px; background-color:${ok ? '' : '#fff1f2'};">${l}${ok ? '' : ' ⚠️'}</span>`;
+                }).join(''));
             } else {
                 $('#boxImeiListPreview').text("Chưa có text IMEI nào được nhập");
             }
@@ -545,9 +558,31 @@
         document.getElementById("currentInputIndexTarget").value = index;
         document.getElementById("modalImeiHeaderTitle").innerText = "Nhập IMEI cho biến thể " + nameVersion + " - " + nameColor;
 
-        const textHienTai = document.getElementById("imei-hidden-" + index).value;
-        document.getElementById("txtAreaImeiTemp").value = textHienTai;
-        $('#txtAreaImeiTemp').trigger('input');
+        // Xóa trắng textarea — không cho sửa IMEI đã lưu
+        document.getElementById("txtAreaImeiTemp").value = "";
+
+        // Ẩn error box
+        const errorBox = document.getElementById("imeiErrorBox");
+        errorBox.classList.add("d-none");
+        errorBox.innerHTML = "";
+
+        // Hiển thị IMEI đã lưu ở preview (chỉ đọc)
+        const textDaLuu = document.getElementById("imei-hidden-" + index).value;
+        const mangDaLuu = textDaLuu ? textDaLuu.split('\n').filter(s => s.trim().length > 0) : [];
+
+        if (mangDaLuu.length > 0) {
+            $('#lblCountImeiModal').text(mangDaLuu.length + " IMEI đã lưu");
+            $('#boxImeiListPreview').html(
+                '<div class="mb-1 fw-semibold text-secondary" style="font-size:11px;">IMEI đã lưu (không thể chỉnh sửa):</div>' +
+                mangDaLuu.map(l =>
+                    `<span class="badge me-1 mb-1 border border-success-subtle"
+                        style="font-size:11px; background-color:#f0fdf4; color:#16a34a;">${l.trim()}</span>`
+                ).join('')
+            );
+        } else {
+            $('#lblCountImeiModal').text("0 IMEI đã lưu");
+            $('#boxImeiListPreview').text("Chưa có IMEI nào được lưu");
+        }
 
         const myModal = new bootstrap.Modal(document.getElementById('imeiModal'));
         myModal.show();
@@ -556,19 +591,56 @@
     function xacNhanLuuImeiModal() {
         const index = document.getElementById("currentInputIndexTarget").value;
         const text = document.getElementById("txtAreaImeiTemp").value.trim();
+        const errorBox = document.getElementById("imeiErrorBox");
+        const imeiRegex = /^\d{13,15}$/;
 
-        document.getElementById("imei-hidden-" + index).value = text;
-        const mang = text ? text.split('\n').filter(s => s.trim().length > 0) : [];
+        // Lấy danh sách IMEI mới nhập (bỏ dòng trống)
+        const dongMoi = text ? text.split('\n').map(s => s.trim()).filter(s => s.length > 0) : [];
 
-        document.getElementById("badge-count-" + index).innerText = mang.length + " IMEI";
-        document.getElementById("tonkho-hidden-" + index).value = mang.length;
+        if (dongMoi.length === 0) {
+            errorBox.innerHTML = "<strong>⚠️ Vui lòng nhập ít nhất một IMEI.</strong>";
+            errorBox.classList.remove("d-none");
+            return;
+        }
+
+        // Validate từng IMEI: chỉ số, 13–15 ký tự
+        const loiList = [];
+        dongMoi.forEach((imei, i) => {
+            if (!imeiRegex.test(imei)) {
+                loiList.push(`Dòng ${i + 1}: <strong>"${imei}"</strong> — IMEI chỉ gồm chữ số, từ 13–15 ký tự.`);
+            }
+        });
+
+        if (loiList.length > 0) {
+            errorBox.innerHTML = "⚠️ Có IMEI không hợp lệ:<br>" + loiList.join("<br>");
+            errorBox.classList.remove("d-none");
+            return; // Dừng, không lưu
+        }
+
+        // Hợp lệ — ẩn error box
+        errorBox.classList.add("d-none");
+        errorBox.innerHTML = "";
+
+        // Gộp IMEI cũ đã lưu + IMEI mới (cộng dồn, không ghi đè)
+        const textDaLuu = document.getElementById("imei-hidden-" + index).value;
+        const mangDaLuu = textDaLuu ? textDaLuu.split('\n').filter(s => s.trim().length > 0) : [];
+        const mangGop = mangDaLuu.concat(dongMoi);
+
+        // Lưu và cập nhật UI
+        document.getElementById("imei-hidden-" + index).value = mangGop.join('\n');
+        document.getElementById("badge-count-" + index).innerText = mangGop.length + " Máy";
+        document.getElementById("tonkho-hidden-" + index).value = mangGop.length;
 
         bootstrap.Modal.getInstance(document.getElementById('imeiModal')).hide();
     }
 
     function clearModalTextArea() {
         document.getElementById("txtAreaImeiTemp").value = "";
-        $('#txtAreaImeiTemp').trigger('input');
+        const errorBox = document.getElementById("imeiErrorBox");
+        errorBox.classList.add("d-none");
+        errorBox.innerHTML = "";
+        $('#lblCountImeiModal').text("0 IMEI mới");
+        $('#boxImeiListPreview').text("Chưa có text IMEI nào được nhập");
     }
 
     function sinhKhungUploadAnh() {
