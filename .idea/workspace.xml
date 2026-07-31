@@ -14,22 +14,13 @@
   <component name="ChangeListManager">
     <list default="true" id="4d10d1b0-9c0e-419b-8246-6aef80ccf8f8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/listener/HoaDonHuyCronListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/listener/HoaDonHuyCronListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HinhThucThanhToanRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/hoadon/HinhThucThanhToanRepo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ChiTietSanPhamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/ChiTietSanPhamRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/OCungRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/OCungRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/RamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/RamRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/SanPhamRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/repository/san_pham/SanPhamRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/ChiTietSanPhamServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/HoaDonServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/SanPhamServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/demo/servlet/TongQuanServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/common/sidebar.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/common/sidebar.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/chi_tiet_hoa_don.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/chi_tiet_hoa_don.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/chi_tiet_bien_the.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/hien_thi.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/hien_thi.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/hoa_don/hoa_don.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/san_pham_chi_tiet.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them_chi_tiet.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/san_pham/them_chi_tiet.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/demo/tong_quan.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/demo/tong_quan.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -88,23 +79,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.8305378060911086" />
-      <entry key="MS500" value="4.210444253862711" />
-      <entry key="S2" value="10.24003191554674" />
-      <entry key="S5" value="21.611800047102157" />
-      <entry key="S10" value="36.76951391131813" />
-      <entry key="S30" value="63.48095259156582" />
-      <entry key="S60" value="75.36992123640842" />
-      <entry key="M2" value="82.63705142840939" />
-      <entry key="M5" value="87.51126390870313" />
-      <entry key="M10" value="89.23061514242937" />
-      <entry key="M15" value="89.81476858851634" />
-      <entry key="M30" value="90.40855182232738" />
-      <entry key="H1" value="91.02251433751005" />
-      <entry key="H2" value="94.98086115961088" />
-      <entry key="H4" value="117.56958869990093" />
-      <entry key="D1" value="518.7349295685112" />
-      <entry key="W1" value="970.0693918045603" />
+      <entry key="MS100" value="1.0840840668312934" />
+      <entry key="MS500" value="2.749990188863881" />
+      <entry key="S2" value="6.347160740161488" />
+      <entry key="S5" value="9.012091555634969" />
+      <entry key="S10" value="14.866778114787168" />
+      <entry key="S30" value="44.03273204420088" />
+      <entry key="S60" value="66.35703648850445" />
+      <entry key="M2" value="82.99704519943273" />
+      <entry key="M5" value="95.44809043856435" />
+      <entry key="M10" value="100.08867112314152" />
+      <entry key="M15" value="101.69488683510333" />
+      <entry key="M30" value="103.33575151640098" />
+      <entry key="H1" value="104.48105132259195" />
+      <entry key="H2" value="108.69833813337338" />
+      <entry key="H4" value="131.3956598591537" />
+      <entry key="D1" value="532.6094717364801" />
+      <entry key="W1" value="984.0359637291489" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -112,37 +103,37 @@
       <entry key="S2" value="0.0" />
       <entry key="S5" value="0.0" />
       <entry key="S10" value="0.0" />
-      <entry key="S30" value="1.4082113632593624E-215" />
-      <entry key="S60" value="5.287841631498911E-108" />
-      <entry key="M2" value="3.416688695758853E-54" />
-      <entry key="M5" value="7.358939423536376E-22" />
-      <entry key="M10" value="4.640221996956719E-11" />
-      <entry key="M15" value="1.8919594195200097E-7" />
-      <entry key="M30" value="8.552492950172874E-4" />
-      <entry key="H1" value="0.07053037016164974" />
-      <entry key="H2" value="0.9444154908977923" />
-      <entry key="H4" value="7.489684911605122" />
-      <entry key="D1" value="181.03684031925428" />
-      <entry key="W1" value="410.2220192068756" />
+      <entry key="S30" value="7.045450626467366E-216" />
+      <entry key="S60" value="3.740235133592216E-108" />
+      <entry key="M2" value="2.8735293915861004E-54" />
+      <entry key="M5" value="6.866561609923185E-22" />
+      <entry key="M10" value="4.48229880913145E-11" />
+      <entry key="M15" value="1.8487854506700135E-7" />
+      <entry key="M30" value="8.454347091360974E-4" />
+      <entry key="H1" value="0.07012450967012585" />
+      <entry key="H2" value="0.9416942947366689" />
+      <entry key="H4" value="7.4788869077775475" />
+      <entry key="D1" value="180.99331352532286" />
+      <entry key="W1" value="410.2079277660597" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.6640889383745685" />
-      <entry key="MS500" value="4.126098082603577" />
-      <entry key="S2" value="10.188486697998318" />
-      <entry key="S5" value="21.543167936317488" />
-      <entry key="S10" value="36.69323495627909" />
-      <entry key="S30" value="63.42696880684356" />
-      <entry key="S60" value="75.33596103674508" />
-      <entry key="M2" value="82.61786561460728" />
-      <entry key="M5" value="87.50298610648004" />
-      <entry key="M10" value="89.2263687432364" />
-      <entry key="M15" value="89.81191341328069" />
-      <entry key="M30" value="90.40796399705084" />
-      <entry key="H1" value="91.09221104128545" />
-      <entry key="H2" value="95.9243320234439" />
-      <entry key="H4" value="125.05748592964713" />
-      <entry key="D1" value="699.7673153964716" />
-      <entry key="W1" value="1380.2900417002027" />
+      <entry key="MS100" value="0.9972069744833211" />
+      <entry key="MS500" value="2.7036289330282544" />
+      <entry key="S2" value="6.318024756731946" />
+      <entry key="S5" value="8.98674707754586" />
+      <entry key="S10" value="14.83569491075446" />
+      <entry key="S30" value="43.99279582998471" />
+      <entry key="S60" value="66.32526732385399" />
+      <entry key="M2" value="82.97664420381203" />
+      <entry key="M5" value="95.43855581835004" />
+      <entry key="M10" value="100.08364549293684" />
+      <entry key="M15" value="101.6914768124114" />
+      <entry key="M30" value="103.33485833279394" />
+      <entry key="H1" value="104.55019038166785" />
+      <entry key="H2" value="109.63901209929841" />
+      <entry key="H4" value="138.87272241736414" />
+      <entry key="D1" value="713.5983252960402" />
+      <entry key="W1" value="1394.242521295833" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">

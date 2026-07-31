@@ -23,6 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
         :root {
@@ -411,10 +412,32 @@
             </div>
         </div>
 
+        <!-- BIỂU ĐỒ DOANH THU THEO TUẦN -->
+        <div class="panel" style="margin-bottom: 24px;">
+            <div class="panel-header">
+                <div>
+                    <h3 class="panel-title">Doanh thu theo tuần</h3>
+                    <span style="font-size:12px; color:var(--text-muted);">
+                        <c:choose>
+                            <c:when test="${not empty dauTuan and not empty cuoiTuan}">
+                                ${dauTuan} &ndash; ${cuoiTuan}
+                            </c:when>
+                        </c:choose>
+                    </span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="width:12px; height:3px; background:#1a56db; border-radius:2px; display:inline-block;"></span>
+                    <span style="font-size:12px; color:var(--text-muted);">Doanh thu (triệu đ)</span>
+                </div>
+            </div>
+            <div style="padding: 20px 24px; position:relative; height:260px;">
+                <canvas id="chartDoanhThu"></canvas>
+            </div>
+        </div>
+
         <div class="dashboard-grid">
 
-            <!-- BẢNG ĐƠN HÀNG GẦN ĐÂY -->
-            <div class="panel">
+            <!-- BẢNG ĐƠN HÀNG GẦN ĐÂY -->            <div class="panel">
                 <div class="panel-header">
                     <h3 class="panel-title">Đơn hàng gần đây</h3>
                     <a href="/hoa-don/hien-thi" class="panel-action">Xem tất cả</a>
@@ -503,6 +526,92 @@
         </div>
     </div>
 </main>
+
+<script>
+(function () {
+    var labels = ${chartLabels};
+    var rawData = ${chartData};
+
+    // Tìm giá trị max để tính padding trục Y đẹp hơn
+    var maxVal = 0;
+    rawData.forEach(function(v) { if (v != null && v > maxVal) maxVal = v; });
+    var suggestedMax = maxVal > 0 ? maxVal * 1.25 : 10;
+
+    var ctx = document.getElementById('chartDoanhThu').getContext('2d');
+
+    // Gradient fill bên dưới đường
+    var gradient = ctx.createLinearGradient(0, 0, 0, 220);
+    gradient.addColorStop(0, 'rgba(26, 86, 219, 0.18)');
+    gradient.addColorStop(1, 'rgba(26, 86, 219, 0.01)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Doanh thu (triệu đ)',
+                data: rawData,
+                borderColor: '#1a56db',
+                backgroundColor: gradient,
+                borderWidth: 2.5,
+                pointBackgroundColor: '#1a56db',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                fill: true,
+                tension: 0.35,
+                spanGaps: false   // ngắt đoạn tại null (ngày chưa đến)
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            var v = ctx.parsed.y;
+                            if (v == null) return '';
+                            // Hiển thị lại đơn vị đầy đủ trong tooltip
+                            var fullVal = (v * 1000000).toLocaleString('vi-VN');
+                            return ' ' + fullVal + 'đ';
+                        }
+                    },
+                    backgroundColor: '#1f2937',
+                    titleColor: '#f9fafb',
+                    bodyColor: '#d1fae5',
+                    padding: 10,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(0,0,0,0.04)' },
+                    ticks: {
+                        font: { size: 12, family: 'Inter, sans-serif' },
+                        color: '#6b7280'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: suggestedMax,
+                    grid: { color: 'rgba(0,0,0,0.06)' },
+                    ticks: {
+                        font: { size: 12, family: 'Inter, sans-serif' },
+                        color: '#6b7280',
+                        callback: function(value) {
+                            if (value === 0) return '0';
+                            return value.toLocaleString('vi-VN') + ' tr';
+                        }
+                    }
+                }
+            }
+        }
+    });
+})();
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

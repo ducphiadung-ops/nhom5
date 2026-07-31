@@ -323,11 +323,22 @@ public class ChiTietSanPhamServlet extends HttpServlet {
             List<ChiTietSanPham> listResult;
 
             if (idSanPhamStr != null && !idSanPhamStr.trim().isEmpty()) {
-                // --- xem biến thể của 1 sản phẩm cụ thể ---
+                // --- xem biến thể của 1 sản phẩm cụ thể, có thể thêm bộ lọc ---
                 Integer idSanPham = Integer.parseInt(idSanPhamStr);
-                listResult = ctspRepo.findBySanPhamId(idSanPham);
 
+                boolean coLocSP = idMauSac != null || idRam != null || idOCung != null
+                        || trangThai != null || giaMin != null || giaMax != null;
+
+                if (coLocSP) {
+                    listResult = ctspRepo.locDaKieu(null, null, null, idMauSac, idRam, idOCung,
+                            trangThai, giaMin, giaMax, idSanPham);
+                } else {
+                    listResult = ctspRepo.findBySanPhamId(idSanPham);
+                }
+
+                // Lấy SP cha để hiển thị tiêu đề
                 SanPham spCha = (!listResult.isEmpty()) ? listResult.get(0).getSanPham() : sanPhamRepo.getOne(idSanPham);
+                if (spCha == null) spCha = sanPhamRepo.getOne(idSanPham);
                 if (spCha != null) {
                     req.setAttribute("tenDongMayHienTai", spCha.getTenSanPham());
                     req.setAttribute("maSanPhamHienTai",  spCha.getMaSanPham());

@@ -89,6 +89,8 @@
         .employee-name{max-width:100px;font-weight:500;}
         .customer-info p{max-width:85px;font-weight:600;}
         .customer-info{display:flex;align-items:center;gap:6px;}
+        .customer-info > div{display:flex;align-items:center;}
+        .customer-info p{margin-bottom:0;}
         .avatar-initial{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
         .bg-orange-light{background:#ffedd5;color:#c2410c;}
         .total-amount{font-weight:700;}

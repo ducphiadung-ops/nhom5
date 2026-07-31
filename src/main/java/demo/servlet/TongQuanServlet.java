@@ -148,6 +148,53 @@ public class TongQuanServlet extends HttpServlet {
             List<HoaDon> listDonHangGanDay = hoaDonRepo.getTop5();
             List<SanPham> listSanPhamBanChay = sanPhamRepo.getTop5();
 
+            // 7. BIỂU ĐỒ DOANH THU THEO TUẦN HIỆN TẠI
+            // Tính ngày đầu tuần (Thứ 2) và cuối tuần (Chủ nhật) của tuần chứa ngày hôm nay
+            java.time.LocalDate today = java.time.LocalDate.now();
+            java.time.LocalDate dauTuan = today.with(java.time.DayOfWeek.MONDAY);
+            java.time.LocalDate cuoiTuan = today.with(java.time.DayOfWeek.SUNDAY);
+
+            // Label trục X: "T2 28/7", "T3 29/7", ...
+            String[] tenNgay = {"T2", "T3", "T4", "T5", "T6", "T7", "CN"};
+            java.time.format.DateTimeFormatter fmtLabel =
+                    java.time.format.DateTimeFormatter.ofPattern("dd/MM");
+
+            StringBuilder jsonLabels = new StringBuilder("[");
+            StringBuilder jsonData   = new StringBuilder("[");
+
+            for (int i = 0; i < 7; i++) {
+                java.time.LocalDate ngay = dauTuan.plusDays(i);
+                String label = tenNgay[i] + " " + ngay.format(fmtLabel);
+
+                // Append label
+                if (i > 0) { jsonLabels.append(","); jsonData.append(","); }
+                jsonLabels.append("\"").append(label).append("\"");
+
+                // Ngày trong tương lai → null (ngắt đoạn đường)
+                if (ngay.isAfter(today)) {
+                    jsonData.append("null");
+                } else {
+                    java.sql.Date ngaySql = java.sql.Date.valueOf(ngay);
+                    BigDecimal dt = session.createQuery(
+                            "SELECT SUM(h.tongTien) FROM HoaDon h " +
+                            "WHERE h.trangThai = 1 AND CAST(h.ngayLap AS date) = :d",
+                            BigDecimal.class)
+                            .setParameter("d", ngaySql)
+                            .uniqueResult();
+                    // Dùng đơn vị triệu đồng để trục Y gọn hơn
+                    double val = (dt != null) ? dt.doubleValue() / 1_000_000.0 : 0.0;
+                    jsonData.append(String.format("%.3f", val).replace(",", "."));
+                }
+            }
+            jsonLabels.append("]");
+            jsonData.append("]");
+
+            req.setAttribute("chartLabels", jsonLabels.toString());
+            req.setAttribute("chartData",   jsonData.toString());
+            // Truyền ngày đầu/cuối tuần để hiển thị tiêu đề biểu đồ
+            req.setAttribute("dauTuan",  dauTuan.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            req.setAttribute("cuoiTuan", cuoiTuan.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
             // Định dạng tiền tệ chuẩn VN
             String doanhThuFormatted = String.format("%,.0f", doanhThuValue).replace(",", ".");
 
@@ -174,6 +221,10 @@ public class TongQuanServlet extends HttpServlet {
             req.setAttribute("ngayLocValue", "");
             req.setAttribute("ngayTodayValue", todayStr);
             req.setAttribute("isAll", false);
+            req.setAttribute("chartLabels", "[\"T2\",\"T3\",\"T4\",\"T5\",\"T6\",\"T7\",\"CN\"]");
+            req.setAttribute("chartData",   "[null,null,null,null,null,null,null]");
+            req.setAttribute("dauTuan", "");
+            req.setAttribute("cuoiTuan", "");
         }
 
         req.getRequestDispatcher("/demo/tong_quan.jsp").forward(req, resp);

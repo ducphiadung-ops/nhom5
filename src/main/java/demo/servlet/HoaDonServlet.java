@@ -522,7 +522,7 @@ public class HoaDonServlet extends HttpServlet {
         List<ChiTietSanPham> listSanPham      = chiTietSanPhamRepository.getAll();
         List<KhachHang> listKhachHang          = khachHangRepo.getAll();
         List<MaSeri> listMaSeri                = maSeriRepository.getAll();
-        List<HinhThucThanhToan> listHinhThuc   = hinhThucThanhToanRepo.getAll();
+        List<HinhThucThanhToan> listHinhThuc   = hinhThucThanhToanRepo.getAllActive();
 
         // Chỉ lấy hoá đơn chờ của nhân viên đang đăng nhập
         List<HoaDon> listHoaDonCho;

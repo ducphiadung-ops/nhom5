@@ -238,12 +238,14 @@ public class ChiTietSanPhamRepository {
     /**
      * Lọc biến thể đa tiêu chí cho trang Quản lý Biến thể Sản phẩm.
      * Tất cả tham số đều nullable — null nghĩa là bỏ qua điều kiện đó.
+     * @param idSanPham  nếu không null thì ghim theo 1 SP cụ thể (chế độ xem biến thể của SP cha)
      */
     public List<ChiTietSanPham> locDaKieu(String tenSanPham,
                                           Integer idCpu, Integer idGpu,
                                           Integer idMauSac, Integer idRam, Integer idOCung,
                                           Integer trangThai,
-                                          java.math.BigDecimal giaMin, java.math.BigDecimal giaMax) {
+                                          java.math.BigDecimal giaMin, java.math.BigDecimal giaMax,
+                                          Integer idSanPham) {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             StringBuilder hql = new StringBuilder(
                     "SELECT ct FROM ChiTietSanPham ct " +
@@ -253,6 +255,8 @@ public class ChiTietSanPhamRepository {
 
             if (tenSanPham != null && !tenSanPham.trim().isEmpty())
                 hql.append(" AND LOWER(sp.tenSanPham) LIKE LOWER(:tenSanPham)");
+            if (idSanPham != null)
+                hql.append(" AND sp.id = :idSanPham");
             if (idCpu != null)
                 hql.append(" AND ch.cpu.id = :idCpu");
             if (idGpu != null)
@@ -277,6 +281,7 @@ public class ChiTietSanPhamRepository {
 
             if (tenSanPham != null && !tenSanPham.trim().isEmpty())
                 query.setParameter("tenSanPham", "%" + tenSanPham.trim() + "%");
+            if (idSanPham != null) query.setParameter("idSanPham", idSanPham);
             if (idCpu != null)    query.setParameter("idCpu", idCpu);
             if (idGpu != null)    query.setParameter("idGpu", idGpu);
             if (idMauSac != null) query.setParameter("idMauSac", idMauSac);
@@ -308,6 +313,15 @@ public class ChiTietSanPhamRepository {
     }
 
     /** Lấy giá bán nhỏ nhất và lớn nhất trong toàn bộ biến thể */
+    /** Overload tương thích ngược — không lọc theo SP cụ thể */
+    public List<ChiTietSanPham> locDaKieu(String tenSanPham,
+                                          Integer idCpu, Integer idGpu,
+                                          Integer idMauSac, Integer idRam, Integer idOCung,
+                                          Integer trangThai,
+                                          java.math.BigDecimal giaMin, java.math.BigDecimal giaMax) {
+        return locDaKieu(tenSanPham, idCpu, idGpu, idMauSac, idRam, idOCung, trangThai, giaMin, giaMax, null);
+    }
+
     public java.math.BigDecimal[] getMinMaxDonGia() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             Object[] row = (Object[]) session.createQuery(
