@@ -498,20 +498,15 @@
                 </div>
                 <div class="top-products-list">
 
-                    <!-- Dùng JSTL để lặp qua ListSanPhamBanChay -->
-                    <c:forEach items="${ListSanPhamBanChay}" var="sp">
+                    <!-- ListSanPhamBanChay là List<Object[]>: row[0]=SanPham, row[1]=Long soLuongBan -->
+                    <c:forEach items="${ListSanPhamBanChay}" var="row">
                         <div class="top-product-item">
-
                             <div class="top-product-info">
-                                <!-- Giả định Entity SanPham có thuộc tính tenSanPham -->
-                                <a href="#" class="top-product-name">${sp.tenSanPham}</a>
-                                <!-- Tùy thuộc vào việc Entity SanPham có lưu trực tiếp số lượng đã bán không -->
-                                <span class="top-product-sales">Sản phẩm nổi bật</span>
+                                <a href="#" class="top-product-name">${row[0].tenSanPham}</a>
+                                <span class="top-product-sales">Đã bán: ${row[1]} lượt</span>
                             </div>
-
-                            <!-- Giả định Entity SanPham có thuộc tính giaBan -->
                             <div class="top-product-price">
-                                <fmt:formatNumber value="${sp.giaBan}" type="number" pattern="#,###"/>đ
+                                <fmt:formatNumber value="${row[0].giaBan}" type="number" pattern="#,###"/>đ
                             </div>
                         </div>
                     </c:forEach>

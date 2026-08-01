@@ -94,7 +94,9 @@ public class HoaDonRepository {
     public List<HoaDon> getTop5() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
             return session.createQuery(
-                    "SELECT h FROM HoaDon h LEFT JOIN h.khachHang ORDER BY h.ngayLap DESC",
+                    "SELECT h FROM HoaDon h LEFT JOIN h.khachHang " +
+                    "WHERE h.trangThai = 1 " +
+                    "ORDER BY h.id DESC",
                     HoaDon.class)
                     .setMaxResults(5)
                     .list();

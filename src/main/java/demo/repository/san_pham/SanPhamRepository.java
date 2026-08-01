@@ -249,12 +249,49 @@ public class  SanPhamRepository {
         }
     }
 
-    public List<SanPham> getTop5() {
+    /**
+     * Trả về top 5 sản phẩm bán chạy nhất dựa trên số lượt mua thực tế
+     * (đếm số dòng ChiTietHoaDon thuộc hoá đơn đã thanh toán, nhóm theo SanPham).
+     * Mỗi phần tử trong list là Object[] { SanPham sp, Long soLuongBan }.
+     */
+    public List<Object[]> getTop5BanChay() {
         try (Session session = HibernateConfig.getFACTORY().openSession()) {
-            // Chỉ lấy 5 sản phẩm đầu tiên (sắp xếp theo id mới nhất)
-            return session.createQuery("FROM SanPham s ORDER BY s.id DESC", SanPham.class)
-                    .setMaxResults(5)
+            // Dùng native SQL để tránh vấn đề Hibernate GROUP BY object
+            // và đảm bảo LEFT JOIN đúng, bao gồm cả các dòng có ma_cau_hinh không null
+            @SuppressWarnings("unchecked")
+            List<Object[]> rawRows = session.createNativeQuery(
+                    "SELECT TOP 5 sp.id, sp.ten_san_pham, sp.gia_ban, COUNT(ct.id) AS so_luong " +
+                    "FROM chi_tiet_hoa_don ct " +
+                    "INNER JOIN hoa_don hd ON ct.id_hoa_don = hd.id " +
+                    "INNER JOIN cau_hinh_san_pham chs ON ct.ma_cau_hinh = chs.id " +
+                    "INNER JOIN san_pham sp ON chs.id_san_pham = sp.id " +
+                    "WHERE hd.trang_thai = 1 " +
+                    "  AND ct.ma_cau_hinh IS NOT NULL " +
+                    "GROUP BY sp.id, sp.ten_san_pham, sp.gia_ban " +
+                    "ORDER BY so_luong DESC")
                     .list();
+
+            // Chuyển sang Object[] chứa [SanPham, Long]
+            List<Object[]> result = new ArrayList<>();
+            for (Object[] row : rawRows) {
+                Integer spId    = row[0] instanceof Number ? ((Number) row[0]).intValue() : null;
+                String  tenSp   = (String) row[1];
+                java.math.BigDecimal giaBan = row[2] != null
+                        ? new java.math.BigDecimal(row[2].toString()) : java.math.BigDecimal.ZERO;
+                Long soLuong    = row[3] instanceof Number ? ((Number) row[3]).longValue() : 0L;
+
+                // Tải đầy đủ entity SanPham
+                SanPham sp = session.find(SanPham.class, spId);
+                if (sp == null) {
+                    // Fallback: tạo object tạm nếu không load được
+                    sp = new SanPham();
+                    sp.setId(spId);
+                    sp.setTenSanPham(tenSp);
+                    sp.setGiaBan(giaBan);
+                }
+                result.add(new Object[]{sp, soLuong});
+            }
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();

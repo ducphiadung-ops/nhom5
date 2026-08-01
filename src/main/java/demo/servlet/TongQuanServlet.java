@@ -1,7 +1,6 @@
 package demo.servlet;
 
 import demo.entity.hoa_don.HoaDon;
-import demo.entity.san_pham.SanPham;
 import demo.repository.hoadon.HoaDonRepository;
 import demo.repository.san_pham.SanPhamRepository;
 import demo.util.HibernateConfig;
@@ -146,7 +145,7 @@ public class TongQuanServlet extends HttpServlet {
 
             // 5 & 6. LẤY DỮ LIỆU TỪ REPOSITORY
             List<HoaDon> listDonHangGanDay = hoaDonRepo.getTop5();
-            List<SanPham> listSanPhamBanChay = sanPhamRepo.getTop5();
+            List<Object[]> listSanPhamBanChay = sanPhamRepo.getTop5BanChay();
 
             // 7. BIỂU ĐỒ DOANH THU THEO TUẦN HIỆN TẠI
             // Tính ngày đầu tuần (Thứ 2) và cuối tuần (Chủ nhật) của tuần chứa ngày hôm nay
